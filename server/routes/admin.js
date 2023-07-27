@@ -3,8 +3,22 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const { Admin } = require('../models');
 const yup = require("yup");
+const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
 require('dotenv').config();
+
+
+// Authorization Checks
+router.get("/auth", validateToken, (req, res) => {
+    let adminInfo = {
+        id: req.admin.id,
+        email: req.admin.email,
+        name: req.admin.name
+    };
+    res.json({
+        admin: adminInfo
+    });
+});
 
 
 
@@ -49,7 +63,7 @@ router.post("/registerAdmin", async (req, res) => {
     res.json(result);
 });
 
-router.post("/login", async (req, res) => {
+router.post("/loginadmin", async (req, res) => {
     let data = req.body;
 
     // Validate request body
