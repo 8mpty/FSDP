@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { Admin } = require('../models');
+const { User } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
@@ -9,18 +9,18 @@ require('dotenv').config();
 
 // Authorization Checks
 router.get("/auth", validateToken, (req, res) => {
-    let adminInfo = {
-        id: req.admin.id,
-        email: req.admin.email,
-        name: req.admin.name
+    let userInfo = {
+        id: req.user.id,
+        email: req.user.email,
+        name: req.user.name
     };
     res.json({
-        admin: adminInfo
+        user: userInfo
     });
 });
 
-// Register Admin
-router.post("/registerAdmin", async (req, res) => {
+// Register User
+router.post("/register", async (req, res) => {
     let data = req.body;
 
     // Validate request body
@@ -45,23 +45,23 @@ router.post("/registerAdmin", async (req, res) => {
     data.password = data.password.trim();
 
     // Check email
-    let admin = await Admin.findOne({
+    let user = await User.findOne({
         where: { email: data.email }
     });
-    if (admin) {
+    if (user) {
         res.status(400).json({ message: "Email already exists." });
         return;
     }
 
     // Hash passowrd
     data.password = await bcrypt.hash(data.password, 10);
-    // Create Admin
-    let result = await Admin.create(data);
+    // Create User
+    let result = await User.create(data);
     res.json(result);
 });
 
-// Login Admin
-router.post("/loginadmin", async (req, res) => {
+// Login User
+router.post("/login", async (req, res) => {
     let data = req.body;
 
     // Validate request body
@@ -84,69 +84,68 @@ router.post("/loginadmin", async (req, res) => {
 
     // Check email and password
     let errorMsg = "Email or password is not correct.";
-    let admin = await Admin.findOne({
+    let user = await User.findOne({
         where: { email: data.email }
     });
-    if (!admin) {
+    if (!user) {
         res.status(400).json({ message: errorMsg });
         return;
     }
-    let match = await bcrypt.compare(data.password, admin.password);
+    let match = await bcrypt.compare(data.password, user.password);
     if (!match) {
         res.status(400).json({ message: errorMsg });
         return;
     }
 
-    // Return Admin info
-    let adminInfo = {
-        id: admin.id,
-        email: admin.email,
-        name: admin.name
+    // Return User info
+    let userInfo = {
+        id: user.id,
+        email: user.email,
+        name: user.name
         // password: admin.password
     };
-    let accessToken = sign(adminInfo, process.env.APP_SECRET);
+    let accessToken = sign(userInfo, process.env.APP_SECRET);
     res.json({
         accessToken: accessToken,
-        admin: adminInfo
+        user: userInfo
     });
 });
 
-// Get the Details of Admin from Specific ID
+// Get the Details of User from Specific ID
 router.get("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
-    let admin = await Admin.findByPk(id);
-    if(!admin){
-        res.status(400).json({message: `Cannot find account with ID ${id}`})
+    let user = await User.findByPk(id);
+    if (!user) {
+        res.status(400).json({ message: `Cannot find account with ID ${id}` })
         return;
     }
-    res.json(admin);
+    res.json(user);
 });
 
-// Delete Admin Account of Specific ID
+// Delete User Account of Specific ID
 router.delete("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
-    let admin = await Admin.findByPk(id);
+    let user = await User.findByPk(id);
 
-    if (!admin){
+    if (!user) {
         res.sendStatus(404)
         return;
     }
 
-    let adminNum = await Admin.destroy({
+    let userNum = await User.destroy({
         where: { id: id }
     })
 
-    if(adminNum == 1){
+    if (userNum == 1) {
         res.json({
-            message: `Admin ${admin.name} has been deleted successfully!`
+            message: `User ${user.name} has been deleted successfully!`
         });
     }
-    else{
+    else {
         res.status(400).json({
-            message: `MCannnot delete ${admin.name} account!`
+            message: `MCannnot delete ${user.name} account!`
         })
     }
 });
-
 
 module.exports = router;

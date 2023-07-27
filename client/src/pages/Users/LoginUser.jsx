@@ -1,16 +1,17 @@
-import React, { useContext }  from 'react'
+import React, { useContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Box, Typography, TextField, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { AdminContext } from '../../contexts/AccountContext';
+import { UserContext } from '../../contexts/AccountContext';
 import * as yup from 'yup';
 import http from '../../http';
+import '../../Profile.css';
 
-function LoginAdmin() {
+function LoginUser() {
   const navigate = useNavigate();
-  const { setAdmin } = useContext(AdminContext);
+  const { setUser } = useContext(UserContext);
 
   const formik = useFormik({
     initialValues: {
@@ -30,10 +31,10 @@ function LoginAdmin() {
     onSubmit: (data) => {
       data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
-      http.post("/admin/loginadmin", data)
+      http.post("/user/login", data)
         .then((res) => {
           localStorage.setItem("accessToken", res.data.accessToken);
-          setAdmin(res.data.admin);
+          setUser(res.data.user);
           navigate("/");
         })
         .catch(function (err) {
@@ -48,10 +49,11 @@ function LoginAdmin() {
       flexDirection: 'column',
       alignItems: 'center'
     }}>
-      <ToastContainer />
-      <Typography variant="h5" sx={{ my: 2 }}> Login </Typography>
-
-      <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >
+      <Typography variant="h5" sx={{ my: 2 }}>
+        Login
+      </Typography>
+      <Box component="form" sx={{ maxWidth: '500px' }}
+        onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth margin="normal" autoComplete="off"
           label="Email"
@@ -70,12 +72,20 @@ function LoginAdmin() {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
-        <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
+        <Box className='hyper-links'>
+          <Link to="/register">Create Account</Link>
+          <Link to="/accountRecovery" className='for-pass'>Forgot Password</Link>
+        </Box>
+
+        <Button fullWidth variant="contained" sx={{ mt: 2 }}
+          type="submit">
           Login
         </Button>
       </Box>
+
+      <ToastContainer />
     </Box>
   )
 }
 
-export default LoginAdmin
+export default LoginUser;

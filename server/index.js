@@ -11,7 +11,11 @@ app.get("/", (req, res) => {
 });
 
 
-// Routes Added Here
+// User Route
+const userRoute = require('./routes/user');
+app.use("/user", userRoute);
+
+// Admin Route
 const adminRoute = require('./routes/admin');
 app.use("/admin", adminRoute);
 

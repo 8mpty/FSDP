@@ -5,13 +5,13 @@ import { Box, Typography, TextField, Button } from '@mui/material';
 import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { AdminContext } from '../../contexts/AccountContext';
+import { UserContext } from '../../contexts/AccountContext';
 import * as yup from 'yup';
 import http from '../../http';
-import '../../Profile.css';
+// import '../../Profile.css';
 
-function ProfileAdmin() {
-  const { admin } = useContext(AdminContext);
+function ProfileUser() {
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [prof, setProf] = useState({
@@ -22,14 +22,14 @@ function ProfileAdmin() {
   });
 
   useEffect(() => {
-      if (admin != null) {
-          http.get(`/admin/${admin.id}`)
+      if (user != null) {
+          http.get(`/user/${user.id}`)
               .then((res) => {
                   console.log(res.data.password);
                   setProf(res.data);
               });
       }
-  }, [admin]);
+  }, [user]);
 
   const formik = useFormik({
       initialValues: prof,
@@ -62,7 +62,7 @@ function ProfileAdmin() {
   };
 
   const deleteUser = () => {
-      http.delete(`/admin/${admin.id}`)
+      http.delete(`/user/${user.id}`)
           .then((res) => {
               // Temp solution to delete user, logging out and going back to homepage
               localStorage.clear();
@@ -162,4 +162,4 @@ function ProfileAdmin() {
   )
 }
 
-export default ProfileAdmin;
+export default ProfileUser;

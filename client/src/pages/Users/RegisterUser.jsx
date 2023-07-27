@@ -1,23 +1,27 @@
-import React, { useContext }  from 'react'
+import React from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { AdminContext } from '../../contexts/AccountContext';
 import * as yup from 'yup';
 import http from '../../http';
 
-function LoginAdmin() {
+function RegisterUser() {
   const navigate = useNavigate();
-  const { setAdmin } = useContext(AdminContext);
-
   const formik = useFormik({
     initialValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: ""
     },
     validationSchema: yup.object({
+      name: yup.string().trim()
+        .matches(/^[a-z ,.'-]+$/i, 'Invalid name')
+        .min(3, 'Name must be at least 3 characters')
+        .max(50, 'Name must be at most 50 characters')
+        .required('Name is required'),
       email: yup.string().trim()
         .email('Enter a valid email')
         .max(50, 'Email must be at most 50 characters')
@@ -26,15 +30,18 @@ function LoginAdmin() {
         .min(8, 'Password must be at least 8 characters')
         .max(50, 'Password must be at most 50 characters')
         .required('Password is required'),
+      confirmPassword: yup.string().trim()
+        .required('Confirm password is required')
+        .oneOf([yup.ref('password'), null], 'Passwords must match')
     }),
     onSubmit: (data) => {
+      data.name = data.name.trim();
       data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
-      http.post("/admin/loginadmin", data)
+      http.post("/user/register", data)
         .then((res) => {
-          localStorage.setItem("accessToken", res.data.accessToken);
-          setAdmin(res.data.admin);
-          navigate("/");
+          console.log(res.data);
+          navigate("/login");
         })
         .catch(function (err) {
           toast.error(`${err.response.data.message}`);
@@ -49,9 +56,18 @@ function LoginAdmin() {
       alignItems: 'center'
     }}>
       <ToastContainer />
-      <Typography variant="h5" sx={{ my: 2 }}> Login </Typography>
+      <Typography variant="h5" sx={{ my: 2 }}> Register </Typography>
 
       <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >
+        <TextField
+          fullWidth margin="normal" autoComplete="off"
+          label="Name"
+          name="name"
+          value={formik.values.name}
+          onChange={formik.handleChange}
+          error={formik.touched.name && Boolean(formik.errors.name)}
+          helperText={formik.touched.name && formik.errors.name}
+        />
         <TextField
           fullWidth margin="normal" autoComplete="off"
           label="Email"
@@ -70,12 +86,22 @@ function LoginAdmin() {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
-        <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
-          Login
+        <TextField
+          fullWidth margin="normal" autoComplete="off"
+          label="Confirm Password"
+          name="confirmPassword" type="password"
+          value={formik.values.confirmPassword}
+          onChange={formik.handleChange}
+          error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
+          helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+        />
+        <Button fullWidth variant="contained" sx={{ mt: 2 }}
+          type="submit">
+          Register
         </Button>
       </Box>
     </Box>
   )
 }
 
-export default LoginAdmin
+export default RegisterUser;
