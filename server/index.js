@@ -4,13 +4,22 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Testing");
+    res.send("FSDP Project 😎");
 });
 
 
-let port = process.env.APP_PORT;
-app.listen(port, () => {
-    console.log(`⚡ Sever running on http://localhost:${port}`);
-});
+// Routes Added Here
+const adminRoute = require('./routes/admin');
+app.use("/admin", adminRoute);
+
+
+const db = require('./models');
+db.sequelize.sync({ alter: true }).then(() => {
+    let port = process.env.APP_PORT;
+    app.listen(port, () => {
+        console.log(`⚡ Sever running on http://localhost:${port}`);
+    });
+})
