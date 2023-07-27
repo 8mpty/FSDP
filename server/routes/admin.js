@@ -20,8 +20,6 @@ router.get("/auth", validateToken, (req, res) => {
     });
 });
 
-
-
 // Register Admin
 router.post("/registerAdmin", async (req, res) => {
     let data = req.body;
@@ -63,6 +61,7 @@ router.post("/registerAdmin", async (req, res) => {
     res.json(result);
 });
 
+// Login Admin
 router.post("/loginadmin", async (req, res) => {
     let data = req.body;
 
@@ -113,6 +112,41 @@ router.post("/loginadmin", async (req, res) => {
     });
 });
 
+// Get the Details of Admin from Specific ID
+router.get("/:id", validateToken, async (req, res) => {
+    let id = req.params.id;
+    let admin = await Admin.findByPk(id);
+    if(!admin){
+        res.status(400).json({message: `Cannot find account with ID ${id}`})
+        return;
+    }
+    res.json(admin);
+});
+
+router.delete("/:id", validateToken, async (req, res) => {
+    let id = req.params.id;
+    let admin = await Admin.findByPk(id);
+
+    if (!admin){
+        res.sendStatus(404)
+        return;
+    }
+
+    let adminNum = await Admin.destroy({
+        where: { id: id }
+    })
+
+    if(adminNum == 1){
+        res.json({
+            message: `Admin ${admin.name} has been deleted successfully!`
+        });
+    }
+    else{
+        res.status(400).json({
+            message: `MCannnot delete ${admin.name} account!`
+        })
+    }
+});
 
 
 module.exports = router;

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link }
   from 'react-router-dom';
 import RegisterAdmin from './pages/Admins/RegisterAdmin';
 import LoginAdmin from './pages/Admins/LoginAdmin';
+import ProfileAdmin from './pages/Admins/ProfileAdmin';
 import {AdminContext, UserContext} from './contexts/AdminContext';
 import http from './http';
 
@@ -36,7 +37,7 @@ function App() {
               {admin && (
                 <>
                   {/* <Typography>{admin.name}</Typography> */}
-                  <Button onClick={logout}><Typography>{admin.name}</Typography></Button>
+                  <Link to="/profileAdmin" ><Typography>{admin.name}</Typography></Link>
                   <Button onClick={logout}>Logout</Button>
                 </>
               )
@@ -53,8 +54,12 @@ function App() {
         <Container>
           <Routes>
             <Route path={"/"} />
+
+
+            {/* Admin Stuff */}
             <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
             <Route path={"/loginAdmin"} element={<LoginAdmin />} />
+            <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
           </Routes>
         </Container>
       </Router>
