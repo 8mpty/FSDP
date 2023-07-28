@@ -68,6 +68,9 @@ function App() {
                   </>
                 ) : admin ? (
                   <>
+                  <Link to="/adminridehistory">
+              <Typography class='a'>Ride Histories</Typography>
+            </Link>
                     <Link to="/profileAdmin"><Typography>{admin.name}</Typography></Link>
                     <Button onClick={logout}>Logout</Button>
                   </>
@@ -81,9 +84,16 @@ function App() {
                 )}
               {user && (
                 <Link to="/ridehistory">
-                <Typography class='a'>ridehistory</Typography>
+                <Typography class='a'>Ride history</Typography>
               </Link>
               )}
+
+              {admin && (
+                <Link to="/adminridehistory">
+                <Typography class='a'>adminridehistory</Typography>
+              </Link>
+              )}
+
               </Toolbar>
             </Container>
           </AppBar>
