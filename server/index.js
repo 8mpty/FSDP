@@ -60,6 +60,12 @@ app.use("/admin", adminRoute);
 const ridehistoryRoute = require("./routes/ridehistory");
 app.use("/ridehistory", ridehistoryRoute);
 
+// Bookings Route
+const bookingRoute = require('./routes/booking');
+app.use("/booking", bookingRoute);
+const adminbookingRoute = require('./routes/adminbooking');
+app.use("/adminbooking", adminbookingRoute);
+
 
 const db = require('./models');
 db.sequelize.sync({ alter: true }).then(() => {
