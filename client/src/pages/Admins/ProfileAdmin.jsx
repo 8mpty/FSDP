@@ -98,6 +98,18 @@ function ProfileAdmin() {
             });
     }
 
+    const resendVerificationCode = () => {
+        http
+            .post("/admin/resendVerificationCode", { email: prof.email })
+            .then((res) => {
+                console.log(res.data);
+                toast.success("Verification code sent successfully.");
+            })
+            .catch((error) => {
+                console.error("Error resending verification code:", error);
+                toast.error("Failed to resend verification code. Please try again later.");
+            });
+    };
 
     return (
         <Box>
@@ -161,6 +173,9 @@ function ProfileAdmin() {
                     </Button>
                     <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpen}>
                         Delete Account
+                    </Button>
+                    <Button variant="contained" sx={{ ml: 2 }} onClick={resendVerificationCode}>
+                        Resend New Verification Code
                     </Button>
                 </Box>
                 <Dialog open={open} onClose={handleClose}>

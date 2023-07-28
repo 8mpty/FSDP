@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import { UserContext } from "../../contexts/AccountContext";
 import * as yup from "yup";
 import http from "../../http";
-// import '../../Profile.css';
+import '../../Profile.css';
 
 function ProfileUser() {
   const { user } = useContext(UserContext);
@@ -43,9 +43,9 @@ function ProfileUser() {
       confirmPassword: yup.lazy((value) =>
         value || formik.values.password
           ? yup
-              .string()
-              .oneOf([yup.ref("password"), null], "Passwords must match")
-              .required("Confirm Password is required")
+            .string()
+            .oneOf([yup.ref("password"), null], "Passwords must match")
+            .required("Confirm Password is required")
           : yup.string()
       ),
     }),

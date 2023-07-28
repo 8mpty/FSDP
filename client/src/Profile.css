@@ -24,57 +24,41 @@
     display: inline-block;
 }
 
-.acc-pic {
-    border: 2px solid pink;
-    border-radius: 5px;
-    left: 10px;
-    height: 150px;
-    width: 200px;
-    float: left;
-    margin-right: 20px;
-}
-
-.for-pass {
-    float: right;
-}
-
-.hyper-links {
-    margin: 10px;
-}
-
-.side-link a {
-    text-decoration: none;
-    color: white;
-}
-
-.side-div {
-    display: flex;
-    align-items: center;
-    /* justify-content: center; */
-}
-
-.side-bar {
-    border: 2px solid white;
-    border-radius: 10px;
-    height: max-content;
-    width: max-content;
-    background-color: rgb(25, 118, 210)
-}
-
-.container-outer {
-    /* display: flex; */
-    /* position: relative; */
-    /* left: calc(100vw - 78vw); */
-}
-
-.container-inner {
-    padding: 10px;
-    border: 2px solid white;
-    border-radius: 20px;
-    width: max-content;
-}
 
 .main-content {
     display: flex;
     justify-content: center;
+}
+
+.hyper-links {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Apply Flexbox to the parent container */
+.hyper-links.admins {
+    display: flex;
+    justify-content: flex-end;
+    /* Optionally, you can align it to the center horizontally */
+    /* justify-content: center; */
+    /* Optionally, you can align it to the center vertically */
+    /* align-items: center; */
+    /* Alternatively, use the shorthand for both horizontal and vertical alignment */
+    /* justify-content: center; */
+    /* align-items: center; */
+
+    /* Add absolute positioning to position the div at the bottom-right */
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+
+    /* Additional styling */
+    border: 2px solid white;
+    border-radius: 20px;
+}
+
+.admin-link {
+    text-decoration: none;
+    color: white;
 }
