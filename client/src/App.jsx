@@ -13,10 +13,12 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import RegisterAdmin from "./pages/Admins/RegisterAdmin";
 import LoginAdmin from "./pages/Admins/LoginAdmin";
 import ProfileAdmin from "./pages/Admins/ProfileAdmin";
+import AccountRecoveryAdmin from "./pages/Admins/AccountRecoveryAdmin";
 
 import RegisterUser from "./pages/Users/RegisterUser";
 import LoginUser from "./pages/Users/LoginUser";
 import ProfileUser from "./pages/Users/ProfileUser";
+import AccountRecoveryUser from "./pages/Users/AccountRecoveryUser";
 
 import Ridehistory from "./pages/Ridehistory/ridehistory";
 import Adminridehistory from "./pages/Ridehistory/adminridehistory";
@@ -123,11 +125,13 @@ function App() {
               <Route path={"/register"} element={<RegisterUser />} />
               <Route path={"/login"} element={<LoginUser />} />
               <Route path={"/profile"} element={<ProfileUser />} />
+              <Route path={"/accountRecoveryUser"} element={<AccountRecoveryUser />} />
 
               {/* Admin Stuff */}
               <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
+              <Route path={"/accountRecoveryAdmin"} element={<AccountRecoveryAdmin />} />
 
               {/* Ride History Stuff */}
               <Route path={"/ridehistory"} element={<Ridehistory />} />

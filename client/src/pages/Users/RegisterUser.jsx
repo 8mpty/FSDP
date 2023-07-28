@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Box, Typography, TextField, Button } from '@mui/material';
@@ -9,6 +9,7 @@ import http from '../../http';
 
 function RegisterUser() {
   const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -32,7 +33,7 @@ function RegisterUser() {
         .required('Password is required'),
       confirmPassword: yup.string().trim()
         .required('Confirm password is required')
-        .oneOf([yup.ref('password'), null], 'Passwords must match')
+        .oneOf([yup.ref('password'), null], 'Passwords must match'),
     }),
     onSubmit: (data) => {
       data.name = data.name.trim();
