@@ -18,6 +18,13 @@ import Editridehistory from "./pages/Ridehistory/editridehistory";
 import Deleteridehistory from "./pages/Ridehistory/deleteridehistory";
 import Drivehistory from "./pages/Ridehistory/drivehistory";
 
+import Bookings from './pages/Bookings/Bookings';
+import AdminBookings from './pages/Bookings/AdminBookings';
+import AddBooking from './pages/Bookings/AddBooking';
+import EditBooking from './pages/Bookings/EditBooking';
+import AddAdminBooking from './pages/Bookings/AddAdminBooking';
+import EditAdminBooking from './pages/Bookings/EditAdminBooking';
+
 
 import http from './http';
 
@@ -77,13 +84,31 @@ function App() {
                     <Link to="/login"><Typography>Login</Typography></Link>
                   </>
 
-                    
+
                 )}
-              {user && (
-                <Link to="/ridehistory">
-                <Typography class='a'>ridehistory</Typography>
-              </Link>
-              )}
+                {user && (
+                  <>
+                    <Link to="/ridehistory">
+                      <Typography class='a'>ridehistory</Typography>
+                    </Link>
+                    <Link to="/bookings" >
+                      <Typography style={{ fontFamily: "system-ui" }}>Bookings</Typography>
+                    </Link>
+                    
+                  </>
+
+                )}
+
+                {admin && (
+                  <>
+                    <Link to="/adminbookings" >
+                      <Typography style={{ fontFamily: "system-ui" }}>Admin Bookings</Typography>
+                    </Link>
+                  </>
+
+                )}
+
+
               </Toolbar>
             </Container>
           </AppBar>
@@ -102,7 +127,7 @@ function App() {
               <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
-              
+
               {/* Ride History Stuff */}
               <Route path={"/ridehistory"} element={<Ridehistory />} />
               <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
@@ -112,9 +137,18 @@ function App() {
               <Route path="/adminridehistory/:id" component={Adminridehistory} />
               <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
               <Route
-              path={"/deleteridehistory/:id"}
-              element={<Deleteridehistory />}
+                path={"/deleteridehistory/:id"}
+                element={<Deleteridehistory />}
               />
+
+              {/* Booking Stuff */}
+              <Route path={"/bookings"} element={<Bookings />} />
+              <Route path={"/adminbookings"} element={<AdminBookings />} />
+              <Route path={"/addbooking"} element={<AddBooking />} />
+              <Route path={"/editbooking/:id"} element={<EditBooking />} />
+              <Route path={"/addadminbooking"} element={<AddAdminBooking />} />
+              <Route path={"/editadminbooking/:id"} element={<EditAdminBooking />} />
+
             </Routes>
           </Container>
         </Router>
