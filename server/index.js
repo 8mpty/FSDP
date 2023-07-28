@@ -19,6 +19,10 @@ app.use("/user", userRoute);
 const adminRoute = require('./routes/admin');
 app.use("/admin", adminRoute);
 
+// Ridehistory Route
+const ridehistoryRoute = require("./routes/ridehistory");
+app.use("/ridehistory", ridehistoryRoute);
+
 
 const db = require('./models');
 db.sequelize.sync({ alter: true }).then(() => {

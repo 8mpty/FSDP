@@ -12,6 +12,13 @@ import RegisterUser from './pages/Users/RegisterUser';
 import LoginUser from './pages/Users/LoginUser';
 import ProfileUser from './pages/Users/ProfileUser';
 
+import Ridehistory from "./pages/Ridehistory/ridehistory";
+import Adminridehistory from "./pages/Ridehistory/adminridehistory";
+import Editridehistory from "./pages/Ridehistory/editridehistory";
+import Deleteridehistory from "./pages/Ridehistory/deleteridehistory";
+import Drivehistory from "./pages/Ridehistory/drivehistory";
+
+
 import http from './http';
 
 import { AdminContext, UserContext } from './contexts/AccountContext';
@@ -69,8 +76,14 @@ function App() {
                     {/* <Link to="/register"><Typography>Register</Typography></Link> */}
                     <Link to="/login"><Typography>Login</Typography></Link>
                   </>
-                )}
 
+                    
+                )}
+              {user && (
+                <Link to="/ridehistory">
+                <Typography class='a'>ridehistory</Typography>
+              </Link>
+              )}
               </Toolbar>
             </Container>
           </AppBar>
@@ -89,8 +102,19 @@ function App() {
               <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
-
-
+              
+              {/* Ride History Stuff */}
+              <Route path={"/ridehistory"} element={<Ridehistory />} />
+              <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
+              <Route path={"/drivehistory"} element={<Drivehistory />} />
+              <Route path={"/drivehistory/:id"} element={<Drivehistory />} />
+              <Route path={"/adminridehistory"} element={<Adminridehistory />} />
+              <Route path="/adminridehistory/:id" component={Adminridehistory} />
+              <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
+              <Route
+              path={"/deleteridehistory/:id"}
+              element={<Deleteridehistory />}
+              />
             </Routes>
           </Container>
         </Router>
