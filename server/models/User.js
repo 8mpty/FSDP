@@ -16,7 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false, // Set the default value to false for regular users
     },
-    
+    verificationCode: { // Add this field to store the verification code
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   });
   User.associate = (models) => {
     User.hasMany(models.ridehistory, {
