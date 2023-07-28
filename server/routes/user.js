@@ -102,7 +102,6 @@ router.post("/login", async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name
-        // password: admin.password
     };
     let accessToken = sign(userInfo, process.env.APP_SECRET);
     res.json({
@@ -145,6 +144,60 @@ router.delete("/:id", validateToken, async (req, res) => {
         res.status(400).json({
             message: `MCannnot delete ${user.name} account!`
         })
+    }
+});
+
+// Update User Particulars
+router.put("/updateUser/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+
+    // Validate request body
+    let validationSchema = yup.object({
+        name: yup.string().trim().matches(/^[a-z ,.'-]+$/i)
+            .min(3).max(50),
+        email: yup.string().trim().email().max(50),
+        password: yup.string().trim().min(8).max(50),
+    });
+
+    try {
+        await validationSchema.validate(data, { abortEarly: false });
+    } catch (err) {
+        res.status(400).json({ errors: err.errors });
+        return;
+    }
+
+    // Trim string values if present
+    if (data.name) {
+        data.name = data.name.trim();
+    }
+    if (data.email) {
+        data.email = data.email.trim().toLowerCase();
+    }
+    if (data.password) {
+        data.password = data.password.trim();
+        data.password = await bcrypt.hash(data.password, 10); // Hash the new password
+    }
+
+    // Update User
+    try {
+        let user = await User.findByPk(id);
+
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+
+        // Update user's data directly
+        Object.assign(user, data);
+
+        // Save the updated user
+        await user.save();
+
+        res.json(user);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 

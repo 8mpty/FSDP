@@ -148,5 +148,61 @@ router.delete("/:id", validateToken, async (req, res) => {
     }
 });
 
+// Update Admin Particulars
+router.put("/updateAdmin/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+
+    // Validate request body
+    let validationSchema = yup.object({
+        name: yup.string().trim().matches(/^[a-z ,.'-]+$/i)
+            .min(3).max(50),
+        email: yup.string().trim().email().max(50),
+        password: yup.string().trim().min(8).max(50),
+    });
+
+    try {
+        await validationSchema.validate(data, { abortEarly: false });
+    } catch (err) {
+        res.status(400).json({ errors: err.errors });
+        return;
+    }
+
+    // Trim string values if present
+    if (data.name) {
+        data.name = data.name.trim();
+    }
+    if (data.email) {
+        data.email = data.email.trim().toLowerCase();
+    }
+    if (data.password) {
+        data.password = data.password.trim();
+        data.password = await bcrypt.hash(data.password, 10); // Hash the new password
+    }
+
+    // Update Admin
+    try {
+        let admin = await Admin.findByPk(id);
+
+        if (!admin) {
+            res.status(404).json({ message: `Admin with ID ${id} not found.` });
+            return;
+        }
+
+        // Update admin's data directly
+        Object.assign(admin, data);
+
+        // Save the updated admin
+        await admin.save();
+
+        res.json(admin);
+    } catch (error) {
+        console.error('Error updating admin:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
 
 module.exports = router;
