@@ -38,6 +38,7 @@ function RegisterAdmin() {
       data.name = data.name.trim();
       data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
+      data.isAdmin = true;
       http.post("/admin/registerAdmin", data)
         .then((res) => {
           console.log(res.data);

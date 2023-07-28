@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false, // Set the default value to false for regular users
+    },
+    
   });
   User.associate = (models) => {
     User.hasMany(models.ridehistory, {

@@ -20,17 +20,16 @@ router.post("/",validateToken, async (req, res) => {
     res.status(400).json({ errors: err.errors });
     return;
   }
-  data.userId = user.id;
+  data.userId = req.user.id;
   let result = await ridehistory.create(data);
   
   res.json(result);
 });
 
 router.get("/", validateToken, async (req, res) => {
-
   let condition = {};
   let search = req.query.search;
-  
+
   if (search) {
     condition[Sequelize.Op.or] = [
       { driver: { [Sequelize.Op.like]: `%${search}%` } },
@@ -38,14 +37,25 @@ router.get("/", validateToken, async (req, res) => {
     ];
   }
 
-  condition.userId = req.user.id;
+  // Check if the authenticated user is an admin
+  const isAdmin = req.user.isAdmin; // Replace "isAdmin" with the actual property name for the admin flag
 
-  let list = await ridehistory.findAll({
-    order: [["createdAt", "DESC"]],
-    where: condition,
-    include: { model: User, as: "user", attributes: ['name'] }
-  });
-  res.json(list);
+  if (!isAdmin) {
+    // If it's not an admin, apply the filtering by user id
+    condition.userId = req.user.id;
+  }
+
+  try {
+    let list = await ridehistory.findAll({
+      order: [["createdAt", "DESC"]],
+      where: condition,
+      include: { model: User, as: "user", attributes: ['name'] }
+    });
+    res.json(list);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "An error occurred while fetching ride history" });
+  }
 });
 
 router.get("/:id", async (req, res) => {
