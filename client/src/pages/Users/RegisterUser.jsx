@@ -38,6 +38,7 @@ function RegisterUser() {
       data.name = data.name.trim();
       data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
+      data.isAdmin = false;
       http.post("/user/register", data)
         .then((res) => {
           console.log(res.data);

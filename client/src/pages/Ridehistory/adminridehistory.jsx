@@ -88,7 +88,15 @@ function Adminridehistory() {
   
 
   const getRidehistory = () => {
-    http.get("/ridehistory").then((res) => {
+    const isAdmin = true;
+    const headers = {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+        "isAdmin": isAdmin
+      }
+    };
+    
+    http.get("/ridehistory",headers).then((res) => {
       setRidehistorylist(res.data);
     });
   };

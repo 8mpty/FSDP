@@ -11,7 +11,11 @@ module.exports = (sequelize, DataTypes) => {
         name: {
             type: DataTypes.STRING,
             allowNull: false
-        }
+        },
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true, // Set the default value to false for regular users
+          },
     });
     return Admin;
 }
