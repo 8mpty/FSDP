@@ -89,8 +89,19 @@ function App() {
               <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
-
-
+              
+              {/* Ride History Stuff */}
+              <Route path={"/ridehistory"} element={<Ridehistory />} />
+              <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
+              <Route path={"/drivehistory"} element={<Drivehistory />} />
+              <Route path={"/drivehistory/:id"} element={<Drivehistory />} />
+              <Route path={"/adminridehistory"} element={<Adminridehistory />} />
+              <Route path="/adminridehistory/:id" component={Adminridehistory} />
+              <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
+              <Route
+              path={"/deleteridehistory/:id"}
+              element={<Deleteridehistory />}
+              />
             </Routes>
           </Container>
         </Router>
