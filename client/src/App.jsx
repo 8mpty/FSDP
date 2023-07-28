@@ -17,6 +17,7 @@ import ProfileAdmin from "./pages/Admins/ProfileAdmin";
 import RegisterUser from "./pages/Users/RegisterUser";
 import LoginUser from "./pages/Users/LoginUser";
 import ProfileUser from "./pages/Users/ProfileUser";
+import AccountRecoveryUser from "./pages/Users/AccountRecoveryUser";
 
 import Ridehistory from "./pages/Ridehistory/ridehistory";
 import Adminridehistory from "./pages/Ridehistory/adminridehistory";
@@ -123,7 +124,7 @@ function App() {
               <Route path={"/register"} element={<RegisterUser />} />
               <Route path={"/login"} element={<LoginUser />} />
               <Route path={"/profile"} element={<ProfileUser />} />
-
+              <Route path={"/accountRecoveryUser"} element={<AccountRecoveryUser />} />
               {/* Admin Stuff */}
               <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />

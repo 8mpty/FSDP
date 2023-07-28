@@ -5,7 +5,27 @@ const { User } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
+const nodemailer = require("nodemailer");
 require('dotenv').config();
+
+
+// Define your Brevo SMTP credentials
+const brevSMTP = {
+    host: "smtp-relay.brevo.com",
+    port: 587, // The default port for Brevo SMTP
+    secure: false,
+    auth: {
+        user: "mohd.khairin62@gmail.com",
+        pass: "1gROUpGWT6wz4bdZ",
+    },
+};
+// Create a Nodemailer transporter
+const transporter = nodemailer.createTransport(brevSMTP);
+
+// Function to generate a random verification code
+function generateVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 // Authorization Checks
 router.get("/auth", validateToken, (req, res) => {
@@ -55,8 +75,30 @@ router.post("/register", async (req, res) => {
 
     // Hash passowrd
     data.password = await bcrypt.hash(data.password, 10);
+
+    // Generate a verification code
+    const verificationCode = generateVerificationCode();
+
+    // Save the verification code in the database (you may need to add a new field for this)
+    data.verificationCode = verificationCode;
+
     // Create User
     let result = await User.create(data);
+
+    // Send the verification code to the user's email
+    try {
+        await transporter.sendMail({
+            from: "mohd.khairin62@gmail.com", // Set your email address here
+            to: data.email,
+            subject: "Account Secure Code",
+            text: `Your account verification code is: ${verificationCode}. 
+            Please keep this safe as it will help in recovering your account if lost!`,
+        });
+    } catch (error) {
+        console.error("Error sending verification code email:", error);
+        // Handle the error appropriately
+    }
+
     res.json(result);
 });
 
@@ -199,6 +241,80 @@ router.put("/updateUser/:id", validateToken, async (req, res) => {
         console.error('Error updating user:', error);
         res.status(500).json({ message: "Internal Server Error" });
     }
+});
+
+// Account Recovery - Verify email and verification code and update password
+router.post("/accountRecovery", async (req, res) => {
+    const { email, newPassword, confirmPassword, verificationCode } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+        res.status(404).json({ message: "User not found." });
+        return;
+    }
+
+    // Check if the verification code matches
+    if (user.verificationCode !== verificationCode) {
+        res.status(400).json({ message: "Invalid verification code." });
+        return;
+    }
+
+    // Check if the new password and confirm password match
+    if (newPassword !== confirmPassword) {
+        res.status(400).json({ message: "Passwords do not match." });
+        return;
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password and reset the verification code in the database
+    user.password = hashedPassword;
+    // user.verificationCode = null; // Reset the verification code after successful password reset
+
+    // Save the user with the verification code intact
+    await user.save();
+
+    res.json({ message: "Password updated successfully." });
+});
+
+// Account Recovery - Resend verification code
+router.post("/resendVerificationCode", async (req, res) => {
+    const { email } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+        res.status(404).json({ message: "User not found." });
+        return;
+    }
+
+    // Generate a new verification code for password reset
+    const verificationCode = generateVerificationCode();
+
+    // Update the verification code in the database
+    user.verificationCode = verificationCode;
+    await user.save();
+
+    // Send the verification code to the user's email
+    try {
+        await transporter.sendMail({
+            from: "mohd.khairin62@gmail.com", // Set your email address here
+            to: email,
+            subject: "New Verification Code Requested",
+            text: `Your new verification code is: ${verificationCode}`,
+        });
+    } catch (error) {
+        console.error("Error sending verification code email:", error);
+        // Handle the error appropriately
+        res.status(500).json({ message: "Failed to send verification code." });
+        return;
+    }
+
+    res.json({ message: "Verification code sent successfully." });
 });
 
 module.exports = router;
