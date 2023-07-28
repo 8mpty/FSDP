@@ -100,7 +100,7 @@ function AdminBookings() {
             </Box>
 
             <Grid container spacing={0}>
-                <table style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>
+                <table style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", borderCollapse:"collapse", marginLeft:"auto", marginRight:"auto"}}>
                     <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>ID</th>
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Driver Name</th>

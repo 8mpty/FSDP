@@ -98,7 +98,7 @@ function Bookings() {
                                     }
                                     <CardContent>
                                         <Box sx={{ display: 'flex', mb: 1 }}>
-                                            <Typography variant="h5" sx={{ flexGrow: 1 }} style={{fontFamily: "system-ui", fontWeight:"bold"}}>
+                                            <Typography variant="h5" sx={{ flexGrow: 1 }} style={{fontFamily: "system-ui", fontWeight:"bold",textAlign:"left"}}>
                                                 {booking.name}
                                             </Typography>
                                             {
@@ -133,15 +133,15 @@ function Bookings() {
                                             </Typography>
                                         </Box>
                 
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{fontFamily: "system-ui", paddingBottom: "5px"}}>
+                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{fontFamily: "system-ui", paddingBottom: "5px", textAlign:"left"}}>
                                         <LocationOn sx={{ mr: 1 }} />
                                             {booking.pickup}
                                         </Typography>
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{fontFamily: "system-ui" , paddingBottom: "5px"}}>
+                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{fontFamily: "system-ui" , paddingBottom: "5px", textAlign:"left"}}>
                                         <Directions sx={{ mr: 1 }} />
                                             {booking.passby}
                                         </Typography>
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{fontFamily: "system-ui", paddingBottom: "5px"}}>
+                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{fontFamily: "system-ui", paddingBottom: "5px", textAlign:"left"}}>
                                         <SpeakerNotes sx={{ mr: 1 }} />
                                             {booking.notes}
                                         </Typography>
