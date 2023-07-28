@@ -26,10 +26,11 @@ router.post("/",validateToken, async (req, res) => {
   res.json(result);
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateToken, async (req, res) => {
 
   let condition = {};
   let search = req.query.search;
+  
   if (search) {
     condition[Sequelize.Op.or] = [
       { driver: { [Sequelize.Op.like]: `%${search}%` } },
