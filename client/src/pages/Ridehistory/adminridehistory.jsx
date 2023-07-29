@@ -302,6 +302,7 @@ function Adminridehistory() {
         </Table>
       </TableContainer>
       <Dialog open={deleteModalOpen} onClose={closeDeleteModal} className="custom-modal">
+        
       <DialogTitle>Delete Ride History</DialogTitle>
       <DialogContent className="modal-content">
         <Typography variant="body1" className="modal-text">
@@ -318,7 +319,7 @@ function Adminridehistory() {
             <Typography variant="body2">Pickup: {selectedRideHistory.start}</Typography>
             <Typography variant="body2">Destination: {selectedRideHistory.end}</Typography>
             <Typography variant="body2">Points: {selectedRideHistory.points}</Typography>
-            {/* Add more details here based on your ride history object */}
+            
           </>
         )}
       </DialogContent>
