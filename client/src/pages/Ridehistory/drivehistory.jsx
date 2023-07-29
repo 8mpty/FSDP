@@ -33,13 +33,12 @@ function Drivehistory({ role }) {
   });
 
   return (
-    <Box>
+    <Box className='history-page'>
       <SplitButton />
-      <Grid container spacing={8}>
-        <Grid item xs={8}>
-          <Typography variant="h2" sx={{ my: 2, fontWeight: "bold" }}>
+          <Typography variant="h2" sx={{ my: 2, textAlign: "left", marginLeft: 3 }}>
             Drive History
           </Typography>
+          <Box className="history-container">
 
           {filteredDriveHistory.length > 0 ? (
             filteredDriveHistory.map((ridehistory) => (
@@ -57,6 +56,8 @@ function Drivehistory({ role }) {
                           mb: 1,
                           color: "red",
                           justifyContent: "space-between",
+                          fontFamily: "poppins-regular",
+                        textAlign:"left"
                         }}
                       >
                         {dayjs(ridehistory.createdAt).format(
@@ -68,6 +69,8 @@ function Drivehistory({ role }) {
                         sx={{
                           whiteSpace: "pre-wrap",
                           justifyContent: "space-between",
+                          fontFamily: "poppins-regular",
+                        textAlign:"left"
                         }}
                       >
                         Drove {ridehistory.rider} from
@@ -77,6 +80,8 @@ function Drivehistory({ role }) {
                         sx={{
                           whiteSpace: "pre-wrap",
                           justifyContent: "space-between",
+                          fontFamily: "poppins-regular",
+                        textAlign:"left"
                         }}
                       >
                         {ridehistory.start} to {ridehistory.end}
@@ -88,6 +93,8 @@ function Drivehistory({ role }) {
                           fontStyle: "italic",
                           color: "gray",
                           justifyContent: "space-between",
+                          fontFamily: "poppins-regular",
+                        textAlign:"left"
                         }}
                       >
                         {ridehistory.description}
@@ -98,6 +105,8 @@ function Drivehistory({ role }) {
                           whiteSpace: "pre-wrap",
                           color: "limegreen",
                           justifyContent: "space-between",
+                          fontFamily: "poppins-regular",
+                        textAlign:"left"
                         }}
                       >
                         +{ridehistory.points}pts
@@ -127,8 +136,7 @@ function Drivehistory({ role }) {
               No Drive History Found
             </Typography>
           )}
-        </Grid>
-      </Grid>
+        </Box>
     </Box>
   );
 }
