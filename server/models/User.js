@@ -16,9 +16,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false, // Set the default value to false for regular users
     },
-    verificationCode: { // Add this field to store the verification code
+    verificationCode: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    requestDelete: { // Add the requestDelete property
+      type: DataTypes.BOOLEAN,
+      defaultValue: false, // Set the default value to false for new users
     },
   });
   User.associate = (models) => {

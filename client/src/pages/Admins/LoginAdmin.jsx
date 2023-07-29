@@ -1,4 +1,4 @@
-import React, { useContext }  from 'react'
+import React, { useContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Box, Typography, TextField, Button } from '@mui/material';
@@ -42,13 +42,9 @@ function LoginAdmin() {
     }
   });
   return (
-    <Box sx={{
-      marginTop: 8,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    }}>
-      <ToastContainer />
+    <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      
+      <ToastContainer position="top-right" autoClose={3000} />
       <Typography variant="h5" sx={{ my: 2 }}> Login </Typography>
 
       <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >

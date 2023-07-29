@@ -27,6 +27,19 @@ function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Get all Admins
+router.get("/getAllAdmins", async (req, res) => {
+    try {
+        const admins = await Admin.findAll({
+            attributes: ['id', 'name', 'email'], // Only fetch necessary attributes
+        });
+        res.json(admins);
+    } catch (error) {
+        console.error('Error fetching admins:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
 // Authorization Checks
 router.get("/auth", validateToken, (req, res) => {
     let adminInfo = {
@@ -38,6 +51,7 @@ router.get("/auth", validateToken, (req, res) => {
         admin: adminInfo
     });
 });
+
 
 // Register Admin
 router.post("/registerAdmin", async (req, res) => {
@@ -185,7 +199,7 @@ router.delete("/:id", validateToken, async (req, res) => {
     }
     else {
         res.status(400).json({
-            message: `MCannnot delete ${admin.name} account!`
+            message: `Cannnot delete ${admin.name} account!`
         })
     }
 });
