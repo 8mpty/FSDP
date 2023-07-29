@@ -86,13 +86,21 @@ function ProfileUser() {
     setOpen(false);
   };
 
-  const deleteUser = () => {
-    http.delete(`/user/${user.id}`).then((res) => {
-      // Temp solution to delete user, logging out and going back to homepage
-      localStorage.clear();
-      window.location = "/";
-      navigate("/");
-    });
+  const requestDeletion = () => {
+    // Make an API call to update the "requestDelete" property to true for the current user
+    http
+      .put(`/user/updateUser/${user.id}`, { requestDelete: true })
+      .then((res) => {
+        console.log("Account deletion requested!");
+        toast.success("Account deletion requested. An admin will review your request.");
+        // Update the local state to reflect the change (optional)
+        setProf((prevState) => ({ ...prevState, requestDelete: true }));
+        // You may choose to redirect the user to a confirmation page here if needed
+      })
+      .catch((error) => {
+        console.error("Error requesting account deletion:", error);
+        toast.error("Failed to request account deletion. Please try again later.");
+      });
   };
 
   const resendVerificationCode = () => {
@@ -176,20 +184,21 @@ function ProfileUser() {
           </Button>
         </Box>
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Delete Main</DialogTitle>
+          <DialogTitle>Request Account Deletion</DialogTitle>
           <DialogContent>
-            <DialogContentText>Are you sure you want to delete your account?</DialogContentText>
+            <DialogContentText>Are you sure you want to request for deletion?</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="inherit" onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant="contained" color="error" onClick={deleteUser}>
+            <Button variant="contained" color="error" onClick={requestDeletion}>
               Delete
             </Button>
           </DialogActions>
         </Dialog>
       </Box>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 }
