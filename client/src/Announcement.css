@@ -1,0 +1,46 @@
+.announcement-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.announcement-box {
+    background-color: rgb(59, 159, 192);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    /* Use 'min-width' to make the box width as wide as its contents */
+    min-width: fit-content;
+}
+
+.announcement-box h2 {
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.announcement-box p {
+    font-size: 14px;
+}
+
+.announcement-box button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 2vh 0 2vh 0;
+}
+
+.announcement-box button:hover {
+    background-color: #0056b3;
+}

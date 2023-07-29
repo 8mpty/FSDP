@@ -27,6 +27,12 @@ import EditBooking from './pages/Bookings/EditBooking';
 import AddAdminBooking from './pages/Bookings/AddAdminBooking';
 import EditAdminBooking from './pages/Bookings/EditAdminBooking';
 
+import Announcement from "./pages/Announcement/Announcement";
+import UpdateAnnouncement from "./pages/Announcement/UpdateAnnouncement";
+import AnnouncementPanel from "./pages/Announcement/AnnouncementPanel";
+import AddAnnouncement from "./pages/Announcement/AddAnnouncement";
+
+
 import http from "./http";
 
 import { AdminContext, UserContext } from "./contexts/AccountContext";
@@ -34,6 +40,14 @@ import { AdminContext, UserContext } from "./contexts/AccountContext";
 function App() {
   const [admin, setAdmin] = useState(null);
   const [user, setUser] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
+  const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
+
+  // Function to handle closing of an announcement
+  const closeAnnouncement = () => {
+    setDisplayedAnnouncementIndex((prevIndex) => prevIndex + 1);
+  };
+
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -72,6 +86,16 @@ function App() {
       localStorage.setItem("role", "user");
     }
   }, [admin, user]);
+
+  useEffect(() => {
+    http.get("/announcement/getAllAnnouncements")
+      .then((response) => {
+        setAnnouncements(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const logout = () => {
     localStorage.clear();
@@ -162,10 +186,26 @@ function App() {
                   <Link to="/adminbookings">
                     <Typography style={{ fontFamily: "system-ui" }}>Admin Bookings</Typography>
                   </Link>
+                  <Link to="/announcementPanel">
+                    <Typography style={{ fontFamily: "system-ui" }}>Announcement Panel</Typography>
+                  </Link>
                 </Toolbar>
               </Container>
             </AppBar>
           ) : null}
+
+          <Container>
+            <Box className="announcement-container">
+              {announcements.length > 0 && displayedAnnouncementIndex < announcements.length && (
+                <Announcement
+                  key={announcements[displayedAnnouncementIndex].id}
+                  announcement={announcements[displayedAnnouncementIndex]}
+                  onClose={closeAnnouncement}
+                />
+              )}
+            </Box>
+
+          </Container>
 
           <Container>
             <Routes>
@@ -208,6 +248,12 @@ function App() {
 
                   {/* Admin Booking Stuff */}
                   <Route path={"/adminbookings"} element={<AdminBookings />} />
+
+                  {/* Admin Announcement Stuff */}
+                  <Route path={"/editAnnouncement/:id"} element={<UpdateAnnouncement />} />
+                  <Route path={"/announcementPanel"} element={<AnnouncementPanel />} />
+                  <Route path={"/addAnnouncement"} element={<AddAnnouncement />} />
+
                 </>
               ) : null}
               {/* Common Routes Accessible By Anyone */}
@@ -220,6 +266,9 @@ function App() {
               {/* Admin Stuff */}
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/accountRecoveryAdmin"} element={<AccountRecoveryAdmin />} />
+
+              {/* Announcement Stuff */}
+              <Route path={"/announcement"} element={<Announcement />} />
 
             </Routes>
           </Container>

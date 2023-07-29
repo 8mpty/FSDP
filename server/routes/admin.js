@@ -52,7 +52,6 @@ router.get("/auth", validateToken, (req, res) => {
     });
 });
 
-
 // Register Admin
 router.post("/registerAdmin", async (req, res) => {
     let data = req.body;

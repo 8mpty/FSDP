@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { validateToken } = require('./middlewares/auth');
 const createDefaultAdmin = require('./CreateDefaultAdmin');
+const { Announcement } = require('./models');
 require('dotenv').config();
 const db = require('./models');
 
@@ -9,7 +10,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  try {
+    // Fetch all announcements
+    const announcements = await Announcement.findAll({
+      order: [['createdAt', 'C']],
+    });
+
+    res.json(announcements);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
   res.send("FSDP Project 😎");
 });
 
@@ -67,6 +79,10 @@ const bookingRoute = require('./routes/booking');
 app.use("/booking", bookingRoute);
 const adminbookingRoute = require('./routes/adminbooking');
 app.use("/adminbooking", adminbookingRoute);
+
+// Announcement Route
+const announcementRoute = require('./routes/announcements');
+app.use("/announcement", announcementRoute);
 
 
 // Add the following function to create a default admin when the server starts
