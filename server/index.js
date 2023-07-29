@@ -1,14 +1,27 @@
 const express = require('express');
 const cors = require('cors');
 const { validateToken } = require('./middlewares/auth');
+const createDefaultAdmin = require('./CreateDefaultAdmin');
+const { Announcement } = require('./models');
 require('dotenv').config();
-
+const db = require('./models');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  try {
+    // Fetch all announcements
+    const announcements = await Announcement.findAll({
+      order: [['createdAt', 'C']],
+    });
+
+    res.json(announcements);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
   res.send("FSDP Project 😎");
 });
 
@@ -67,11 +80,27 @@ app.use("/booking", bookingRoute);
 const adminbookingRoute = require('./routes/adminbooking');
 app.use("/adminbooking", adminbookingRoute);
 
+// Announcement Route
+const announcementRoute = require('./routes/announcements');
+app.use("/announcement", announcementRoute);
 
-const db = require('./models');
-db.sequelize.sync({ alter: true }).then(() => {
-  let port = process.env.APP_PORT;
-  app.listen(port, () => {
-    console.log(`⚡ Sever running on http://localhost:${port}`);
+
+// Add the following function to create a default admin when the server starts
+async function initializeServer() {
+  try {
+    await createDefaultAdmin();
+  } catch (error) {
+    console.error('Error creating default admin:', error);
+  }
+
+  // Start the server after creating the default admin
+  db.sequelize.sync({ alter: true }).then(() => {
+    let port = process.env.APP_PORT;
+    app.listen(port, () => {
+      console.log(`⚡ Sever running on http://localhost:${port}`);
+    });
   });
-})
+}
+
+// Call the initializeServer function to start the server and create the default admin
+initializeServer();

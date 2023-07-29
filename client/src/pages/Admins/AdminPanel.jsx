@@ -1,8 +1,9 @@
-// AdminPanel.jsx
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import http from "../../http";
+import dayjs from "dayjs";
+import global from '../../global';
 import '../../AdminPanel.css';
 
 function AdminPanel() {
@@ -10,11 +11,6 @@ function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [showAdmins, setShowAdmins] = useState(true); // New state variable to track data display
 
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const formattedDate = date.toLocaleString(); // You can customize the date format further if needed
-    return formattedDate;
-  }
   useEffect(() => {
     // Fetch all admins from the backend when the component mounts
     http.get('/admin/getAllAdmins')
@@ -86,65 +82,71 @@ function AdminPanel() {
       </Button>
 
       {showAdmins ? (
-        <div>
+        <Box>
           <Typography variant="h5" gutterBottom>Admins</Typography>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Extra Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {admins.map(admin => (
-                <tr key={admin.id}>
-                  <td>{admin.id}</td>
-                  <td>{admin.name}</td>
-                  <td>{admin.email}</td>
-                  <td>
-                    <Button variant="contained" color="secondary" onClick={() => handleDeleteAdmin(admin.id)}>Delete</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <TableContainer component={Paper}>
+            <Table className="admin-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Extra Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {admins.map(admin => (
+                  <TableRow key={admin.id}>
+                    <TableCell>{admin.id}</TableCell>
+                    <TableCell>{admin.name}</TableCell>
+                    <TableCell>{admin.email}</TableCell>
+                    <TableCell>
+                      {admin.email !== "admin@admin.com" && (
+                        <Button variant="contained" color="secondary" onClick={() => deleteAdmin(admin.id)}>Delete</Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       ) : (
-        <div>
+        <Box>
           <Typography variant="h5" gutterBottom>Users</Typography>
-          <table className="user-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Created At</th>
-                <th>Updated At</th>
-                <th>Extra Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>{formatDate(user.createdAt)}</td>
-                  <td>{formatDate(user.updatedAt)}</td>
-                  <td>
-                    {user.requestDelete && (
-                      <Button variant="contained" color="secondary" onClick={() => deleteUser(user.id, user.requestDelete)}>
-                        Delete
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <TableContainer component={Paper}>
+            <Table className="user-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Created At</TableCell>
+                  <TableCell>Updated At</TableCell>
+                  <TableCell>Extra Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users.map(user => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{dayjs(user.createdAt).format(global.datetimeFormat)}</TableCell>
+                    <TableCell>{dayjs(user.updatedAt).format(global.datetimeFormat)}</TableCell>
+                    <TableCell>
+                      {user.requestDelete && (
+                        <Button variant="contained" color="secondary" onClick={() => deleteUser(user.id, user.requestDelete)}>
+                          Delete
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       )}
     </Box>
   );
