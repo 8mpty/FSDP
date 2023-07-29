@@ -1,0 +1,58 @@
+/* AdminPanelStyles.css */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.addButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.addAdminButton {
+    text-decoration: none;
+}
+
+table {
+    width: 100%;
+    margin-bottom: 20px;
+    border: 5px solid white;
+    border-radius: 30px;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+
+
+tbody tr:hover {
+    background-color: lightskyblue;
+    color: black;
+}
+
+.deleteButton {
+    background-color: #e57373;
+    color: #fff;
+}
+
+.deleteButton:hover {
+    background-color: #d32f2f;
+}
+
+.user-table th,
+.user-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}

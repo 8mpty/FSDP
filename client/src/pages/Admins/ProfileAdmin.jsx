@@ -114,7 +114,7 @@ function ProfileAdmin() {
     return (
         <Box>
             <Typography variant="h5" sx={{ my: 2 }}>
-                Edit Profile
+                Edit Admin Profile
             </Typography>
             <Box component="form" className="full-prof" onSubmit={formik.handleSubmit}>
                 <Box>

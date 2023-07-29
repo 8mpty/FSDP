@@ -26,6 +26,18 @@ const transporter = nodemailer.createTransport(brevSMTP);
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
+// Get all Users
+router.get("/getAllUsers", async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete'], // Only fetch necessary attributes
+        });
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching Users:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 // Authorization Checks
 router.get("/auth", validateToken, (req, res) => {
@@ -81,6 +93,9 @@ router.post("/register", async (req, res) => {
 
     // Save the verification code in the database (you may need to add a new field for this)
     data.verificationCode = verificationCode;
+
+    // Set requestDelete to false for the new user
+    data.requestDelete = false;
 
     // Create User
     let result = await User.create(data);
@@ -316,5 +331,30 @@ router.post("/resendVerificationCode", async (req, res) => {
 
     res.json({ message: "Verification code sent successfully." });
 });
+
+// Update the Request Delete status for a User
+router.put("/requestDelete/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        let user = await User.findByPk(id);
+
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+
+        user.requestDelete = true;
+
+        // Save the updated user
+        await user.save();
+
+        res.json({ message: "Request for account deletion has been recorded." });
+    } catch (error) {
+        console.error('Error updating requestDelete status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
 
 module.exports = router;
