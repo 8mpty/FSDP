@@ -74,13 +74,16 @@ function LoginUser() {
         />
         <Box className='hyper-links'>
           <Link to="/register">Create Account</Link>
-          <Link to="/accountRecovery" className='for-pass'>Forgot Password</Link>
+          <Link to="/accountRecoveryUser" className='for-pass'>Forgot Password</Link>
         </Box>
 
-        <Button fullWidth variant="contained" sx={{ mt: 2 }}
-          type="submit">
+        <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
           Login
         </Button>
+
+        <Box className='hyper-links admins'>
+          <Link to="/loginAdmin" className='admin-link'>For Admins</Link>
+        </Box>
       </Box>
 
       <ToastContainer />

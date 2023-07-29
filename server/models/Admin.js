@@ -15,7 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         isAdmin: {
             type: DataTypes.BOOLEAN,
             defaultValue: true, // Set the default value to false for regular users
-          },
+        },
+        verificationCode: { // Add this field to store the verification code
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
     });
     return Admin;
 }

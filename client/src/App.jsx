@@ -13,16 +13,25 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import RegisterAdmin from "./pages/Admins/RegisterAdmin";
 import LoginAdmin from "./pages/Admins/LoginAdmin";
 import ProfileAdmin from "./pages/Admins/ProfileAdmin";
+import AccountRecoveryAdmin from "./pages/Admins/AccountRecoveryAdmin";
 
 import RegisterUser from "./pages/Users/RegisterUser";
 import LoginUser from "./pages/Users/LoginUser";
 import ProfileUser from "./pages/Users/ProfileUser";
+import AccountRecoveryUser from "./pages/Users/AccountRecoveryUser";
 
 import Ridehistory from "./pages/Ridehistory/ridehistory";
 import Adminridehistory from "./pages/Ridehistory/adminridehistory";
 import Editridehistory from "./pages/Ridehistory/editridehistory";
 import Deleteridehistory from "./pages/Ridehistory/deleteridehistory";
 import Drivehistory from "./pages/Ridehistory/drivehistory";
+
+import Bookings from './pages/Bookings/Bookings';
+import AdminBookings from './pages/Bookings/AdminBookings';
+import AddBooking from './pages/Bookings/AddBooking';
+import EditBooking from './pages/Bookings/EditBooking';
+import AddAdminBooking from './pages/Bookings/AddAdminBooking';
+import EditAdminBooking from './pages/Bookings/EditAdminBooking';
 
 import http from "./http";
 
@@ -80,9 +89,12 @@ function App() {
                     <Link to="/ridehistory">
                       <Typography class="a">Ride history</Typography>
                     </Link>
+                    <Link to="/bookings" ><Typography style={{ fontFamily: "system-ui" }}>Bookings</Typography></Link>
                     <Link to="/profile">
                       <Typography>{user.name}</Typography>
                     </Link>
+
+
                     <Button onClick={logout}>Logout</Button>
                   </>
                 ) : admin ? (
@@ -90,6 +102,7 @@ function App() {
                     <Link to="/adminridehistory">
                       <Typography class="a">Ride Histories</Typography>
                     </Link>
+                    <Link to="/adminbookings" ><Typography style={{ fontFamily: "system-ui" }}>Admin Bookings</Typography></Link>
                     <Link to="/profileAdmin">
                       <Typography>{admin.name}</Typography>
                     </Link>
@@ -113,11 +126,13 @@ function App() {
               <Route path={"/register"} element={<RegisterUser />} />
               <Route path={"/login"} element={<LoginUser />} />
               <Route path={"/profile"} element={<ProfileUser />} />
+              <Route path={"/accountRecoveryUser"} element={<AccountRecoveryUser />} />
 
               {/* Admin Stuff */}
               <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
+              <Route path={"/accountRecoveryAdmin"} element={<AccountRecoveryAdmin />} />
 
               {/* Ride History Stuff */}
               <Route path={"/ridehistory"} element={<Ridehistory />} />
@@ -140,6 +155,15 @@ function App() {
                 path={"/deleteridehistory/:id"}
                 element={<Deleteridehistory />}
               />
+
+              {/* Booking Stuff */}
+              <Route path={"/bookings"} element={<Bookings />} />
+              <Route path={"/adminbookings"} element={<AdminBookings />} />
+              <Route path={"/addbooking"} element={<AddBooking />} />
+              <Route path={"/editbooking/:id"} element={<EditBooking />} />
+              <Route path={"/addadminbooking"} element={<AddAdminBooking />} />
+              <Route path={"/editadminbooking/:id"} element={<EditAdminBooking />} />
+
             </Routes>
           </Container>
         </Router>

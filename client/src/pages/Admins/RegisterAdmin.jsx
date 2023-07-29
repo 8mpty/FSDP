@@ -9,6 +9,7 @@ import http from '../../http';
 
 function RegisterAdmin() {
   const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -32,7 +33,7 @@ function RegisterAdmin() {
         .required('Password is required'),
       confirmPassword: yup.string().trim()
         .required('Confirm password is required')
-        .oneOf([yup.ref('password'), null], 'Passwords must match')
+        .oneOf([yup.ref('password'), null], 'Passwords must match'),
     }),
     onSubmit: (data) => {
       data.name = data.name.trim();
@@ -42,7 +43,7 @@ function RegisterAdmin() {
       http.post("/admin/registerAdmin", data)
         .then((res) => {
           console.log(res.data);
-          navigate("/login");
+          navigate("/loginAdmin");
         })
         .catch(function (err) {
           toast.error(`${err.response.data.message}`);
