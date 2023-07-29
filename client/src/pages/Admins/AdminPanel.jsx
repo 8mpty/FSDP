@@ -104,7 +104,9 @@ function AdminPanel() {
                   <td>{admin.name}</td>
                   <td>{admin.email}</td>
                   <td>
-                    <Button variant="contained" color="secondary" onClick={() => handleDeleteAdmin(admin.id)}>Delete</Button>
+                    {admin.email !== "admin@admin.com" && (
+                      <Button variant="contained" color="secondary" onClick={() => deleteAdmin(admin.id)}>Delete</Button>
+                    )}
                   </td>
                 </tr>
               ))}

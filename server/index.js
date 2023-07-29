@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const { validateToken } = require('./middlewares/auth');
+const createDefaultAdmin = require('./CreateDefaultAdmin');
 require('dotenv').config();
-
+const db = require('./models');
 
 const app = express();
 app.use(cors());
@@ -68,10 +69,22 @@ const adminbookingRoute = require('./routes/adminbooking');
 app.use("/adminbooking", adminbookingRoute);
 
 
-const db = require('./models');
-db.sequelize.sync({ alter: true }).then(() => {
-  let port = process.env.APP_PORT;
-  app.listen(port, () => {
-    console.log(`⚡ Sever running on http://localhost:${port}`);
+// Add the following function to create a default admin when the server starts
+async function initializeServer() {
+  try {
+    await createDefaultAdmin();
+  } catch (error) {
+    console.error('Error creating default admin:', error);
+  }
+
+  // Start the server after creating the default admin
+  db.sequelize.sync({ alter: true }).then(() => {
+    let port = process.env.APP_PORT;
+    app.listen(port, () => {
+      console.log(`⚡ Sever running on http://localhost:${port}`);
+    });
   });
-})
+}
+
+// Call the initializeServer function to start the server and create the default admin
+initializeServer();

@@ -35,8 +35,6 @@ function App() {
   const [admin, setAdmin] = useState(null);
   const [user, setUser] = useState(null);
 
-
-
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
@@ -51,7 +49,7 @@ function App() {
             setAdmin(res.data.admin);
           })
           .catch((error) => {
-            // Handle errors here if needed
+            console.log(error);
           });
       } else if (role === "user") {
         http
@@ -60,7 +58,7 @@ function App() {
             setUser(res.data.user);
           })
           .catch((error) => {
-            // Handle errors here if needed
+            console.log(error);
           });
       }
     }
@@ -91,7 +89,6 @@ function App() {
   };
 
   return (
-    
     <AdminContext.Provider value={{ admin, setAdmin }}>
       <UserContext.Provider value={{ user, setUser }}>
         <Router>
@@ -196,6 +193,7 @@ function App() {
                 <>
                   <Route path={"/adminridehistory"} element={<Adminridehistory />} />
                   <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
+                  <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
 
                   {/* Admin Booking Stuff */}
                   <Route path={"/addadminbooking"} element={<AddAdminBooking />} />
@@ -222,7 +220,6 @@ function App() {
               {/* Admin Stuff */}
               <Route path={"/loginAdmin"} element={<LoginAdmin />} />
               <Route path={"/accountRecoveryAdmin"} element={<AccountRecoveryAdmin />} />
-              <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
 
             </Routes>
           </Container>
@@ -230,6 +227,6 @@ function App() {
       </UserContext.Provider>
     </AdminContext.Provider>
   );
-
 }
+
 export default App;

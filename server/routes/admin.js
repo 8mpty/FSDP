@@ -188,6 +188,12 @@ router.delete("/:id", validateToken, async (req, res) => {
         return;
     }
 
+    // Add a check for the default admin
+    if (admin.email === 'admin@admin.com') {
+        res.status(403).json({ message: "Default admin cannot be deleted." });
+        return;
+    }
+
     let adminNum = await Admin.destroy({
         where: { id: id }
     })
