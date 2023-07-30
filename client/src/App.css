@@ -1,24 +1,14 @@
-@font-face {
-  font-family: 'Poppins-Regular';
-  src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
-  /* other formats include: 'woff2', 'truetype, 'opentype',
-                            'embedded-opentype', and 'svg' */
-}
-
-.AppBar {
-  background-color: darkblue;
-  width: 100%;
-  display: flex;
-  align-items: center;
-
-  justify-content: space-between;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
 .AppBar a {
-  color: white;
+  color: inherit;
   text-decoration: none;
-  margin-right: 1rem;
-  font-family:poppins-regular;
+  margin-right: 16px;
 }
 
 .AppBar a:hover {
@@ -26,8 +16,8 @@
 }
 
 .AppBar button {
-  color: white;
-  margin-left: 1rem;
+  color: inherit;
+  margin-left: 12px;
 }
 
 .AppBar button:hover {
