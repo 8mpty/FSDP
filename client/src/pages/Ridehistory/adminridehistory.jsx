@@ -1,3 +1,4 @@
+// https://www.copycat.dev/blog/material-ui-table/
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -24,7 +25,7 @@ import { AccessTime, Search, Clear } from "@mui/icons-material";
 import http from "../../http";
 import dayjs from "dayjs";
 import global from "../../global";
-import "../../adminridehistory.css";
+// import "../../adminridehistory.css";
 import axios from "axios";
 
 import { useParams, useNavigate } from "react-router-dom";

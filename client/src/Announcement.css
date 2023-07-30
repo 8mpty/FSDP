@@ -17,8 +17,6 @@
     padding: 16px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-    /* Use 'min-width' to make the box width as wide as its contents */
     min-width: fit-content;
 }
 
@@ -43,4 +41,11 @@
 
 .announcement-box button:hover {
     background-color: #0056b3;
+}
+
+.edit-container{
+    margin-top: 8;
+    display: 'flex';
+    flex-direction: 'column';
+    align-items: 'center';
 }

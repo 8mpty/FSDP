@@ -3,7 +3,6 @@ import { Box, Typography, Button } from "@mui/material";
 import "../../Announcement.css";
 
 const Announcement = ({ announcement, onClose }) => {
-    // State to manage whether the announcement is visible or not
     const [isVisible, setIsVisible] = useState(true);
 
     // Function to handle the close button click
@@ -13,13 +12,11 @@ const Announcement = ({ announcement, onClose }) => {
         onClose(announcement.id);
     };
 
-    // Check if the announcement object is defined
     if (!announcement) {
-        return null; // Return null or any other fallback UI if announcement is undefined
+        return null;
     }
 
     return (
-        // Render the announcement only if it is visible
         isVisible && (
             <Box className="announcement-box">
                 <Typography variant="h6" gutterBottom>

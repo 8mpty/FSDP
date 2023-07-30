@@ -1,14 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http';
-import dayjs from 'dayjs';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { PostAdd } from '@mui/icons-material';
-import { UserContext } from '../../contexts/AccountContext';
 
 
 
@@ -16,7 +14,6 @@ import { UserContext } from '../../contexts/AccountContext';
 function AddBooking() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
-    const { user } = useContext(UserContext);
 
     const formik = useFormik({
         initialValues: {
@@ -50,43 +47,19 @@ function AddBooking() {
         }),
         onSubmit: (data) => {
             if (imageFile) {
-              data.imageFile = imageFile;
+                data.imageFile = imageFile;
             }
             data.name = data.name.trim();
             data.pickup = data.pickup.trim();
             data.notes = data.notes.trim();
             data.passby = data.passby.trim();
-          
+
             http.post("/booking", data)
-              .then((res) => {
-                console.log(res.data);
-                navigate("/bookings");
-          
-                // Create a ride history entry with the relevant data
-                const rideHistoryData = {
-                  driver: data.name,
-                  rider: user.name,
-                  start: data.pickup,
-                  end: data.passby,
-                  points: 100,
-                  role: 'rider'
-                  
-                };
-          
-                // Call the backend API to create the ride history entry
-                http.post('/ridehistory', rideHistoryData)
-                  .then((rideHistoryRes) => {
-                    console.log('Ride history entry created successfully:', rideHistoryRes.data);
+                .then((res) => {
+                    console.log(res.data);
                     navigate("/bookings");
-                  })
-                  .catch((error) => {
-                    console.log('Error creating ride history entry:', error);
-                  });
-              })
-              .catch((error) => {
-                console.log('Error creating booking:', error);
-              });
-          }
+                });
+        }
     });
 
     const onFileChange = (e) => {

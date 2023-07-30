@@ -9,7 +9,9 @@ import '../../AdminPanel.css';
 function AdminPanel() {
   const [admins, setAdmins] = useState([]);
   const [users, setUsers] = useState([]);
-  const [showAdmins, setShowAdmins] = useState(true); // New state variable to track data display
+  const [showAdmins, setShowAdmins] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     // Fetch all admins from the backend when the component mounts
@@ -65,7 +67,25 @@ function AdminPanel() {
   };
 
   const handleToggleData = () => {
-    setShowAdmins(prevShowAdmins => !prevShowAdmins); // Toggle the showAdmins state
+    setShowAdmins(prevShowAdmins => !prevShowAdmins);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prevPage => prevPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prevPage => prevPage - 1);
+  };
+
+  const renderTableData = (data) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  };
+
+  const getTotalPages = (totalItems, itemsPerPage) => {
+    return Math.ceil(totalItems / itemsPerPage);
   };
 
   return (
@@ -95,7 +115,7 @@ function AdminPanel() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {admins.map(admin => (
+                {renderTableData(admins).map(admin => (
                   <TableRow key={admin.id}>
                     <TableCell>{admin.id}</TableCell>
                     <TableCell>{admin.name}</TableCell>
@@ -110,6 +130,24 @@ function AdminPanel() {
               </TableBody>
             </Table>
           </TableContainer>
+          {admins.length > itemsPerPage && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+              {currentPage > 1 && (
+                <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }} >Previous</Link>
+              )}
+              {currentPage > 1 && currentPage < Math.ceil(admins.length / itemsPerPage) && (
+                <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
+              )}
+              {currentPage < Math.ceil(admins.length / itemsPerPage) && (
+                <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>Next</Link>
+              )}
+            </Box>
+          )}
+          {currentPage > 1 && (
+            <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
+              {`< ${currentPage} / ${getTotalPages(admins.length, itemsPerPage)} >`}
+            </Typography>
+          )}
         </Box>
       ) : (
         <Box>
@@ -127,7 +165,7 @@ function AdminPanel() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map(user => (
+                {renderTableData(users).map(user => (
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.name}</TableCell>
@@ -146,9 +184,27 @@ function AdminPanel() {
               </TableBody>
             </Table>
           </TableContainer>
+          {users.length > itemsPerPage && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+              {currentPage > 1 && (
+                <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }} >Previous</Link>
+              )}
+              {currentPage > 1 && currentPage < Math.ceil(users.length / itemsPerPage) && (
+                <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
+              )}
+              {currentPage < Math.ceil(users.length / itemsPerPage) && (
+                <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>Next</Link>
+              )}
+            </Box>
+          )}
+          {currentPage > 1 && (
+            <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
+              {`< ${currentPage} / ${getTotalPages(users.length, itemsPerPage)} >`}
+            </Typography>
+          )}
         </Box>
       )}
-    </Box>
+    </Box >
   );
 }
 

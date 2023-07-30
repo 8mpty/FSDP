@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         description: {
             type: DataTypes.TEXT,
             allowNull: false
+        },
+        endDate: {
+            type: DataTypes.DATE,
+            allowNull: true
         }
     });
     Announcement.associate = (models) => {
