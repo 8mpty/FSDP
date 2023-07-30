@@ -52,7 +52,6 @@ router.get("/auth", validateToken, (req, res) => {
     });
 });
 
-
 // Register Admin
 router.post("/registerAdmin", async (req, res) => {
     let data = req.body;
@@ -185,6 +184,12 @@ router.delete("/:id", validateToken, async (req, res) => {
 
     if (!admin) {
         res.sendStatus(404)
+        return;
+    }
+
+    // Add a check for the default admin
+    if (admin.email === 'admin@admin.com') {
+        res.status(403).json({ message: "Default admin cannot be deleted." });
         return;
     }
 
