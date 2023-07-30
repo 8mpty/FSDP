@@ -1,11 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
+import dayjs from "dayjs";
+import global from '../../global';
 import http from "../../http";
 
 
 function AnnouncementPanel() {
     const [announcements, setAnnouncements] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+
+    const handleNextPage = () => {
+        setCurrentPage(prevPage => prevPage + 1);
+    };
+
+    const handlePreviousPage = () => {
+        setCurrentPage(prevPage => prevPage - 1);
+    };
+
+    const renderTableData = (data) => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return data.slice(startIndex, endIndex);
+    };
+
+    const getTotalPages = (totalItems, itemsPerPage) => {
+        return Math.ceil(totalItems / itemsPerPage);
+    };
+
     useEffect(() => {
         // Fetch all admins from the backend when the component mounts
         http.get('/announcement/getAllAnnouncements')
@@ -33,15 +57,17 @@ function AnnouncementPanel() {
                                     <TableCell>ID</TableCell>
                                     <TableCell>Title</TableCell>
                                     <TableCell>Description</TableCell>
+                                    <TableCell>End Date</TableCell>
                                     <TableCell>Edit</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {announcements.map((announ) => (
+                                {renderTableData(announcements).map((announ) => (
                                     <TableRow key={announ.id}>
                                         <TableCell>{announ.id}</TableCell>
                                         <TableCell>{announ.title}</TableCell>
                                         <TableCell>{announ.description}</TableCell>
+                                        <TableCell>{dayjs(announ.endDate).format(global.datetimeFormat)}</TableCell>
                                         <TableCell>
                                             <Link to={`/editAnnouncement/${announ.id}`}>
                                                 <Button variant="contained" color="secondary">Edit</Button>
@@ -52,6 +78,24 @@ function AnnouncementPanel() {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    {announcements.length > itemsPerPage && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                            {currentPage > 1 && (
+                                <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }} >Previous</Link>
+                            )}
+                            {currentPage > 1 && currentPage < Math.ceil(announcements.length / itemsPerPage) && (
+                                <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
+                            )}
+                            {currentPage < Math.ceil(announcements.length / itemsPerPage) && (
+                                <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>Next</Link>
+                            )}
+                        </Box>
+                    )}
+                    {currentPage > 1 && (
+                        <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
+                            {`< ${currentPage} / ${getTotalPages(announcements.length, itemsPerPage)} >`}
+                        </Typography>
+                    )}
                 </Box>
             </Box>
         </Box>

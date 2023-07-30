@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { Admin, Announcement, Sequelize } = require('../models');
 const { validateToken } = require('../middlewares/auth');
-const yup = require("yup")
+const yup = require("yup");
+
 
 
 router.post("/createAnnouncement", validateToken, async (req, res) => {
     let data = req.body;
     let validationSchema = yup.object({
         title: yup.string().trim().min(5).max(50).required(),
-        description: yup.string().trim().min(10).max(100).required()
+        description: yup.string().trim().min(10).max(100).required(),
+        endDate: yup.date().nullable(),
     });
     try {
         await validationSchema.validate(data,
@@ -23,6 +25,17 @@ router.post("/createAnnouncement", validateToken, async (req, res) => {
     data.title = data.title.trim();
     data.description = data.description.trim();
     data.adminId = req.admin.id;
+
+    if (data.endDate) {
+        data.endDate = new Date(data.endDate);
+    } else {
+        // For testing purposes, set endDate to yesterday's date
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        data.endDate = yesterday;
+    }
+
+
     let result = await Announcement.create(data);
     res.json(result);
 });
@@ -70,7 +83,8 @@ router.put("/:id", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(5).max(50).required(),
-        description: yup.string().trim().min(10).max(100).required()
+        description: yup.string().trim().min(10).max(100).required(),
+        endDate: yup.date().nullable(),
     });
     try {
         await validationSchema.validate(data,
