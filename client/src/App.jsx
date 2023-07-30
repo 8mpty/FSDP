@@ -221,6 +221,7 @@ function App() {
                   <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
                   <Route path={"/drivehistory"} element={<Drivehistory />} />
                   <Route path={"/drivehistory/:id"} element={<Drivehistory />} />
+                  <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
 
                   {/* User Booking Stuff */}
                   <Route path={"/addbooking"} element={<AddBooking />} />
