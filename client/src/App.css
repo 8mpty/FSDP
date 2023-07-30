@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Poppins-Regular';
+  src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,10 +10,20 @@
   text-align: center;
 }
 
+.AppBar {
+  background-color: darkblue;
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  justify-content: space-between;
+}
+
 .AppBar a {
   color: inherit;
   text-decoration: none;
   margin-right: 16px;
+  font-family: poppins-regular;
 }
 
 .AppBar a:hover {
@@ -24,7 +39,7 @@
   color: lightblue;
 }
 
-/* Add CSS styles for the announcement box */
+/* CSS styles for the announcement box */
 .announcement-box {
   background-color: #f0f0f0;
   border: 1px solid #ccc;
@@ -54,4 +69,11 @@
 
 .announcement-box button:hover {
   background-color: #0056b3;
+}
+
+.tabs {
+  padding: 10px;
+  border: 10px solid lightblue;
+  border-radius: 10px;
+  color: white;
 }

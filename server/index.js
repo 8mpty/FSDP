@@ -2,19 +2,55 @@ const express = require('express');
 const cors = require('cors');
 const { validateToken } = require('./middlewares/auth');
 const createDefaultAdmin = require('./CreateDefaultAdmin');
-const { Announcement } = require('./models');
+const { Sequelize, Announcement } = require('./models');
 require('dotenv').config();
+const cron = require('node-cron');
 const db = require('./models');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+const deleteExpiredAnnouncements = async () => {
+  const currentDate = new Date();
+  try {
+    await Announcement.destroy({
+      where: {
+        endDate: {
+          [Sequelize.Op.lte]: currentDate // Delete announcements with endDate less than or equal to the current date
+        }
+      }
+    });
+  } catch (err) {
+    console.error('Error deleting expired announcements:', err);
+  }
+};
+app.use(async (req, res, next) => {
+  try {
+    // Check if the request is for the announcements route
+    if (req.originalUrl === '/announcement') {
+      // Delete expired announcements before serving the route
+      await deleteExpiredAnnouncements();
+    }
+    // Continue to the next middleware or route handler
+    next();
+  } catch (err) {
+    console.error('Error while handling announcement route:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Cron job to run the deleteExpiredAnnouncements function every day at midnight (00:00)
+cron.schedule('0 0 * * *', async () => {
+  console.log('Running cron job: Deleting expired announcements...');
+  await deleteExpiredAnnouncements();
+});
+
 app.get("/", async (req, res) => {
   try {
     // Fetch all announcements
     const announcements = await Announcement.findAll({
-      order: [['createdAt', 'C']],
+      order: [['createdAt', 'DESC']],
     });
 
     res.json(announcements);
@@ -99,6 +135,8 @@ async function initializeServer() {
     app.listen(port, () => {
       console.log(`⚡ Sever running on http://localhost:${port}`);
     });
+    setInterval(deleteExpiredAnnouncements, 24 * 60 * 60 * 1000); // 24 hours
+    deleteExpiredAnnouncements();
   });
 }
 

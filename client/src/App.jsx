@@ -40,10 +40,10 @@ import { AdminContext, UserContext } from "./contexts/AccountContext";
 function App() {
   const [admin, setAdmin] = useState(null);
   const [user, setUser] = useState(null);
+  const [dropMenu, setdropMenu] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
 
-  // Function to handle closing of an announcement
   const closeAnnouncement = () => {
     setDisplayedAnnouncementIndex((prevIndex) => prevIndex + 1);
   };
@@ -52,10 +52,8 @@ function App() {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      // Read the role from local storage (assuming the role is stored as "admin" or "user")
       const role = localStorage.getItem("role");
 
-      // Based on the role, set the admin or user state accordingly
       if (role === "admin") {
         http
           .get("/admin/auth")
@@ -79,7 +77,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // After setting admin/user states, update the role in local storage for future reference
     if (admin) {
       localStorage.setItem("role", "admin");
     } else if (user) {
@@ -91,18 +88,33 @@ function App() {
     http.get("/announcement/getAllAnnouncements")
       .then((response) => {
         setAnnouncements(response.data);
+
       })
       .catch((error) => {
         console.log(error);
       });
   }, []);
+  useEffect(() => {
+    // Check if there are announcements to show and start the interval
+    if (announcements.length > 0 && displayedAnnouncementIndex < announcements.length) {
+      const interval = setInterval(() => {
+        closeAnnouncement(); // Close the current announcement
+
+        // Check if there are more announcements to show
+        if (displayedAnnouncementIndex + 1 >= announcements.length) {
+          clearInterval(interval); // No more announcements, clear the interval
+        }
+      }, 2000);
+
+      return () => clearInterval(interval); // Clear the interval when the component unmounts
+    }
+  }, [announcements, displayedAnnouncementIndex]);
 
   const logout = () => {
     localStorage.clear();
     window.location = "/";
   };
 
-  const [dropMenu, setdropMenu] = useState(null);
 
   const handleMenuOpen = (event) => {
     setdropMenu(event.currentTarget);
@@ -180,13 +192,13 @@ function App() {
             <AppBar position="static" className="AppBar">
               <Container>
                 <Toolbar disableGutters={true}>
-                  <Link to="/adminridehistory">
+                  <Link to="/adminridehistory" className="tabs">
                     <Typography className="a">Ride Histories</Typography>
                   </Link>
-                  <Link to="/adminbookings">
+                  <Link to="/adminbookings" className="tabs">
                     <Typography style={{ fontFamily: "system-ui" }}>Admin Bookings</Typography>
                   </Link>
-                  <Link to="/announcementPanel">
+                  <Link to="/announcementPanel" className="tabs">
                     <Typography style={{ fontFamily: "system-ui" }}>Announcement Panel</Typography>
                   </Link>
                 </Toolbar>
@@ -197,14 +209,11 @@ function App() {
           <Container>
             <Box className="announcement-container">
               {announcements.length > 0 && displayedAnnouncementIndex < announcements.length && (
-                <Announcement
-                  key={announcements[displayedAnnouncementIndex].id}
-                  announcement={announcements[displayedAnnouncementIndex]}
+                <Announcement key={announcements[displayedAnnouncementIndex].id} announcement={announcements[displayedAnnouncementIndex]}
                   onClose={closeAnnouncement}
                 />
               )}
             </Box>
-
           </Container>
 
           <Container>

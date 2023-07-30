@@ -1,47 +1,39 @@
 @font-face {
-    font-family: 'Poppins-Regular';
-    src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
-    /* other formats include: 'woff2', 'truetype, 'opentype',
-                              'embedded-opentype', and 'svg' */
-  }
+  font-family: 'Poppins-Regular';
+  src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
+}
 
-  @font-face {
-    font-family: 'Poppins-Medium';
-    src: local('Poppins-Medium'), url(./fonts/Poppins-Medium.ttf) format('truetype');
-    /* other formats include: 'woff2', 'truetype, 'opentype',
-                              'embedded-opentype', and 'svg' */
-  }
+@font-face {
+  font-family: 'Poppins-Medium';
+  src: local('Poppins-Medium'), url(./fonts/Poppins-Medium.ttf) format('truetype');
+}
 
 
 
 
 .history-container {
-    position: relative;
-    z-index: 1; /* Top-most layer */
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  
-  .history-page h2 {
-    position: relative;
-    font-family: poppins-medium;
-
-  }
-  
-  
-  .history-page {
-    position: relative;
-    z-index: 3; /* Bottom layer */
-    background-color: #fafafa; 
-    padding: 10px;
-  }
-
-  .card-text {
-    font-family:poppins-regular;
-  }
-  
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 
-  
+.history-page h2 {
+  position: relative;
+  font-family: poppins-medium;
+
+}
+
+
+.history-page {
+  position: relative;
+  z-index: 3;
+  background-color: #fafafa;
+  padding: 10px;
+}
+
+.card-text {
+  font-family: poppins-regular;
+}
