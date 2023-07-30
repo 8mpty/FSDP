@@ -59,6 +59,8 @@ function AddBooking() {
                     console.log(res.data);
                     navigate("/bookings");
                 });
+            
+            
         }
     });
 
