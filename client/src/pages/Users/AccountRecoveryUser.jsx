@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -35,12 +37,13 @@ function AccountRecovery() {
 
       http.post("/user/accountRecovery", data)
         .then((res) => {
+          toast.success("New Password Updated!! You may attempt to log in now.");
           console.log(res.data);
           navigate("/login");
         })
         .catch((err) => {
+          toast.error(`Error when resetting password!! Your varification code may be incorrect!`);
           console.error(err.response.data);
-          // Handle error and show appropriate message
         });
     },
   });

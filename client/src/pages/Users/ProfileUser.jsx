@@ -23,9 +23,7 @@ function ProfileUser() {
   useEffect(() => {
     if (user != null) {
       http.get(`/user/${user.id}`).then((res) => {
-        console.log(res.data.password);
         setProf(res.data);
-
         setProf((prevState) => ({ ...prevState, password: "", confirmPassword: "" }));
       });
     }
@@ -52,23 +50,20 @@ function ProfileUser() {
 
     onSubmit: (values) => {
       try {
-        // If the password field is not modified, use the previous password values
         if (!values.password || values.password === prof.password) {
           values.password = prof.password;
           values.confirmPassword = prof.confirmPassword;
         }
 
-        // Send the updated data to the server
         http
           .put(`/user/updateUser/${user.id}`, values)
           .then((res) => {
             console.log("Form submitted!");
             toast.success("Profile updated successfully.");
-            // You may choose to update the "user" state with the updated data here if needed
           })
           .catch((error) => {
             console.error("Error updating profile:", error);
-            toast.error("Failed to update profile. Please try again later.");
+            toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!");
           });
       } catch (error) {
         console.error("Error updating user:", error);
@@ -76,26 +71,45 @@ function ProfileUser() {
     },
   });
 
-  const [open, setOpen] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const [openDriverDialog, setOpenDriverDialog] = useState(false);
+
+  const handleOpenDriverDialog = () => {
+    setOpenDriverDialog(true);
+  };
+  const handleCloseDriverDialog = () => {
+    setOpenDriverDialog(false);
   };
 
+
+
+
+  const requestAsDriver = () => {
+    http.put(`/user/requestAsDriver/${user.id}`, { requestAsDriver: true })
+      .then((res) => {
+        console.log("Be a Driver requested!");
+        toast.success("Be a Driver requested. An admin will review your request.");
+        setProf((prevState) => ({ ...prevState, requestDelete: true }));
+      })
+      .catch((error) => {
+        console.error("Error requesting account driver status:", error);
+        toast.error("Failed to request driver status. Please try again later.");
+      });
+  };
   const requestDeletion = () => {
-    // Make an API call to update the "requestDelete" property to true for the current user
-    http
-      .put(`/user/updateUser/${user.id}`, { requestDelete: true })
+    http.put(`/user/updateUser/${user.id}`, { requestDelete: true })
       .then((res) => {
         console.log("Account deletion requested!");
         toast.success("Account deletion requested. An admin will review your request.");
-        // Update the local state to reflect the change (optional)
         setProf((prevState) => ({ ...prevState, requestDelete: true }));
-        // You may choose to redirect the user to a confirmation page here if needed
       })
       .catch((error) => {
         console.error("Error requesting account deletion:", error);
@@ -176,24 +190,48 @@ function ProfileUser() {
           <Button variant="contained" type="submit" onClick={formik.handleSubmit}>
             Update
           </Button>
-          <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpen}>
-            Delete Account
-          </Button>
-          <Button variant="contained" sx={{ ml: 2 }} onClick={resendVerificationCode}>
-            Resend New Verification Code
-          </Button>
+          
+          {prof && prof.requestDelete ? (
+            <Button variant="contained" sx={{ ml: 2 }} color="info" disabled>Deletion Requested</Button>
+          ) : (
+            <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpenDeleteDialog}>Delete Account</Button>
+          )}
+
+          <Button variant="contained" sx={{ ml: 2 }} onClick={resendVerificationCode}>Resend New Verification Code</Button>
+
+          {prof && prof.driverStatus ? (
+            <Button variant="contained" sx={{ ml: 2 }} color="info" disabled>Already a Driver</Button>
+          ) : (
+            <Button variant="contained" sx={{ ml: 2 }} color="info" onClick={handleOpenDriverDialog}>Request to be a Driver</Button>
+          )}
         </Box>
-        <Dialog open={open} onClose={handleClose}>
+
+        <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
           <DialogTitle>Request Account Deletion</DialogTitle>
           <DialogContent>
             <DialogContentText>Are you sure you want to request for deletion?</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="inherit" onClick={handleClose}>
+            <Button variant="contained" color="inherit" onClick={handleCloseDeleteDialog}>
               Cancel
             </Button>
             <Button variant="contained" color="error" onClick={requestDeletion}>
               Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={openDriverDialog} onClose={handleCloseDriverDialog}>
+          <DialogTitle>Request to be a Driver</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Are you sure you want to request to be a driver?</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="contained" color="inherit" onClick={handleCloseDriverDialog}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={requestAsDriver}>
+              Request
             </Button>
           </DialogActions>
         </Dialog>

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { Admin } = require('../models');
+const { Admin , Sequelize} = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
@@ -30,15 +30,28 @@ function generateVerificationCode() {
 // Get all Admins
 router.get("/getAllAdmins", async (req, res) => {
     try {
-        const admins = await Admin.findAll({
-            attributes: ['id', 'name', 'email'], // Only fetch necessary attributes
-        });
-        res.json(admins);
+      let condition = {};
+      let search = req.query.search;
+  
+      if (search) {
+        condition[Sequelize.Op.or] = [
+          { name: { [Sequelize.Op.like]: `%${search}%` } },
+          { email: { [Sequelize.Op.like]: `%${search}%` } }
+        ];
+      }
+  
+      let admins = await Admin.findAll({
+        where: condition,
+        attributes: ['id', 'name', 'email'],
+      });
+  
+      res.json(admins);
     } catch (error) {
-        console.error('Error fetching admins:', error);
-        res.status(500).json({ message: "Internal Server Error" });
+      console.error('Error fetching admins:', error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
-});
+  });
+  
 
 // Authorization Checks
 router.get("/auth", validateToken, (req, res) => {
