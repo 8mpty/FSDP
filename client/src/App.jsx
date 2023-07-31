@@ -2,6 +2,8 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import { Container, AppBar, Toolbar, Typography, Box, Button, Menu, MenuItem } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import RegisterAdmin from "./pages/Admins/RegisterAdmin";
 import LoginAdmin from "./pages/Admins/LoginAdmin";
@@ -117,6 +119,7 @@ function App() {
   const logout = () => {
     localStorage.clear();
     window.location = "/";
+    toast.success("Logout Successfull!!");
   };
 
 

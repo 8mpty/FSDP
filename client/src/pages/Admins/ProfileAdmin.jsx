@@ -24,9 +24,7 @@ function ProfileAdmin() {
         if (admin != null) {
             http.get(`/admin/${admin.id}`)
                 .then((res) => {
-                    console.log(res.data.password);
                     setProf(res.data);
-
                     setProf(prevState => ({ ...prevState, password: "", confirmPassword: "" }));
                 });
         }
@@ -55,25 +53,22 @@ function ProfileAdmin() {
 
         onSubmit: (values) => {
             try {
-                // If the password field is not modified, use the previous password values
                 if (!values.password || values.password === prof.password) {
                     values.password = prof.password;
                     values.confirmPassword = prof.confirmPassword;
                 }
-
-                // Send the updated data to the server
                 http.put(`/admin/updateAdmin/${admin.id}`, values)
                     .then((res) => {
                         console.log('Form submitted!');
                         toast.success('Profile updated successfully.');
-                        // You may choose to update the "admin" state with the updated data here if needed
                     })
                     .catch((error) => {
                         console.error('Error updating profile:', error);
-                        toast.error('Failed to update profile. Please try again later.');
+                        toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!");
                     });
             } catch (error) {
                 console.error('Error updating admin:', error);
+                toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!",error);
             }
         },
     });
@@ -91,23 +86,24 @@ function ProfileAdmin() {
     const deleteUser = () => {
         http.delete(`/admin/${admin.id}`)
             .then((res) => {
-                // Temp solution to delete user, logging out and going back to homepage
+                toast.success('Deleted Account Successfully!');
                 localStorage.clear();
                 window.location = "/";
                 navigate("/");
+            }).catch((err) => {
+                toast.error('Error when deleting account. Please try again later!', err);
             });
     }
 
     const resendVerificationCode = () => {
-        http
-            .post("/admin/resendVerificationCode", { email: prof.email })
+        http.post("/admin/resendVerificationCode", { email: prof.email })
             .then((res) => {
-                console.log(res.data);
                 toast.success("Verification code sent successfully.");
+                console.log(res.data);
             })
             .catch((error) => {
-                console.error("Error resending verification code:", error);
                 toast.error("Failed to resend verification code. Please try again later.");
+                console.error("Error resending verification code:", error);
             });
     };
 
@@ -180,7 +176,7 @@ function ProfileAdmin() {
                 </Box>
                 <Dialog open={open} onClose={handleClose}>
                     <DialogTitle>
-                        Delete Main
+                        Delete Account
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>

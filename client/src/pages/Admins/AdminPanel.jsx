@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { AccessTime, Search, Clear } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import http from "../../http";
 import dayjs from "dayjs";
 import global from '../../global';
 import '../../AdminPanel.css';
 
 function AdminPanel() {
+  const [openDelAdmin, setOpenDelAdmin] = useState(false);
+  const [openDelUser, setOpenDelUser] = useState(false);
+  const [openDriver, setOpenDriver] = useState(false);
+  const [search, setSearch] = useState('');
   const [admins, setAdmins] = useState([]);
   const [users, setUsers] = useState([]);
   const [showAdmins, setShowAdmins] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  useEffect(() => {
-    // Fetch all admins from the backend when the component mounts
+
+  const onSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const getAllAdmins = () => {
     http.get('/admin/getAllAdmins')
       .then(response => {
         setAdmins(response.data);
@@ -22,8 +33,9 @@ function AdminPanel() {
       .catch(error => {
         console.error('Error fetching admins:', error);
       });
+  }
 
-    // Fetch all users from the backend when the component mounts
+  const getAllUsers = () => {
     http.get('/user/getAllUsers')
       .then(response => {
         setUsers(response.data);
@@ -31,40 +43,141 @@ function AdminPanel() {
       .catch(error => {
         console.error('Error fetching users:', error);
       });
+  }
+
+
+
+
+
+  const searchAdmin = () => {
+    http.get(`/admin/getAllAdmins?search=${search}`)
+      .then((res) => {
+        setAdmins(res.data);
+      });
+  };
+  const searchUser = () => {
+    http.get(`/user/getAllUsers?search=${search}`)
+      .then((res) => {
+        setUsers(res.data);
+      });
+  };
+
+
+
+  const onSearchKeyDownAdmin = (e) => {
+    if (e.key === "Enter") {
+      searchAdmin();
+    }
+  };
+
+  const onSearchKeyDownUser = (e) => {
+    if (e.key === "Enter") {
+      searchUser();
+    }
+  };
+
+
+
+  const onClickSearchAdmin = () => {
+    searchAdmin();
+  }
+
+  const onClickClearAdmin = () => {
+    setSearch('');
+    getAllAdmins();
+  };
+
+
+
+  const onClickSearchUser = () => {
+    searchUser();
+  }
+
+  const onClickClearUser = () => {
+    setSearch('');
+    getAllUsers();
+  };
+
+
+
+  useEffect(() => {
+    getAllAdmins();
+    getAllUsers();
   }, []);
 
   const deleteAdmin = (id) => {
-    // Send a DELETE request to the server to delete the admin with the given id
     http.delete(`/admin/${id}`)
       .then(response => {
-        // If the admin is deleted successfully, update the state to remove the admin from the list
         if (response.data.message) {
+          toast.success(`Successfully deleted admin`);
           setAdmins(admins.filter(admin => admin.id !== id));
         }
       })
       .catch(error => {
+        toast.error(`Error when deleting admin`, error);
         console.error(`Error deleting admin with ID ${id}:`, error);
       });
   };
 
   const deleteUser = (id, requestDelete) => {
     if (requestDelete) {
-      // Send a DELETE request to the server to delete the user with the given id
       http.delete(`/user/${id}`)
         .then(response => {
-          // If the user is deleted successfully, update the state to remove the user from the list
           if (response.data.message) {
+            toast.success(`Successfully deleted user`);
             setUsers(users.filter(user => user.id !== id));
           }
         })
         .catch(error => {
+          toast.error(`Error when deleting user`, error);
           console.error(`Error deleting user with ID ${id}:`, error);
         });
     } else {
-      // Show a toast message indicating that the user's request for deletion is false
       toast.info("User has not requested account deletion.");
     }
   };
+
+  const setDriver = (id, requestAsDriver, driverStatus) => {
+    if (requestAsDriver && !driverStatus) {
+      http.put(`/user/setDriverStatus/${id}`)
+        .then(response => {
+          toast.success(`User is now officially a driver.`);
+          setUsers(users.map(user => user.id === id ? {
+            ...user, driverStatus: true
+          } : user));
+        })
+        .catch(error => {
+          toast.error(`Error when approving ${users.id} driver status`, error);
+          console.error(`Error updating driver status of user with ID ${id}:`, error);
+        });
+    } else {
+      console.log("setDriver - Not eligible for approval.");
+      toast.info("User has not requested to be a driver!");
+    }
+  };
+
+
+
+  const handleOpenUser = () => {
+    setOpenDelUser(true);
+  };
+  const handleOpenAdmin = () => {
+    setOpenDelAdmin(true);
+  };
+  const handleOpenDriver = () => {
+    setOpenDriver(true);
+  };
+
+  const handleCloseUser = () => {
+    setOpenDelUser(false);
+  };
+  const handleCloseAdmin = () => {
+    setOpenDelAdmin(false);
+  };
+  const handleCloseDriver = () => {
+    setOpenDriver(false);
+  };
+
 
   const handleToggleData = () => {
     setShowAdmins(prevShowAdmins => !prevShowAdmins);
@@ -90,6 +203,7 @@ function AdminPanel() {
 
   return (
     <Box>
+
       <Typography variant="h4" gutterBottom>AdminPanel</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
         <Link to="/registerAdmin" style={{ textDecoration: 'none' }}>
@@ -103,9 +217,20 @@ function AdminPanel() {
 
       {showAdmins ? (
         <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Input value={search} placeholder="Search Admins"
+              onChange={onSearchChange}
+              onKeyDown={onSearchKeyDownAdmin} />
+            <IconButton color="primary" onClick={onClickSearchAdmin}>
+              <Search />
+            </IconButton>
+            <IconButton color="primary" onClick={onClickClearAdmin}>
+              <Clear />
+            </IconButton>
+          </Box>
           <Typography variant="h5" gutterBottom>Admins</Typography>
           <TableContainer component={Paper}>
-            <Table className="admin-table">
+            <Table className="ridetable">
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
@@ -122,7 +247,29 @@ function AdminPanel() {
                     <TableCell>{admin.email}</TableCell>
                     <TableCell>
                       {admin.email !== "admin@admin.com" && (
-                        <Button variant="contained" color="secondary" onClick={() => deleteAdmin(admin.id)}>Delete</Button>
+                        <Box>
+                          <Button variant="contained" color="secondary" onClick={handleOpenAdmin}>Delete</Button>
+                          <Dialog open={openDelAdmin} onClose={handleCloseUser}>
+                            <DialogTitle>
+                              Delete Account
+                            </DialogTitle>
+                            <DialogContent>
+                              <DialogContentText>
+                                Are you sure you want to delete user account {admin.id}?
+                              </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                              <Button variant="contained" color="inherit"
+                                onClick={handleCloseAdmin}>
+                                Cancel
+                              </Button>
+                              <Button variant="contained" color="error"
+                                onClick={() => deleteAdmin(admin.id)}>
+                                Delete
+                              </Button>
+                            </DialogActions>
+                          </Dialog>
+                        </Box>
                       )}
                     </TableCell>
                   </TableRow>
@@ -151,9 +298,20 @@ function AdminPanel() {
         </Box>
       ) : (
         <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Input value={search} placeholder="Search Users"
+              onChange={onSearchChange}
+              onKeyDown={onSearchKeyDownUser} />
+            <IconButton color="primary" onClick={onClickSearchUser}>
+              <Search />
+            </IconButton>
+            <IconButton color="primary" onClick={onClickClearUser}>
+              <Clear />
+            </IconButton>
+          </Box>
           <Typography variant="h5" gutterBottom>Users</Typography>
           <TableContainer component={Paper}>
-            <Table className="user-table">
+            <Table className="ridetable">
               <TableHead>
                 <TableRow>
                   <TableCell>ID</TableCell>
@@ -162,6 +320,7 @@ function AdminPanel() {
                   <TableCell>Created At</TableCell>
                   <TableCell>Updated At</TableCell>
                   <TableCell>Extra Actions</TableCell>
+                  <TableCell>Approve</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -174,9 +333,56 @@ function AdminPanel() {
                     <TableCell>{dayjs(user.updatedAt).format(global.datetimeFormat)}</TableCell>
                     <TableCell>
                       {user.requestDelete && (
-                        <Button variant="contained" color="secondary" onClick={() => deleteUser(user.id, user.requestDelete)}>
-                          Delete
-                        </Button>
+                        <Box>
+                          <Button variant="contained" color="secondary" onClick={handleOpenUser}>Delete</Button>
+                          <Dialog open={openDelUser} onClose={handleCloseUser}>
+                            <DialogTitle>
+                              Delete Account
+                            </DialogTitle>
+                            <DialogContent>
+                              <DialogContentText>
+                                Are you sure you want to delete user account {user.id}?
+                              </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                              <Button variant="contained" color="inherit"
+                                onClick={handleCloseUser}>
+                                Cancel
+                              </Button>
+                              <Button variant="contained" color="error"
+                                onClick={() => deleteUser(user.id, user.requestDelete)}>
+                                Delete
+                              </Button>
+                            </DialogActions>
+                          </Dialog>
+                        </Box>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {user.requestAsDriver && !user.driverStatus && (
+                        <Box>
+                          <Button variant="contained" color="primary" onClick={handleOpenDriver}>Approve</Button>
+                          <Dialog open={openDriver} onClose={handleCloseDriver}>
+                            <DialogTitle>
+                              Approve Driver Request
+                            </DialogTitle>
+                            <DialogContent>
+                              <DialogContentText>
+                                Are you sure you want to approve the driver request of user account {user.id}?
+                              </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                              <Button variant="contained" color="inherit"
+                                onClick={handleCloseDriver}>
+                                Cancel
+                              </Button>
+                              <Button variant="contained" color="warning"
+                                onClick={() => setDriver(user.id, user.requestAsDriver, user.driverStatus)}>
+                                Approve
+                              </Button>
+                            </DialogActions>
+                          </Dialog>
+                        </Box>
                       )}
                     </TableCell>
                   </TableRow>

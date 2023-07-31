@@ -19,7 +19,7 @@ const Announcement = ({ announcement, onClose }) => {
     return (
         isVisible && (
             <Box className="announcement-box">
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom className="tt">
                     {announcement.title}
                 </Typography>
                 <Typography variant="body1">{announcement.description}</Typography>
