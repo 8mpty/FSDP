@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Grid } from '@mui/material';
 import { useFormik } from 'formik';
@@ -7,13 +7,12 @@ import http from '../../http';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { PostAdd } from '@mui/icons-material';
-
-
-
+import { UserContext } from '../../contexts/AccountContext';
 
 function AddBooking() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
+    const { user } = useContext(UserContext);
 
     const formik = useFormik({
         initialValues: {
@@ -21,9 +20,6 @@ function AddBooking() {
             pickup: "",
             passby: "",
             notes: "",
-
-
-
         },
         validationSchema: yup.object().shape({
             name: yup.string().trim()
@@ -42,8 +38,6 @@ function AddBooking() {
                 .min(3, 'Notes must be at least 3 characters')
                 .max(500, 'Notes must be at most 500 characters')
                 .required('Notes is required')
-
-
         }),
         onSubmit: (data) => {
             if (imageFile) {
@@ -58,6 +52,27 @@ function AddBooking() {
                 .then((res) => {
                     console.log(res.data);
                     navigate("/bookings");
+
+                    const rideHistoryData = {
+                        driver: data.name,
+                        rider: user.name,
+                        start: data.pickup,
+                        end: data.passby,
+                        points: 100,
+                        role: 'rider'
+                    };
+
+                    // Call the backend API to create the ride history entry
+                    http.post('/ridehistory', rideHistoryData)
+                        .then((rideHistoryRes) => {
+                            console.log('Ride history entry created successfully:', rideHistoryRes.data);
+                        })
+                        .catch((error) => {
+                            console.log('Error creating ride history entry:', error);
+                        });
+                })
+                .catch((error) => {
+                    console.log('Error creating booking:', error);
                 });
         }
     });
@@ -86,22 +101,19 @@ function AddBooking() {
     };
 
     return (
-        <Box style={{ marginLeft: "150px",marginTop:"75px" }}>
+        <Box style={{ marginLeft: "150px", marginTop: "75px" }}>
             <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
 
-                <div style={{ display: "flex", backgroundColor: "#00b4cf", width: "550px", height: "465px", marginTop: "35px",color:"white", alignContent:"center",alignItems:"center" }}>
-                    <p style={{ fontFamily: "system-ui" , fontWeight:"bold", fontSize:"30px",marginLeft:"20px"}}>Let's Book
-                        <p style={{fontFamily:"system-ui",paddingTop:"30px", fontSize:"15px"}}>
+                <div style={{ display: "flex", backgroundColor: "#00b4cf", width: "550px", height: "465px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
+                    <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
+                        <p style={{ fontFamily: "system-ui", paddingTop: "30px", fontSize: "15px" }}>
                             Feeling Lazy?
                         </p>
-                        <p style={{fontFamily:"system-ui",fontSize:"15px"}}>
+                        <p style={{ fontFamily: "system-ui", fontSize: "15px" }}>
                             Book a car ride that maximises comfort and speed today
                         </p>
                     </p>
                 </div>
-
-
-
 
                 <Grid container spacing={2} style={{ alignItems: "center" }}>
 
