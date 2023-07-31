@@ -34,6 +34,7 @@ function LoginUser() {
       http.post("/user/login", data)
         .then((res) => {
           localStorage.setItem("accessToken", res.data.accessToken);
+          toast.success(`User Login successfull!`);
           setUser(res.data.user);
           navigate("/");
         })
@@ -49,6 +50,7 @@ function LoginUser() {
       flexDirection: 'column',
       alignItems: 'center'
     }}>
+      <ToastContainer />
       <Typography variant="h5" sx={{ my: 2 }}>
         Login
       </Typography>
@@ -85,8 +87,6 @@ function LoginUser() {
           <Link to="/loginAdmin" className='admin-link'>For Admins</Link>
         </Box>
       </Box>
-
-      <ToastContainer />
     </Box>
   )
 }

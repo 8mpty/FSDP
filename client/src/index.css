@@ -10,11 +10,18 @@
   -webkit-text-size-adjust: 100%;
 }
 
+@font-face {
+  font-family: 'Poppins-Regular';
+  src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
+}
+
 @media (prefers-color-scheme: dark) {
 
   input,
   select,
-  textarea {
+  textarea,
+  link{
+    font-family: 'Poppins-Regular';
     color: white !important;
   }
 

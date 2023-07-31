@@ -4,6 +4,8 @@ import { Box, Typography, TextField, Button } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http';
@@ -28,7 +30,7 @@ function AddAnnouncement() {
                 .max(500, 'Description must be at most 100 characters')
                 .required('Description is required'),
             endDate: yup.date().nullable(true)
-                .min(new Date(), 'Date must not be less then today\'s date')
+                .min(currentDate, 'Date must not be less then today\'s date'),
         }),
         onSubmit: (data) => {
             data.title = data.title.trim();
@@ -37,7 +39,11 @@ function AddAnnouncement() {
             http.post("/announcement/createAnnouncement", data)
                 .then((res) => {
                     console.log(res.data);
+                    toast.success("Created a new announcement successfully!");
                     navigate("/announcementPanel");
+                })
+                .catch((err) => {
+                    toast.error("Error creating announcement. Please Try Again!");
                 });
         }
     });

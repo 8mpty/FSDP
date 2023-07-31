@@ -14,16 +14,24 @@ module.exports = (sequelize, DataTypes) => {
     },
     isAdmin: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false, // Set the default value to false for regular users
+      defaultValue: false,
     },
     verificationCode: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    requestDelete: { // Add the requestDelete property
+    requestDelete: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false, // Set the default value to false for new users
+      defaultValue: false,
     },
+    requestAsDriver:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    driverStatus:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    }
   });
   User.associate = (models) => {
     User.hasMany(models.ridehistory, {
