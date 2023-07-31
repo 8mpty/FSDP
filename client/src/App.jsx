@@ -230,6 +230,7 @@ function App() {
                   <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
                   <Route path={"/drivehistory"} element={<Drivehistory />} />
                   <Route path={"/drivehistory/:id"} element={<Drivehistory />} />
+                  <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
 
                   {/* User Booking Stuff */}
                   <Route path={"/addbooking"} element={<AddBooking />} />
@@ -252,7 +253,7 @@ function App() {
                   {/* Admin Ride History Stuff */}
                   <Route path={"/adminridehistory"} element={<Adminridehistory />} />
                   <Route path={"/adminridehistory/:id"} component={<Adminridehistory />} />
-                  <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
+
                   <Route path={"/deleteridehistory/:id"} element={<Deleteridehistory />} />
 
                   {/* Admin Booking Stuff */}
