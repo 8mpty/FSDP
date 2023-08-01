@@ -103,10 +103,10 @@ function Bookings() {
                                                             <Edit />
                                                         </IconButton>
                                                     </Link>
-                                                    )
-                                                }
+                                                )
+                                            }
 
-                                                </Box>
+                                        </Box>
                                         <img src="https://www.abcpaintandbody.com/wp-content/uploads/2020/06/GettyImages-467657744.jpg"
                                             height="194"
                                             width="100%"
@@ -148,7 +148,7 @@ function Bookings() {
                                     </CardContent>
 
                                 </Card>
-                                
+
                             </Grid>
                         );
                     })

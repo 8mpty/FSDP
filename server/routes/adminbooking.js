@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, AdminBooking, Sequelize } = require('../models');
+const { Admin, AdminBooking, Sequelize } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 
@@ -9,7 +9,7 @@ router.post("/", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object().shape({
         drivername: yup.string().trim().min(3).max(100).required(),
-        driverposition: yup.string().trim().min(3).max(100).required(),
+        driverposition: yup.string().trim().min(1).max(100).required(),
         fare: yup.string().trim().min(3).max(500).required(),
         totalearning: yup.string().trim().min(3).max(500).required()
         
@@ -28,7 +28,7 @@ router.post("/", validateToken, async (req, res) => {
     data.fare = data.fare.trim();
     data.totalearning = data.totalearning.trim();
     
-    data.userId = req.user.id;
+    data.adminId = req.admin.id;
     let result = await AdminBooking.create(data);
     res.json(result);
 });
@@ -50,7 +50,7 @@ router.get("/", async (req, res) => {
     let list = await AdminBooking.findAll({
         where: condition,
         order: [['createdAt', 'DESC']],
-        include: { model: User, as: "user", attributes: ['name'] }
+        include: { model: Admin, as: "admin", attributes: ['name'] }
     });
     res.json(list);
 });
@@ -58,7 +58,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let adminbooking = await AdminBooking.findByPk(id, {
-        include: { model: User, as: "user", attributes: ['name'] }
+        include: { model: Admin, as: "admin", attributes: ['name'] }
     });
     // Check id not found
     if (!adminbooking) {
@@ -77,9 +77,9 @@ router.put("/:id", validateToken, async (req, res) => {
         return;
     }
 
-    // Check request user id
-    let userId = req.user.id;
-    if (adminbooking.userId != userId) {
+    // Check request admin id
+    let adminId = req.admin.id;
+    if (adminbooking.adminId != adminId) {
         res.sendStatus(403);
         return;
     }
@@ -88,7 +88,7 @@ router.put("/:id", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object().shape({
         drivername: yup.string().trim().min(3).max(100).required(),
-        driverposition: yup.string().trim().min(3).max(500).required(),
+        driverposition: yup.string().trim(1).min().max(500).required(),
         fare: yup.string().trim().min(3).max(500).required(),
         totalearning: yup.string().trim().min(3).max(500).required(),
         
@@ -131,9 +131,9 @@ router.delete("/:id", validateToken, async (req, res) => {
         return;
     }
 
-    // Check request user id
-    let userId = req.user.id;
-    if (adminbooking.userId != userId) {
+    // Check request admin id
+    let adminId = req.admin.id;
+    if (adminbooking.adminId != adminId) {
         res.sendStatus(403);
         return;
     }

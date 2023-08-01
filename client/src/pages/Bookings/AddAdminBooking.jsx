@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Select, MenuItem } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../../http';
@@ -47,7 +47,7 @@ function AddAdminBooking() {
                 .max(100, 'Driver Name must be at most 100 characters')
                 .required('Driver Name is required'),
             driverposition: yup.string().trim()
-                .min(3, 'Driver Position must be at least 3 characters')
+                .min(1, 'Driver Position must be at least 1 characters')
                 .max(500, 'Driver Position must be at most 500 characters')
                 .required('Driver Position is required'),
             fare: yup.string().trim()
@@ -66,7 +66,7 @@ function AddAdminBooking() {
                 data.imageFile = imageFile;
             }
             data.drivername = data.drivername.trim();
-            data.driverposition = data.driverposition.trim();
+            // data.driverposition = data.driverposition.trim();
             data.fare = data.fare.trim();
             data.totalearning = data.totalearning.trim();
 
@@ -74,6 +74,9 @@ function AddAdminBooking() {
                 .then((res) => {
                     console.log(res.data);
                     navigate("/adminbookings");
+                }).catch((error) => {
+                    console.log(error);
+                    toast.error(error);
                 });
         }
     });
@@ -106,7 +109,7 @@ function AddAdminBooking() {
 
 
             <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
-                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "465px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
+                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "450px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
                     <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
                         <p style={{ fontFamily: "system-ui", paddingTop: "30px", fontSize: "15px" }}>
                             Feeling Lazy?
@@ -129,20 +132,27 @@ function AddAdminBooking() {
                             onChange={formik.handleChange}
                             error={formik.touched.drivername && Boolean(formik.errors.drivername)}
                             helperText={formik.touched.drivername && formik.errors.drivername}
-                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", marginBottom:"16px" }}
                         />
-                        <TextField
-                            fullWidth margin="normal" autoComplete="off"
+                        <Select
+                            fullWidth
+                            margin="normal"
                             label="Driver Position"
                             name="driverposition"
                             value={formik.values.driverposition}
                             onChange={formik.handleChange}
                             error={formik.touched.driverposition && Boolean(formik.errors.driverposition)}
-                            helperText={formik.touched.driverposition && formik.errors.driverposition}
-                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
-                        />
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign:"left" }}
+                        >
+                            {options.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
 
-                        
+
+
 
                         <TextField
                             fullWidth margin="normal" autoComplete="off"
