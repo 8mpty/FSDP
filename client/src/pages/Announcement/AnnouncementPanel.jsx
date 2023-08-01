@@ -89,7 +89,7 @@ function AnnouncementPanel() {
             <Box>
                 <Box>
                     <TableContainer component={Paper}>
-                        <Table className="antable">
+                        <Table className="ridetable">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>

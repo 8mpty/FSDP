@@ -135,7 +135,7 @@ function App() {
     <AdminContext.Provider value={{ admin, setAdmin }}>
       <UserContext.Provider value={{ user, setUser }}>
         <Router>
-          <AppBar position="static" className="AppBar">
+          <AppBar position="sticky" className="AppBar">
             <Container>
               <Toolbar disableGutters={true}>
                 <Link to="/">
@@ -196,7 +196,7 @@ function App() {
 
           {/* Admin Toolbar */}
           {admin && !user ? (
-            <AppBar position="static" className="AppBar">
+            <AppBar position="sticky" className="AppBar">
               <Container>
                 <Toolbar disableGutters={true}>
                   <Link to="/adminridehistory" className="tabs">

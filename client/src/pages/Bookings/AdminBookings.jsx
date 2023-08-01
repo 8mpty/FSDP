@@ -100,14 +100,14 @@ function AdminBookings() {
             </Box>
 
             <Grid container spacing={0}>
-                <table style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", borderCollapse: "collapse", marginLeft: "auto", marginRight: "auto" }}>
-                    <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>
-                        <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>ID</th>
-                        <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Driver Name</th>
-                        <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Driver Position</th>
-                        <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Fare</th>
-                        <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Total Earning</th>
-                        <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Created At</th>
+                <table className="ridetable" >
+                    <tr   >
+                        <th>ID</th>
+                        <th>Driver Name</th>
+                        <th>Driver Position</th>
+                        <th>Fare</th>
+                        <th>Total Earning</th>
+                        <th>Created At</th>
 
                         <th></th>
 
@@ -119,12 +119,12 @@ function AdminBookings() {
 
 
                                 <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", textAlign: "center" }} key={adminbooking.id} >
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.id}</td>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.drivername}</td>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.driverposition}</td>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.fare}</td>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.totalearning}</td>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{dayjs(adminbooking.createdAt).format(global.datetimeFormat)}</td>
+                                    <td   >{adminbooking.id}</td>
+                                    <td   >{adminbooking.drivername}</td>
+                                    <td   >{adminbooking.driverposition}</td>
+                                    <td   >{adminbooking.fare}</td>
+                                    <td   >{adminbooking.totalearning}</td>
+                                    <td   >{dayjs(adminbooking.createdAt).format(global.datetimeFormat)}</td>
                                     <td>
                                         {
                                             admin && admin.id === adminbooking.adminId && (
