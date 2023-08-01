@@ -135,7 +135,7 @@ function App() {
     <AdminContext.Provider value={{ admin, setAdmin }}>
       <UserContext.Provider value={{ user, setUser }}>
         <Router>
-          <AppBar position="sticky" className="AppBar" sx={{minWidth:"100%"}}>
+          <AppBar position="sticky" className="AppBar">
             <Container>
               <Toolbar disableGutters={true}>
                 <Link to="/">
