@@ -25,7 +25,7 @@ import { AccessTime, Search, Clear } from "@mui/icons-material";
 import http from "../../http";
 import dayjs from "dayjs";
 import global from "../../global";
-// import "../../adminridehistory.css";
+import "../../adminridehistory.css";
 import axios from "axios";
 
 import { useParams, useNavigate } from "react-router-dom";
@@ -213,7 +213,7 @@ function Adminridehistory() {
       />
 
       <TableContainer component={Paper} className="table-container">
-        <Table className="table" aria-label="simple table" stickyHeader>
+        <Table className="ridetable" aria-label="simple table" stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell

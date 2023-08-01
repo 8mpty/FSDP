@@ -38,7 +38,7 @@ router.get("/", validateToken, async (req, res) => {
   }
 
   // Check if the authenticated user is an admin
-  const isAdmin = req.user.isAdmin; // Replace "isAdmin" with the actual property name for the admin flag
+  const isAdmin = req.user.isAdmin; 
 
   if (!isAdmin) {
     // If it's not an admin, apply the filtering by user id

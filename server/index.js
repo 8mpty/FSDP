@@ -120,6 +120,9 @@ app.use("/adminbooking", adminbookingRoute);
 const announcementRoute = require('./routes/announcements');
 app.use("/announcement", announcementRoute);
 
+// Rewards Route
+const rewardsRoute = require('./routes/rewards');
+app.use("/rewards", rewardsRoute);
 
 // Add the following function to create a default admin when the server starts
 async function initializeServer() {

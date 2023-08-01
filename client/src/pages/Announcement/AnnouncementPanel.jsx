@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Input, IconButton } from '@mui/material';
+import { AccessTime, Search, Clear } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import dayjs from "dayjs";
 import global from '../../global';
@@ -7,10 +8,42 @@ import http from "../../http";
 
 
 function AnnouncementPanel() {
+    const [search, setSearch] = useState('');
     const [announcements, setAnnouncements] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
+    const onSearchChange = (e) => {
+        setSearch(e.target.value);
+    };
+    const getAllAnnouncements = () => {
+        http.get('/announcement/getAllAnnouncements')
+            .then(response => {
+                setAnnouncements(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetch announcements:', error);
+            });
+    }
+    const searchAnnouncement = () => {
+        http.get(`/announcement/getAllAnnouncements?search=${search}`)
+            .then((res) => {
+                setAnnouncements(res.data);
+            });
+    };
+    const onSearchKeyDown = (e) => {
+        if (e.key === "Enter") {
+            searchAnnouncement();
+        }
+    };
+    const onClickSearch = () => {
+        searchAnnouncement();
+    }
+
+    const onClickClear = () => {
+        setSearch('');
+        getAllAnnouncements();
+    };
 
     const handleNextPage = () => {
         setCurrentPage(prevPage => prevPage + 1);
@@ -31,18 +64,23 @@ function AnnouncementPanel() {
     };
 
     useEffect(() => {
-        // Fetch all admins from the backend when the component mounts
-        http.get('/announcement/getAllAnnouncements')
-            .then(response => {
-                setAnnouncements(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetch announcements:', error);
-            });
+        getAllAnnouncements();
     }, []);
+
     return (
         <Box>
             <Typography variant="h4" gutterBottom>Announcement Panel</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Input value={search} placeholder="Search"
+                    onChange={onSearchChange}
+                    onKeyDown={onSearchKeyDown} />
+                <IconButton color="primary" onClick={onClickSearch}>
+                    <Search />
+                </IconButton>
+                <IconButton color="primary" onClick={onClickClear}>
+                    <Clear />
+                </IconButton>
+            </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
                 <Link to="/addAnnouncement" style={{ textDecoration: 'none' }}>
                     <Button variant="contained" color="primary">Add Announcement</Button>
@@ -51,7 +89,7 @@ function AnnouncementPanel() {
             <Box>
                 <Box>
                     <TableContainer component={Paper}>
-                        <Table className="admin-table">
+                        <Table className="antable">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>

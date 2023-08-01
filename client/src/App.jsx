@@ -2,6 +2,8 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import { Container, AppBar, Toolbar, Typography, Box, Button, Menu, MenuItem } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import RegisterAdmin from "./pages/Admins/RegisterAdmin";
 import LoginAdmin from "./pages/Admins/LoginAdmin";
@@ -31,6 +33,10 @@ import Announcement from "./pages/Announcement/Announcement";
 import UpdateAnnouncement from "./pages/Announcement/UpdateAnnouncement";
 import AnnouncementPanel from "./pages/Announcement/AnnouncementPanel";
 import AddAnnouncement from "./pages/Announcement/AddAnnouncement";
+
+import Rewards from './pages/Rewards/Rewards';
+import AddReward from './pages/Rewards/AddReward';
+import EditReward from './pages/Rewards/EditReward';
 
 
 import http from "./http";
@@ -113,6 +119,7 @@ function App() {
   const logout = () => {
     localStorage.clear();
     window.location = "/";
+    toast.success("Logout Successfull!!");
   };
 
 
@@ -195,6 +202,11 @@ function App() {
                   <Link to="/adminridehistory" className="tabs">
                     <Typography className="a">Ride Histories</Typography>
                   </Link>
+                  
+                  <Link to="/rewards" className="tabs" >
+                    <Typography>Rewards</Typography>
+                  </Link>
+
                   <Link to="/adminbookings" className="tabs">
                     <Typography style={{ fontFamily: "system-ui" }}>Admin Bookings</Typography>
                   </Link>
@@ -230,6 +242,7 @@ function App() {
                   <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
                   <Route path={"/drivehistory"} element={<Drivehistory />} />
                   <Route path={"/drivehistory/:id"} element={<Drivehistory />} />
+                  <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
 
                   {/* User Booking Stuff */}
                   <Route path={"/addbooking"} element={<AddBooking />} />
@@ -252,7 +265,7 @@ function App() {
                   {/* Admin Ride History Stuff */}
                   <Route path={"/adminridehistory"} element={<Adminridehistory />} />
                   <Route path={"/adminridehistory/:id"} component={<Adminridehistory />} />
-                  <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
+
                   <Route path={"/deleteridehistory/:id"} element={<Deleteridehistory />} />
 
                   {/* Admin Booking Stuff */}
@@ -263,6 +276,10 @@ function App() {
                   <Route path={"/announcementPanel"} element={<AnnouncementPanel />} />
                   <Route path={"/addAnnouncement"} element={<AddAnnouncement />} />
 
+                  {/* Admin Rewards Stuff */}
+                  <Route path={"/rewards"} element={<Rewards />} />
+                  <Route path={"/addreward"} element={<AddReward />} />
+                  <Route path={"/editreward/:id"} element={<EditReward />} />
                 </>
               ) : null}
               {/* Common Routes Accessible By Anyone */}

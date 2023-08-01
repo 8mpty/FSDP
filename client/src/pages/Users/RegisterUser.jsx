@@ -42,6 +42,7 @@ function RegisterUser() {
       data.isAdmin = false;
       http.post("/user/register", data)
         .then((res) => {
+          toast.success(`Register Successfull!!`);
           console.log(res.data);
           navigate("/login");
         })
@@ -57,7 +58,6 @@ function RegisterUser() {
       flexDirection: 'column',
       alignItems: 'center'
     }}>
-      <ToastContainer />
       <Typography variant="h5" sx={{ my: 2 }}> Register </Typography>
 
       <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >

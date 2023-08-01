@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -32,15 +34,15 @@ function AccountRecovery() {
     }),
     onSubmit: (data) => {
       data.email = data.email.trim().toLowerCase();
-
       http.post("/admin/accountRecoveryAdmin", data)
         .then((res) => {
+          toast.success("New Password Updated!! You may attempt to log in now.");
           console.log(res.data);
           navigate("/loginAdmin");
         })
         .catch((err) => {
+          toast.error("Error when resetting password!! Please Try Again Later!");
           console.error(err.response.data);
-          // Handle error and show appropriate message
         });
     },
   });
@@ -50,7 +52,7 @@ function AccountRecovery() {
       <Typography variant="h5" sx={{ my: 2 }}>
         Account Recovery
       </Typography>
-
+      <ToastContainer/>
       <Box component="form" sx={{ maxWidth: "500px" }} onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth

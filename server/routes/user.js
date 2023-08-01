@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const { User, Sequelize } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
@@ -9,7 +9,6 @@ const nodemailer = require("nodemailer");
 require('dotenv').config();
 
 
-// Define your Brevo SMTP credentials
 const brevSMTP = {
     host: "smtp-relay.brevo.com",
     port: 587, // The default port for Brevo SMTP
@@ -19,19 +18,29 @@ const brevSMTP = {
         pass: "1gROUpGWT6wz4bdZ",
     },
 };
-// Create a Nodemailer transporter
-const transporter = nodemailer.createTransport(brevSMTP);
 
-// Function to generate a random verification code
+const transporter = nodemailer.createTransport(brevSMTP);
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
 // Get all Users
 router.get("/getAllUsers", async (req, res) => {
     try {
+        let condition = {};
+        let search = req.query.search;
+
+        if (search) {
+            condition[Sequelize.Op.or] = [
+                { name: { [Sequelize.Op.like]: `%${search}%` } },
+                { email: { [Sequelize.Op.like]: `%${search}%` } }
+            ];
+        }
         const users = await User.findAll({
-            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete'], // Only fetch necessary attributes
+            where: condition,
+            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete', 'requestAsDriver', 'driverStatus'],
         });
+
         res.json(users);
     } catch (error) {
         console.error('Error fetching Users:', error);
@@ -94,8 +103,9 @@ router.post("/register", async (req, res) => {
     // Save the verification code in the database (you may need to add a new field for this)
     data.verificationCode = verificationCode;
 
-    // Set requestDelete to false for the new user
     data.requestDelete = false;
+    data.requestAsDriver = false;
+    data.driverStatus = false;
 
     // Create User
     let result = await User.create(data);
@@ -346,12 +356,63 @@ router.put("/requestDelete/:id", validateToken, async (req, res) => {
 
         user.requestDelete = true;
 
-        // Save the updated user
+        // Save the updated of user
         await user.save();
 
         res.json({ message: "Request for account deletion has been recorded." });
     } catch (error) {
         console.error('Error updating requestDelete status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.put("/requestAsDriver/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        let user = await User.findByPk(id);
+
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+
+        user.requestAsDriver = true;
+
+        // Save the updated status of user
+        await user.save();
+
+        res.json({ message: "Request for being a driver has been recorded." });
+    } catch (error) {
+        console.error('Error updating requestAsDriver status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.put("/setDriverStatus/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        let user = await User.findByPk(id);
+
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+
+        if (user.requestAsDriver && !user.driverStatus) { // Check for requestAsDriver and !driverStatus
+            user.requestAsDriver = false; // Set the requestAsDriver attribute to false
+            user.driverStatus = true;
+
+            // Save the updated status of user
+            await user.save();
+
+            res.json({ message: "User has been approved as a driver." });
+        } else {
+            res.status(400).json({ message: "User has not requested to be a driver or is already approved." });
+        }
+    } catch (error) {
+        console.error('Error updating requestAsDriver status:', error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import http from '../../http';
 import { useFormik } from 'formik';
@@ -22,7 +23,6 @@ function UpdateAnnouncement() {
     http.get(`/announcement/${id}`)
       .then((res) => {
         setAnnouncement(res.data);
-        console.log(res.data);
       });
   }, []);
 
@@ -44,6 +44,7 @@ function UpdateAnnouncement() {
       data.description = data.description.trim();
       http.put(`/announcement/${id}`, data)
         .then((res) => {
+          toast.success(`Update announcement ${announcement.id} successfully!`);
           setAnnouncement(res.data);
           navigate("/announcementPanel");
         });
@@ -61,6 +62,7 @@ function UpdateAnnouncement() {
   const delAnnouncement = () => {
     http.delete(`/announcement/${id}`)
       .then((res) => {
+        toast.success(`Deleted announcement ${announcement.id} successfully!`);
         console.log(res.data);
         navigate("/announcementPanel");
       });

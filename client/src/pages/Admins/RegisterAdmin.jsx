@@ -42,11 +42,12 @@ function RegisterAdmin() {
       data.isAdmin = true;
       http.post("/admin/registerAdmin", data)
         .then((res) => {
+          toast.success(`Admin has been registered!`);
           console.log(res.data);
           navigate("/loginAdmin");
         })
         .catch(function (err) {
-          toast.error(`${err.response.data.message}`);
+          toast.error(`${err.response.data.message}`, err);
         });
     }
   });

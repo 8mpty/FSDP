@@ -7,17 +7,32 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Poppins-Regular';
 }
 
+@font-face {
+    font-family: 'Poppins-Regular';
+    src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
+}
 
 .announcement-box {
     background-color: rgb(59, 159, 192);
-    border: 1px solid #ccc;
+    border: 5px solid rgb(25, 118, 210);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     min-width: fit-content;
+    color: white;
+}
+
+.antable th,
+.antable td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    font-size: medium;
+    font-family: Poppins-Regular;
 }
 
 .announcement-box h2 {
@@ -43,9 +58,13 @@
     background-color: #0056b3;
 }
 
-.edit-container{
+.edit-container {
     margin-top: 8;
     display: 'flex';
     flex-direction: 'column';
     align-items: 'center';
+}
+
+.tt {
+    font-family: 'Poppins-Regular';
 }
