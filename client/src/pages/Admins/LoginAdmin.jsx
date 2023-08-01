@@ -32,6 +32,7 @@ function LoginAdmin() {
       data.password = data.password.trim();
       http.post("/admin/loginadmin", data)
         .then((res) => {
+          toast.success("Admin logged in!!");
           localStorage.setItem("accessToken", res.data.accessToken);
           setAdmin(res.data.admin);
           navigate("/");
