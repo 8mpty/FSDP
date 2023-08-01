@@ -22,8 +22,6 @@ function AddBooking() {
             passby: "",
             notes: "",
 
-
-
         },
         validationSchema: yup.object().shape({
             name: yup.string().trim()
@@ -41,7 +39,7 @@ function AddBooking() {
             notes: yup.string().trim()
                 .min(3, 'Notes must be at least 3 characters')
                 .max(500, 'Notes must be at most 500 characters')
-                .required('Notes is required')
+                
 
 
         }),

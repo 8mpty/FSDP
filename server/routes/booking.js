@@ -53,6 +53,8 @@ router.get("/", async (req, res) => {
         include: { model: User, as: "user", attributes: ['name'] }
     });
     res.json(list);
+
+    
 });
 
 router.get("/:id", async (req, res) => {
