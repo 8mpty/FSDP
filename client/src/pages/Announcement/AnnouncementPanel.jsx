@@ -1,56 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Input, IconButton } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Box, Typography, Paper, Button, Input, IconButton, } from '@mui/material';
 import { AccessTime, Search, Clear } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import dayjs from "dayjs";
+import { AdminContext } from '../../contexts/AccountContext';
+import dayjs from 'dayjs';
 import global from '../../global';
-import http from "../../http";
+import http from '../../http';
+import { DataGrid, GridToolbarContainer, GridToolbarFilterButton, GridToolbarExport } from '@mui/x-data-grid';
 
+const columns = [
+    { field: 'id', headerName: 'ID', width: 100 },
+    { field: 'title', headerName: 'Title', width: 200 },
+    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'endDate', headerName: 'End Date', width: 150 },
+    { field: 'adminName', headerName: 'Created By', width: 150 },
+    {
+        field: 'edit',
+        headerName: 'Edit',
+        width: 100,
+        renderCell: (params) => {
+            const { adminId, id } = params.row;
+            const { admin } = useContext(AdminContext);
+            return adminId === admin.id ? (
+                <Link to={`/editAnnouncement/${id}`}>
+                    <Button variant="contained" color="secondary">
+                        Edit
+                    </Button>
+                </Link>
+            ) : null;
+        },
+    },
+];
 
 function AnnouncementPanel() {
-    const [search, setSearch] = useState('');
+    const { admin } = useContext(AdminContext);
     const [announcements, setAnnouncements] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
+    const [searchInput, setSearchInput] = useState('');
+    const [search, setSearch] = useState('');
 
     const onSearchChange = (e) => {
-        setSearch(e.target.value);
+        setSearchInput(e.target.value);
     };
+
     const getAllAnnouncements = () => {
         http.get('/announcement/getAllAnnouncements')
-            .then(response => {
+            .then((response) => {
                 setAnnouncements(response.data);
+                console.log(response.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetch announcements:', error);
             });
-    }
-    const searchAnnouncement = () => {
-        http.get(`/announcement/getAllAnnouncements?search=${search}`)
-            .then((res) => {
-                setAnnouncements(res.data);
-            });
     };
+
+    const searchAnnouncement = () => {
+        setSearch(searchInput);
+    };
+
     const onSearchKeyDown = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === 'Enter') {
             searchAnnouncement();
         }
     };
+
     const onClickSearch = () => {
         searchAnnouncement();
-    }
+    };
 
     const onClickClear = () => {
-        setSearch('');
+        setSearchInput('');
         getAllAnnouncements();
     };
 
     const handleNextPage = () => {
-        setCurrentPage(prevPage => prevPage + 1);
+        setCurrentPage((prevPage) => prevPage + 1);
     };
 
     const handlePreviousPage = () => {
-        setCurrentPage(prevPage => prevPage - 1);
+        setCurrentPage((prevPage) => prevPage - 1);
     };
 
     const renderTableData = (data) => {
@@ -67,13 +96,29 @@ function AnnouncementPanel() {
         getAllAnnouncements();
     }, []);
 
+    useEffect(() => {
+        const filteredAnnouncements = announcements.filter(
+            (announ) =>
+                announ.title.toLowerCase().includes(search.toLowerCase()) ||
+                announ.description.toLowerCase().includes(search.toLowerCase())
+        );
+        setRows(filteredAnnouncements);
+    }, [search, announcements]);
+
+    const [rows, setRows] = useState([]);
+
     return (
         <Box>
-            <Typography variant="h4" gutterBottom>Announcement Panel</Typography>
+            <Typography variant="h4" gutterBottom>
+                Announcement Panel
+            </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Input value={search} placeholder="Search"
+                <Input
+                    value={searchInput}
+                    placeholder="Search"
                     onChange={onSearchChange}
-                    onKeyDown={onSearchKeyDown} />
+                    onKeyDown={onSearchKeyDown}
+                />
                 <IconButton color="primary" onClick={onClickSearch}>
                     <Search />
                 </IconButton>
@@ -83,61 +128,64 @@ function AnnouncementPanel() {
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
                 <Link to="/addAnnouncement" style={{ textDecoration: 'none' }}>
-                    <Button variant="contained" color="primary">Add Announcement</Button>
+                    <Button variant="contained" color="primary">
+                        Add Announcement
+                    </Button>
                 </Link>
             </Box>
             <Box>
-                <Box>
-                    <TableContainer component={Paper}>
-                        <Table className="ridetable">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>Title</TableCell>
-                                    <TableCell>Description</TableCell>
-                                    <TableCell>End Date</TableCell>
-                                    <TableCell>Edit</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {renderTableData(announcements).map((announ) => (
-                                    <TableRow key={announ.id}>
-                                        <TableCell>{announ.id}</TableCell>
-                                        <TableCell>{announ.title}</TableCell>
-                                        <TableCell>{announ.description}</TableCell>
-                                        <TableCell>{dayjs(announ.endDate).format(global.datetimeFormat)}</TableCell>
-                                        <TableCell>
-                                            <Link to={`/editAnnouncement/${announ.id}`}>
-                                                <Button variant="contained" color="secondary">Edit</Button>
-                                            </Link>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    {announcements.length > itemsPerPage && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
-                            {currentPage > 1 && (
-                                <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }} >Previous</Link>
-                            )}
-                            {currentPage > 1 && currentPage < Math.ceil(announcements.length / itemsPerPage) && (
-                                <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
-                            )}
-                            {currentPage < Math.ceil(announcements.length / itemsPerPage) && (
-                                <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>Next</Link>
-                            )}
-                        </Box>
-                    )}
-                    {currentPage > 1 && (
-                        <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
-                            {`< ${currentPage} / ${getTotalPages(announcements.length, itemsPerPage)} >`}
-                        </Typography>
-                    )}
-                </Box>
+                <Paper>
+                    <DataGrid
+                        rows={rows.map((announ) => ({
+                            id: announ.id,
+                            title: announ.title,
+                            description: announ.description,
+                            endDate: dayjs(announ.endDate).format(global.datetimeFormat),
+                            adminName: announ.admin.name,
+                            adminId: announ.adminId,
+                        }))}
+                        columns={columns}
+                        pageSize={itemsPerPage}
+                        components={{
+                            Toolbar: CustomToolbar,
+                        }}
+                        autoHeight
+                    />
+                </Paper>
+                {rows.length > itemsPerPage && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                        {currentPage > 1 && (
+                            <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }}>
+                                Previous
+                            </Link>
+                        )}
+                        {currentPage > 1 && currentPage < Math.ceil(rows.length / itemsPerPage) && (
+                            <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
+                        )}
+                        {currentPage < Math.ceil(rows.length / itemsPerPage) && (
+                            <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>
+                                Next
+                            </Link>
+                        )}
+                    </Box>
+                )}
+                {currentPage > 1 && (
+                    <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
+                        {`< ${currentPage} / ${getTotalPages(rows.length, itemsPerPage)} >`}
+                    </Typography>
+                )}
             </Box>
         </Box>
-    )
+    );
 }
 
-export default AnnouncementPanel
+const CustomToolbar = () => {
+    return (
+        <GridToolbarContainer>
+            <GridToolbarFilterButton />
+            <GridToolbarExport />
+        </GridToolbarContainer>
+    );
+};
+
+export default AnnouncementPanel;

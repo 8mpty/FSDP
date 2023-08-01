@@ -27,12 +27,14 @@ router.post("/createAnnouncement", validateToken, async (req, res) => {
     data.adminId = req.admin.id;
 
     if (data.endDate) {
-        data.endDate = new Date(data.endDate);
+        const endDate = new Date(data.endDate);
+        const currentDate = new Date();
+        if (endDate < currentDate) {
+            return res.status(400).json({ error: "endDate should be after the current date" });
+        }
+        data.endDate = endDate;
     } else {
-        // For testing purposes, set endDate to yesterday's date
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        data.endDate = yesterday;
+        data.endDate = new Date();
     }
 
 

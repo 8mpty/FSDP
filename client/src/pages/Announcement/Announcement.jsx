@@ -4,11 +4,8 @@ import "../../Announcement.css";
 
 const Announcement = ({ announcement, onClose }) => {
     const [isVisible, setIsVisible] = useState(true);
-
-    // Function to handle the close button click
     const handleClose = () => {
         setIsVisible(false);
-        // Call the provided onClose callback to inform the parent component that this announcement is closed
         onClose(announcement.id);
     };
 

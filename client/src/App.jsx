@@ -46,6 +46,7 @@ import { AdminContext, UserContext } from "./contexts/AccountContext";
 function App() {
   const [admin, setAdmin] = useState(null);
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dropMenu, setdropMenu] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
@@ -54,6 +55,15 @@ function App() {
     setDisplayedAnnouncementIndex((prevIndex) => prevIndex + 1);
   };
 
+  const getAllAnnouncements = () => {
+    http.get("/announcement/getAllAnnouncements")
+      .then((response) => {
+        setAnnouncements(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -64,6 +74,7 @@ function App() {
         http
           .get("/admin/auth")
           .then((res) => {
+            setIsLoggedIn(true);
             setAdmin(res.data.admin);
           })
           .catch((error) => {
@@ -73,12 +84,15 @@ function App() {
         http
           .get("/user/auth")
           .then((res) => {
+            setIsLoggedIn(true);
             setUser(res.data.user);
           })
           .catch((error) => {
             console.log(error);
           });
       }
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -91,28 +105,20 @@ function App() {
   }, [admin, user]);
 
   useEffect(() => {
-    http.get("/announcement/getAllAnnouncements")
-      .then((response) => {
-        setAnnouncements(response.data);
-
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    getAllAnnouncements();
   }, []);
+
   useEffect(() => {
-    // Check if there are announcements to show and start the interval
     if (announcements.length > 0 && displayedAnnouncementIndex < announcements.length) {
       const interval = setInterval(() => {
-        closeAnnouncement(); // Close the current announcement
+        closeAnnouncement();
 
-        // Check if there are more announcements to show
         if (displayedAnnouncementIndex + 1 >= announcements.length) {
-          clearInterval(interval); // No more announcements, clear the interval
+          clearInterval(interval);
         }
       }, 2000);
 
-      return () => clearInterval(interval); // Clear the interval when the component unmounts
+      return () => clearInterval(interval);
     }
   }, [announcements, displayedAnnouncementIndex]);
 
@@ -121,7 +127,6 @@ function App() {
     window.location = "/";
     toast.success("Logout Successfull!!");
   };
-
 
   const handleMenuOpen = (event) => {
     setdropMenu(event.currentTarget);
@@ -202,7 +207,7 @@ function App() {
                   <Link to="/adminridehistory" className="tabs">
                     <Typography className="a">Ride Histories</Typography>
                   </Link>
-                  
+
                   <Link to="/rewards" className="tabs" >
                     <Typography>Rewards</Typography>
                   </Link>
@@ -210,23 +215,27 @@ function App() {
                   <Link to="/adminbookings" className="tabs">
                     <Typography style={{ fontFamily: "system-ui" }}>Admin Bookings</Typography>
                   </Link>
+
                   <Link to="/announcementPanel" className="tabs">
                     <Typography style={{ fontFamily: "system-ui" }}>Announcement Panel</Typography>
                   </Link>
+
                 </Toolbar>
               </Container>
             </AppBar>
           ) : null}
 
-          <Container>
+          {(admin === null || user !== null) && (
             <Box className="announcement-container">
               {announcements.length > 0 && displayedAnnouncementIndex < announcements.length && (
-                <Announcement key={announcements[displayedAnnouncementIndex].id} announcement={announcements[displayedAnnouncementIndex]}
+                <Announcement
+                  key={announcements[displayedAnnouncementIndex].id}
+                  announcement={announcements[displayedAnnouncementIndex]}
                   onClose={closeAnnouncement}
                 />
               )}
             </Box>
-          </Container>
+          )}
 
           <Container>
             <Routes>
@@ -280,6 +289,7 @@ function App() {
                   <Route path={"/rewards"} element={<Rewards />} />
                   <Route path={"/addreward"} element={<AddReward />} />
                   <Route path={"/editreward/:id"} element={<EditReward />} />
+
                 </>
               ) : null}
               {/* Common Routes Accessible By Anyone */}

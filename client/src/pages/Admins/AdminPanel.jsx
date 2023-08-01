@@ -255,7 +255,7 @@ function AdminPanel() {
                             </DialogTitle>
                             <DialogContent>
                               <DialogContentText>
-                                Are you sure you want to delete user account {admin.id}?
+                                Are you sure you want to delete admin account {admin.id}?
                               </DialogContentText>
                             </DialogContent>
                             <DialogActions>

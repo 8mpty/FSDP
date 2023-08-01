@@ -17,7 +17,7 @@ const deleteExpiredAnnouncements = async () => {
     await Announcement.destroy({
       where: {
         endDate: {
-          [Sequelize.Op.lte]: currentDate // Delete announcements with endDate less than or equal to the current date
+          [Sequelize.Op.lte]: currentDate
         }
       }
     });
@@ -27,12 +27,9 @@ const deleteExpiredAnnouncements = async () => {
 };
 app.use(async (req, res, next) => {
   try {
-    // Check if the request is for the announcements route
     if (req.originalUrl === '/announcement') {
-      // Delete expired announcements before serving the route
       await deleteExpiredAnnouncements();
     }
-    // Continue to the next middleware or route handler
     next();
   } catch (err) {
     console.error('Error while handling announcement route:', err);
@@ -40,19 +37,16 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Cron job to run the deleteExpiredAnnouncements function every day at midnight (00:00)
+// Will Run the deleteExpiredAnnouncements function every day at midnight (00:00)
 cron.schedule('0 0 * * *', async () => {
-  console.log('Running cron job: Deleting expired announcements...');
   await deleteExpiredAnnouncements();
 });
 
 app.get("/", async (req, res) => {
   try {
-    // Fetch all announcements
     const announcements = await Announcement.findAll({
       order: [['createdAt', 'DESC']],
     });
-
     res.json(announcements);
   } catch (err) {
     console.error(err);
@@ -127,6 +121,7 @@ app.use("/rewards", rewardsRoute);
 // Add the following function to create a default admin when the server starts
 async function initializeServer() {
   try {
+    await db.sequelize.sync();
     await createDefaultAdmin();
   } catch (error) {
     console.error('Error creating default admin:', error);
