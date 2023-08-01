@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import {AdminContext} from '../../contexts/AccountContext';
+import { AdminContext } from '../../contexts/AccountContext';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
 import { AccountCircle, AccessTime, Search, Clear, Edit, LocationOn, SpeakerNotes, Directions, PostAdd } from '@mui/icons-material';
@@ -100,7 +100,7 @@ function AdminBookings() {
             </Box>
 
             <Grid container spacing={0}>
-                <table style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>
+                <table style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", borderCollapse: "collapse", marginLeft: "auto", marginRight: "auto" }}>
                     <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>ID</th>
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Driver Name</th>
@@ -108,7 +108,7 @@ function AdminBookings() {
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Fare</th>
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Total Earning</th>
                         <th style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>Created At</th>
-                        
+
                         <th></th>
 
                     </tr>
@@ -118,19 +118,23 @@ function AdminBookings() {
                             return (
 
 
-                                <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" , textAlign:"center" }}>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px"}}>{adminbooking.id}</td>
-                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px"}}>{adminbooking.drivername}</td>
+                                <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", textAlign: "center" }} key={adminbooking.id} >
+                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.id}</td>
+                                    <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.drivername}</td>
                                     <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.driverposition}</td>
                                     <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.fare}</td>
                                     <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{adminbooking.totalearning}</td>
                                     <td style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px" }}>{dayjs(adminbooking.createdAt).format(global.datetimeFormat)}</td>
                                     <td>
-                                        <Link to={`/editadminbooking/${adminbooking.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
+                                        {
+                                            admin && admin.id === adminbooking.adminId && (
+                                                <Link to={`/editadminbooking/${adminbooking.id}`}>
+                                                    <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                        <Edit />
+                                                    </IconButton>
+                                                </Link>
+                                            )
+                                        }
                                     </td>
 
                                 </tr>

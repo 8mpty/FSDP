@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         driverposition: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false
         },
         fare: {
@@ -24,9 +24,9 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     AdminBooking.associate = (models) => {
-        AdminBooking.belongsTo(models.User, {
-            foreignKey: "userId",
-            as: 'user'
+        AdminBooking.belongsTo(models.Admin, {
+            foreignKey: "adminId",
+            as: 'admin'
         });
     };
 
