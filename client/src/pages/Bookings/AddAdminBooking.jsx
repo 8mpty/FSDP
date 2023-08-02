@@ -111,7 +111,7 @@ function AddAdminBooking() {
             <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
                 <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "450px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
                     <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
-                        <p style={{ fontFamily: "system-ui", fontSize: "15px", marginRight:"10px" }}>
+                        <p style={{ fontFamily: "system-ui", fontSize: "15px", marginRight: "10px" }}>
                             Enter additional information about bookings to increase efficiency for Admin needs
                         </p>
                     </p>
@@ -129,7 +129,7 @@ function AddAdminBooking() {
                             onChange={formik.handleChange}
                             error={formik.touched.drivername && Boolean(formik.errors.drivername)}
                             helperText={formik.touched.drivername && formik.errors.drivername}
-                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", marginBottom:"16px" }}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", marginBottom: "16px" }}
                         />
                         <Select
                             fullWidth
@@ -139,8 +139,15 @@ function AddAdminBooking() {
                             value={formik.values.driverposition}
                             onChange={formik.handleChange}
                             error={formik.touched.driverposition && Boolean(formik.errors.driverposition)}
-                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign:"left" }}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign: "left" }}
+                            displayEmpty
                         >
+
+                            <MenuItem value="" disabled>
+                                Driver Position
+                            </MenuItem>
+
+
                             {options.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                     {option.label}
