@@ -121,20 +121,18 @@ function AdminBookings() {
                                 <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", textAlign: "center" }} key={adminbooking.id} >
                                     <td   >{adminbooking.id}</td>
                                     <td   >{adminbooking.drivername}</td>
-                                    <td   >{adminbooking.driverposition}</td>
+                                    <td   >Class {adminbooking.driverposition}</td>
                                     <td   >{adminbooking.fare}</td>
                                     <td   >{adminbooking.totalearning}</td>
                                     <td   >{dayjs(adminbooking.createdAt).format(global.datetimeFormat)}</td>
                                     <td>
-                                        {
-                                            admin && admin.id === adminbooking.adminId && (
-                                                <Link to={`/editadminbooking/${adminbooking.id}`}>
-                                                    <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                        <Edit />
-                                                    </IconButton>
-                                                </Link>
-                                            )
-                                        }
+
+                                        <Link to={`/editadminbooking/${adminbooking.id}`}>
+                                            <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Link>
+
                                     </td>
 
                                 </tr>

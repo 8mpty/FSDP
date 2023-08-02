@@ -15,17 +15,17 @@ function AddAdminBooking() {
     const [imageFile, setImageFile] = useState(null);
 
     const options = [
-        { value: '1', label: 'class 1' },
-        { value: '2B', label: 'class 2B' },
-        { value: '2A', label: 'class 2A' },
-        { value: '2', label: 'class 2' },
-        { value: '3', label: 'class 3' },
-        { value: '3A', label: 'class 3A' },
-        { value: '3C', label: 'class 3C' },
-        { value: '3CA', label: 'class 3CA' },
-        { value: '4A', label: 'class 4A' },
-        { value: '4', label: 'class 4' },
-        { value: '5', label: 'class 5' }
+        { value: '1', label: 'Class 1' },
+        { value: '2B', label: 'Class 2B' },
+        { value: '2A', label: 'Class 2A' },
+        { value: '2', label: 'Class 2' },
+        { value: '3', label: 'Class 3' },
+        { value: '3A', label: 'Class 3A' },
+        { value: '3C', label: 'Class 3C' },
+        { value: '3CA', label: 'Class 3CA' },
+        { value: '4A', label: 'Class 4A' },
+        { value: '4', label: 'Class 4' },
+        { value: '5', label: 'Class 5' }
     ];
 
 
@@ -111,11 +111,8 @@ function AddAdminBooking() {
             <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
                 <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "450px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
                     <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
-                        <p style={{ fontFamily: "system-ui", paddingTop: "30px", fontSize: "15px" }}>
-                            Feeling Lazy?
-                        </p>
-                        <p style={{ fontFamily: "system-ui", fontSize: "15px" }}>
-                            Book a car ride that maximises comfort and speed today
+                        <p style={{ fontFamily: "system-ui", fontSize: "15px", marginRight:"10px" }}>
+                            Enter additional information about bookings to increase efficiency for Admin needs
                         </p>
                     </p>
                 </div>
