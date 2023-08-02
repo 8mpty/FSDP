@@ -10,6 +10,8 @@ const db = require('./models');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'));
 
 const deleteExpiredAnnouncements = async () => {
   const currentDate = new Date();
@@ -95,6 +97,8 @@ app.get("/ridehistory", validateToken, (req, res) => {
 // User Route
 const userRoute = require('./routes/user');
 app.use("/user", userRoute);
+const fileRoute = require('./routes/file');
+app.use("/file", fileRoute);
 
 // Admin Route
 const adminRoute = require('./routes/admin');

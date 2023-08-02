@@ -1,6 +1,6 @@
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import http from '../../http';
@@ -19,6 +19,7 @@ function EditReward() {
     http.get(`/rewards/${id}`).then((res) => {
       console.log(res.data);
       setRewards(res.data);
+      //setImageFile(res.data.imageFile);
     });
   }, []);
 
@@ -49,7 +50,7 @@ function EditReward() {
       data.Reward_Amount = data.Reward_Amount;
       http.put(`/rewards/${id}`, data)
         .then((res) => {
-          console.log("Putting Data",res.data);
+          console.log("Putting Data", res.data);
           navigate("/rewards");
         })
     },
@@ -77,44 +78,49 @@ function EditReward() {
         Edit Rewards
       </Typography>
       <Box component="form" onSubmit={formik.handleSubmit}>
-        <TextField
-          fullWidth margin="normal" autoComplete="off"
-          label="Reward_Name"
-          name="Reward_Name"
-          value={formik.values.Reward_Name}
-          onChange={formik.handleChange}
-          error={formik.touched.Reward_Name && Boolean(formik.errors.Reward_Name)}
-          helperText={formik.touched.Reward_Name && formik.errors.Reward_Name}
-        />
-        <TextField
-          fullWidth margin="normal" autoComplete="off"
-          multiline minRows={2}
-          label="Points_Required"
-          name="Points_Required"
-          value={formik.values.Points_Required}
-          onChange={formik.handleChange}
-          error={formik.touched.Points_Required && Boolean(formik.errors.Points_Required)}
-          helperText={formik.touched.Points_Required && formik.errors.Points_Required}
-        />
-        <TextField
-          fullWidth margin="normal" autoComplete="off"
-          multiline minRows={2}
-          label="Reward_Amount"
-          name="Reward_Amount"
-          value={formik.values.Reward_Amount}
-          onChange={formik.handleChange}
-          error={formik.touched.Reward_Amount && Boolean(formik.errors.Reward_Amount)}
-          helperText={formik.touched.Reward_Amount && formik.errors.Reward_Amount}
-        />
-        <Box sx={{ mt: 2 }}>
-          <Button variant="contained" type="submit">
-            Update
-          </Button>
-          <Button variant="contained" sx={{ ml: 2 }} color="error"
-            onClick={deleteReward}>
-            Delete
-          </Button>
-        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6} lg={8}>
+            <TextField
+              fullWidth margin="normal" autoComplete="off"
+              label="Reward_Name"
+              name="Reward_Name"
+              value={formik.values.Reward_Name}
+              onChange={formik.handleChange}
+              error={formik.touched.Reward_Name && Boolean(formik.errors.Reward_Name)}
+              helperText={formik.touched.Reward_Name && formik.errors.Reward_Name}
+            />
+            
+            <TextField
+              fullWidth margin="normal" autoComplete="off"
+              multiline minRows={2}
+              label="Points_Required"
+              name="Points_Required"
+              value={formik.values.Points_Required}
+              onChange={formik.handleChange}
+              error={formik.touched.Points_Required && Boolean(formik.errors.Points_Required)}
+              helperText={formik.touched.Points_Required && formik.errors.Points_Required}
+            />
+            <TextField
+              fullWidth margin="normal" autoComplete="off"
+              multiline minRows={2}
+              label="Reward_Amount"
+              name="Reward_Amount"
+              value={formik.values.Reward_Amount}
+              onChange={formik.handleChange}
+              error={formik.touched.Reward_Amount && Boolean(formik.errors.Reward_Amount)}
+              helperText={formik.touched.Reward_Amount && formik.errors.Reward_Amount}
+            />
+            <Box sx={{ mt: 2 }}>
+              <Button variant="contained" type="submit">
+                Update
+              </Button>
+              <Button variant="contained" sx={{ ml: 2 }} color="error"
+                onClick={deleteReward}>
+                Delete
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   )
