@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { PostAdd } from '@mui/icons-material';
 import { UserContext } from '../../contexts/AccountContext';
 
+
 function AddBooking() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
@@ -71,6 +72,7 @@ function AddBooking() {
                     http.post('/ridehistory', rideHistoryData)
                         .then((rideHistoryRes) => {
                             console.log('Ride history entry created successfully:', rideHistoryRes.data);
+                        
                         })
                         .catch((error) => {
                             console.log('Error creating ride history entry:', error);

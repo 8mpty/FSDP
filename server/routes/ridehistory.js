@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { User, ridehistory, Sequelize } = require("../models");
 const yup = require("yup");
-const { validateToken } = require('../middlewares/auth');
+const { validateToken } = require("../middlewares/auth");
+const nodemailer = require("nodemailer"); // Import nodemailer module
 
-router.post("/",validateToken, async (req, res) => {
+
+router.post("/", validateToken, async (req, res) => {
   let data = req.body;
   // Validate request body
   let validationSchema = yup.object().shape({
@@ -22,7 +24,7 @@ router.post("/",validateToken, async (req, res) => {
   }
   data.userId = req.user.id;
   let result = await ridehistory.create(data);
-  
+
   res.json(result);
 });
 
@@ -38,7 +40,7 @@ router.get("/", validateToken, async (req, res) => {
   }
 
   // Check if the authenticated user is an admin
-  const isAdmin = req.user.isAdmin; 
+  const isAdmin = req.user.isAdmin;
 
   if (!isAdmin) {
     // If it's not an admin, apply the filtering by user id
@@ -49,12 +51,14 @@ router.get("/", validateToken, async (req, res) => {
     let list = await ridehistory.findAll({
       order: [["createdAt", "DESC"]],
       where: condition,
-      include: { model: User, as: "user", attributes: ['name'] }
+      include: { model: User, as: "user", attributes: ["name"] },
     });
     res.json(list);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "An error occurred while fetching ride history" });
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching ride history" });
   }
 });
 
@@ -122,5 +126,18 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
+const brevSMTP = {
+  host: "smtp-relay.brevo.com",
+  port: 587, // The default port for Brevo SMTP
+  secure: false,
+  auth: {
+    user: "gabrielquek5@gmail.com",
+    pass: "1gROUpGWT6wz4bdZ",
+  },
+};
+
+const transporter = nodemailer.createTransport(brevSMTP);
+
 
 module.exports = router;
