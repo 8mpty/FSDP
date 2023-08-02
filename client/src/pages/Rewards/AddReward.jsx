@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AspectRatio from '@mui/joy/AspectRatio';
+import '../../Profile.css'
 
 function AddReward() {
     const navigate = useNavigate();
@@ -91,67 +92,58 @@ function AddReward() {
             <Typography variant="h5" sx={{ my: 2 }}>
                 Add Reward
             </Typography>
-            <Box component="form" onSubmit={formik.handleSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={6} lg={8}>
-                        <TextField
-                            fullWidth margin="normal" autoComplete="off"
-                            label="Reward Name"
-                            name="Reward_Name"
-                            value={formik.values.Reward_Name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.Reward_Name && Boolean(formik.errors.Reward_Name)}
-                            helperText={formik.touched.Reward_Name && formik.errors.Reward_Name}
-                        />
-                        <Typography variant="h6" sx={{ my: 1 }}>
-                            Upload Image
-                        </Typography>
+            <Box className="add-reward" component="form" onSubmit={formik.handleSubmit}>
+                <TextField
+                    fullWidth margin="normal" autoComplete="off"
+                    label="Reward Name"
+                    name="Reward_Name"
+                    value={formik.values.Reward_Name}
+                    onChange={formik.handleChange}
+                    error={formik.touched.Reward_Name && Boolean(formik.errors.Reward_Name)}
+                    helperText={formik.touched.Reward_Name && formik.errors.Reward_Name}
+                />
+                <Typography variant="h6" sx={{ my: 1 }}>Upload Image</Typography>
 
-                        <Box sx={{ textAlign: 'center', mt: 2 }} >
-                            <Button variant="contained" component="label">
-                                Upload Image
-                                <input hidden accept="image/*" multiple type="file"
-                                    onChange={onFileChange} />
-                            </Button>
-                            {
-                                imageFile && (
-                                    <AspectRatio sx={{ mt: 2 }}>
-                                        <Box component="img" alt="rewards"
-                                            src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
-                                        </Box>
-                                    </AspectRatio>
-                                )
-                            }
-                        </Box>
-                        <Typography variant="h6" sx={{ my: 1 }}>
-                            Points Required
-                        </Typography>
-                        <TextField
-                            fullWidth margin="normal" autoComplete="off"
-                            multiline minRows={2}
-                            label="Points Required"
-                            name="Points_Required"
-                            value={formik.values.Points_Required}
-                            onChange={formik.handleChange}
-                            error={formik.touched.Points_Required && Boolean(formik.errors.Points_Required)}
-                            helperText={formik.touched.Points_Required && formik.errors.Points_Required}
-                        />
-                        <Typography variant="h6" sx={{ my: 1 }}>
-                            Reward amount
-                        </Typography>
-                        <TextField
-                            fullWidth margin="normal" autoComplete="off"
-                            multiline minRows={2}
-                            label="Reward Amount"
-                            name="Reward_Amount"
-                            value={formik.values.Reward_Amount}
-                            onChange={formik.handleChange}
-                            error={formik.touched.Reward_Amount && Boolean(formik.errors.Reward_Amount)}
-                            helperText={formik.touched.Reward_Amount && formik.errors.Reward_Amount}
-                        />
-                    </Grid>
-
-                </Grid>
+                <Button variant="contained" component="label">
+                    Upload Image
+                    <input hidden accept="image/*" multiple type="file"
+                        onChange={onFileChange} />
+                </Button>
+                {
+                    imageFile && (
+                        <AspectRatio sx={{ mt: 2 }}>
+                            <Box component="img" alt="rewards"
+                                src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
+                            </Box>
+                        </AspectRatio>
+                    )
+                }
+                <Typography variant="h6" sx={{ my: 1 }}>
+                    Points Required
+                </Typography>
+                <TextField
+                    fullWidth margin="normal" autoComplete="off"
+                    multiline minRows={2}
+                    label="Points Required"
+                    name="Points_Required"
+                    value={formik.values.Points_Required}
+                    onChange={formik.handleChange}
+                    error={formik.touched.Points_Required && Boolean(formik.errors.Points_Required)}
+                    helperText={formik.touched.Points_Required && formik.errors.Points_Required}
+                />
+                <Typography variant="h6" sx={{ my: 1 }}>
+                    Reward amount
+                </Typography>
+                <TextField
+                    fullWidth margin="normal" autoComplete="off"
+                    multiline minRows={2}
+                    label="Reward Amount"
+                    name="Reward_Amount"
+                    value={formik.values.Reward_Amount}
+                    onChange={formik.handleChange}
+                    error={formik.touched.Reward_Amount && Boolean(formik.errors.Reward_Amount)}
+                    helperText={formik.touched.Reward_Amount && formik.errors.Reward_Amount}
+                />
                 <Box sx={{ mt: 2 }}>
                     <Button variant="contained" type="submit">
                         Add

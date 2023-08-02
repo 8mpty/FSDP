@@ -1,8 +1,21 @@
 @font-face {
-    font-family: 'Poppins-Regular';
-    src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
-  }
+  font-family: 'Poppins-Regular';
+  src: local('Poppins-Regular'), url(./fonts/Poppins-Regular.ttf) format('truetype');
+}
 
 .dashboard p {
-    font-family: 'Poppins-Regular';
+  font-family: 'Poppins-Regular';
+}
+
+.recharts-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.graph-con {
+  display: inline-block;
+  border: 5px solid rgb(25, 118, 210);
+  border-radius: 50px;
+  box-shadow: 5px 5px rgb(25, 118, 210);
+  padding-right: 50px;
 }

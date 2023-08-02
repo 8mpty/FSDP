@@ -42,11 +42,31 @@
     position: absolute;
     bottom: 20px;
     right: 20px;
-
     border: 2px solid white;
     border-radius: 20px;
 }
 
 .admin-link {
     text-decoration: none;
+}
+
+.login-con,
+.regis-con,
+.login-admin,
+.forget-con-user,
+.forget-con-admin, .admin-panel {
+    background: rgb(250, 250, 250);
+    padding: 50px;
+    border: 5px solid rgb(25, 118, 210);
+    border-radius: 20px;
+    width: 350px;
+}
+
+.add-reward, .edit-reward {
+    padding: 50px;
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+    border: 5px solid rgb(25, 118, 210);
+    border-radius: 20px;
 }

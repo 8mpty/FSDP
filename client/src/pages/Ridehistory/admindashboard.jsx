@@ -3,16 +3,16 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'r
 import http from "../../http";
 import { format } from "date-fns";
 import {
-    Box,
-    Typography,
-    Grid,
-    Card,
-    CardContent,
-    IconButton,
-  } from "@mui/material";
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  IconButton,
+} from "@mui/material";
 import "../../dashboard.css"
 
-  
+
 function Admindashboard() {
   const [ridehistoryList, setRidehistoryList] = useState([]);
   const isAdmin = true; // Set this to true if the user is an admin, otherwise set it to false
@@ -61,17 +61,17 @@ function Admindashboard() {
 
   return (
     <Box className='dashboard'>
-    <Typography variant="h4" sx={{fontFamily:"poppins-regular"}}>Ride history entries made per day</Typography>
-    <Box className='graph' sx={{display:"flex", justifyContent:"center"}}>
-    <LineChart width={600} height={400} data={ridehistoryList}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Line type="monotone" dataKey="Rides" stroke="#8884d8" />
-    </LineChart>
-    </Box>
+      <Typography variant="h4" sx={{ fontFamily: "poppins-regular" }}>Ride history entries made per day</Typography>
+      <Box className='graph-con'>
+        <LineChart width={600} height={400} data={ridehistoryList}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="Rides" stroke="#8884d8" />
+        </LineChart>
+      </Box>
     </Box>
   );
 }

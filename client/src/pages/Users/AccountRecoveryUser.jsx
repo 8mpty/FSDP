@@ -54,7 +54,7 @@ function AccountRecovery() {
         Account Recovery
       </Typography>
 
-      <Box component="form" sx={{ maxWidth: "500px" }} onSubmit={formik.handleSubmit}>
+      <Box className="forget-con-user" component="form" sx={{ maxWidth: "500px" }} onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth
           margin="normal"
