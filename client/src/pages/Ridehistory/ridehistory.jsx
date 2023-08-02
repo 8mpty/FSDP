@@ -32,6 +32,11 @@ function Ridehistory() {
     return ridehistory.role === userRole;
   });
 
+  const sortedRideHistory = filteredRideHistory.slice().sort((a, b) => {
+    // Sort by createdAt in descending order (most recent first)
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
   return (
     <Box className='history-page'>
       <SplitButton />
@@ -41,8 +46,8 @@ function Ridehistory() {
       <Box className="history-container">
         
         
-        {filteredRideHistory.length > 0 ? (
-          filteredRideHistory.map((ridehistory) => (
+        {sortedRideHistory.length > 0 ? (
+          sortedRideHistory.map((ridehistory) => (
             <Card key={ridehistory.id} sx={{ marginBottom: 2 }}>
               <CardContent>
                 <Box
