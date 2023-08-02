@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, Link, IconButton } from '@mui/material';
+import PasswordIcon from '@mui/icons-material/Password';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { AdminContext } from '../../contexts/AccountContext';
@@ -43,12 +44,12 @@ function LoginAdmin() {
     }
   });
   return (
-    <Box sx={{marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      
-      <ToastContainer position="top-right" autoClose={3000} />
-      <Typography variant="h5" sx={{ my: 2 }}> Login </Typography>
+    <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-      <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >
+      <ToastContainer position="top-right" autoClose={3000} />
+      <Typography variant="h5" sx={{ my: 2 }}> Admin Login </Typography>
+
+      <Box className="login-admin" component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >
         <TextField
           fullWidth margin="normal" autoComplete="off"
           label="Email"
@@ -67,6 +68,11 @@ function LoginAdmin() {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
+
+        <Box>
+          <Link to="/accountRecoveryAdmin"><IconButton><PasswordIcon /></IconButton></Link>
+        </Box>
+
         <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
           Login
         </Button>

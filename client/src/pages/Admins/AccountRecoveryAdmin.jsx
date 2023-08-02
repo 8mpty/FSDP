@@ -50,10 +50,10 @@ function AccountRecovery() {
   return (
     <Box sx={{ marginTop: 8, display: "flex", flexDirection: "column", alignItems: "center" }}>
       <Typography variant="h5" sx={{ my: 2 }}>
-        Account Recovery
+        Admin Account Recovery
       </Typography>
       <ToastContainer/>
-      <Box component="form" sx={{ maxWidth: "500px" }} onSubmit={formik.handleSubmit}>
+      <Box className="forget-con-admin" component="form" sx={{ maxWidth: "500px" }} onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth
           margin="normal"

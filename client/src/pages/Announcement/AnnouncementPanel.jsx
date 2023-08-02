@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Box, Typography, Paper, Button, Input, IconButton, } from '@mui/material';
-import { AccessTime, Search, Clear } from '@mui/icons-material';
+import { Search, Clear, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { AdminContext } from '../../contexts/AccountContext';
 import dayjs from 'dayjs';
@@ -23,9 +23,9 @@ const columns = [
             const { admin } = useContext(AdminContext);
             return adminId === admin.id ? (
                 <Link to={`/editAnnouncement/${id}`}>
-                    <Button variant="contained" color="secondary">
-                        Edit
-                    </Button>
+                    <IconButton color="primary">
+                        <Edit />
+                    </IconButton>
                 </Link>
             ) : null;
         },

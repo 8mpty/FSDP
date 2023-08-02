@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import { AccessTime, Search, Clear } from '@mui/icons-material';
+import { Search, Clear, Edit, Delete } from '@mui/icons-material';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -204,7 +205,7 @@ function AdminPanel() {
   return (
     <Box>
 
-      <Typography variant="h4" gutterBottom>AdminPanel</Typography>
+      <Typography variant="h4" gutterBottom>Admin Panel</Typography>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 2 }}>
         <Link to="/registerAdmin" style={{ textDecoration: 'none' }}>
           <Button variant="contained" color="primary">Add Admin</Button>
@@ -248,7 +249,7 @@ function AdminPanel() {
                     <TableCell>
                       {admin.email !== "admin@admin.com" && (
                         <Box>
-                          <Button variant="contained" color="secondary" onClick={handleOpenAdmin}>Delete</Button>
+                          <IconButton color="error" onClick={handleOpenAdmin}><Delete /></IconButton>
                           <Dialog open={openDelAdmin} onClose={handleCloseUser}>
                             <DialogTitle>
                               Delete Account
@@ -298,6 +299,11 @@ function AdminPanel() {
         </Box>
       ) : (
         <Box>
+          <Box style={{ margin: '10px' }}>
+            <Link to="/usercreationdashboard" style={{ textDecoration: 'none' }}>
+              <Button variant="contained" color="primary" margin="50px">User Stats</Button>
+            </Link>
+          </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Input value={search} placeholder="Search Users"
               onChange={onSearchChange}
@@ -334,7 +340,7 @@ function AdminPanel() {
                     <TableCell>
                       {user.requestDelete && (
                         <Box>
-                          <Button variant="contained" color="secondary" onClick={handleOpenUser}>Delete</Button>
+                          <IconButton color="error" onClick={handleOpenUser}><Delete /></IconButton>
                           <Dialog open={openDelUser} onClose={handleCloseUser}>
                             <DialogTitle>
                               Delete Account
@@ -361,7 +367,7 @@ function AdminPanel() {
                     <TableCell>
                       {user.requestAsDriver && !user.driverStatus && (
                         <Box>
-                          <Button variant="contained" color="primary" onClick={handleOpenDriver}>Approve</Button>
+                          <IconButton color="secondary" onClick={handleOpenDriver}><DriveEtaIcon /></IconButton>
                           <Dialog open={openDriver} onClose={handleCloseDriver}>
                             <DialogTitle>
                               Approve Driver Request

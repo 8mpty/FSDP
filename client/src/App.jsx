@@ -1,6 +1,7 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import { Container, AppBar, Toolbar, Typography, Box, Button, Menu, MenuItem } from "@mui/material";
+import { Container, AppBar, Toolbar, Typography, Box, Button, Menu, MenuItem, IconButton } from "@mui/material";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +11,7 @@ import LoginAdmin from "./pages/Admins/LoginAdmin";
 import ProfileAdmin from "./pages/Admins/ProfileAdmin";
 import AccountRecoveryAdmin from "./pages/Admins/AccountRecoveryAdmin";
 import AdminPanel from "./pages/Admins/AdminPanel";
+import UserCreationDashboard from "./pages/Admins/UserCreationDashboard";
 
 import RegisterUser from "./pages/Users/RegisterUser";
 import LoginUser from "./pages/Users/LoginUser";
@@ -43,6 +45,7 @@ import EditReward from './pages/Rewards/EditReward';
 import http from "./http";
 
 import { AdminContext, UserContext } from "./contexts/AccountContext";
+import { AllOut } from "@mui/icons-material";
 
 function App() {
   const [admin, setAdmin] = useState(null);
@@ -174,9 +177,7 @@ function App() {
                   </>
                 ) : admin ? (
                   <>
-                    <Link to="/adminPanel">
-                      <Typography className="a">Admin Panel</Typography>
-                    </Link>
+                    <Link to="/adminPanel"><IconButton><AdminPanelSettingsIcon /></IconButton></Link>
                     <Button onClick={handleMenuOpen}>
                       <Typography className="a">Admin {admin.id}</Typography>
                     </Button>
@@ -282,7 +283,7 @@ function App() {
                   <Route path={"/adminridehistory/:id"} component={<Adminridehistory />} />
                   <Route path={"/deleteridehistory/:id"} element={<Deleteridehistory />} />
                   <Route path={"/admindashboard"} element={<Admindashboard />} />
-                  
+
                   {/* Admin Booking Stuff */}
                   <Route path={"/adminbookings"} element={<AdminBookings />} />
 
@@ -295,6 +296,8 @@ function App() {
                   <Route path={"/rewards"} element={<Rewards />} />
                   <Route path={"/addreward"} element={<AddReward />} />
                   <Route path={"/editreward/:id"} element={<EditReward />} />
+
+                  <Route path={"/userCreationDashboard"} element={<UserCreationDashboard />} />
 
                 </>
               ) : null}

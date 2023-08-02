@@ -1,7 +1,8 @@
 import React, { useContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { UserContext } from '../../contexts/AccountContext';
@@ -54,7 +55,7 @@ function LoginUser() {
       <Typography variant="h5" sx={{ my: 2 }}>
         Login
       </Typography>
-      <Box component="form" sx={{ maxWidth: '500px' }}
+      <Box component="form" className="login-con" sx={{ maxWidth: '500px' }}
         onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth margin="normal" autoComplete="off"
@@ -79,12 +80,12 @@ function LoginUser() {
           <Link to="/accountRecoveryUser" className='for-pass'>Forgot Password</Link>
         </Box>
 
-        <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
+        <Button style={{ width: "100px" }} variant="contained" sx={{ mt: 2 }} type="submit">
           Login
         </Button>
 
         <Box className='hyper-links admins'>
-          <Link to="/loginAdmin" className='admin-link'>For Admins</Link>
+          <Link to="/loginAdmin" className='admin-link'><IconButton><SupervisorAccountIcon /></IconButton></Link>
         </Box>
       </Box>
     </Box>
