@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
         Reward_Amount: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        imageFile: {
+            type: DataTypes.STRING
         }
     });
     return Rewards;

@@ -8,6 +8,7 @@ import { AccessTime, Search, Clear, Edit } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
 import global from '../../global';
+import AspectRatio from '@mui/joy/AspectRatio';
 
 function Rewards() {
     const [rewardList, setRewardList] = useState([]);
@@ -82,6 +83,16 @@ function Rewards() {
                         return (
                             <Grid item xs={12} md={6} lg={4} key={reward.id}>
                                 <Card>
+                                    {
+                                        reward.imageFile && (
+                                            <AspectRatio>
+                                                <Box component="img"
+                                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${reward.imageFile}`}
+                                                    alt="reward">
+                                                </Box>
+                                            </AspectRatio>
+                                        )
+                                    }
                                     <CardContent>
                                         <Box sx={{ display: 'flex', mb: 1 }}>
                                             <Typography variant="h6" sx={{ flexGrow: 1 }}>
