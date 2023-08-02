@@ -116,7 +116,7 @@ function AddReward() {
                             {
                                 imageFile && (
                                     <AspectRatio sx={{ mt: 2 }}>
-                                        <Box component="img" alt="tutorial"
+                                        <Box component="img" alt="rewards"
                                             src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
                                         </Box>
                                     </AspectRatio>
