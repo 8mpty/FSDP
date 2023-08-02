@@ -21,6 +21,7 @@ import Adminridehistory from "./pages/Ridehistory/adminridehistory";
 import Editridehistory from "./pages/Ridehistory/editridehistory";
 import Deleteridehistory from "./pages/Ridehistory/deleteridehistory";
 import Drivehistory from "./pages/Ridehistory/drivehistory";
+import Admindashboard from "./pages/Ridehistory/admindashboard";
 
 import Bookings from './pages/Bookings/Bookings';
 import AdminBookings from './pages/Bookings/AdminBookings';
@@ -208,6 +209,11 @@ function App() {
                     <Typography className="a">Ride Histories</Typography>
                   </Link>
 
+                  <Link to="/admindashboard" className="tabs">
+                    <Typography className="a">Dashboard</Typography>
+                  </Link>
+
+
                   <Link to="/rewards" className="tabs" >
                     <Typography>Rewards</Typography>
                   </Link>
@@ -274,9 +280,9 @@ function App() {
                   {/* Admin Ride History Stuff */}
                   <Route path={"/adminridehistory"} element={<Adminridehistory />} />
                   <Route path={"/adminridehistory/:id"} component={<Adminridehistory />} />
-
                   <Route path={"/deleteridehistory/:id"} element={<Deleteridehistory />} />
-
+                  <Route path={"/admindashboard"} element={<Admindashboard />} />
+                  
                   {/* Admin Booking Stuff */}
                   <Route path={"/adminbookings"} element={<AdminBookings />} />
 
