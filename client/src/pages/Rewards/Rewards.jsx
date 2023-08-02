@@ -112,10 +112,10 @@ function Rewards() {
                                             </Typography>
                                         </Box>
                                         <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                                            {reward.Points_Required}
+                                            Points Required: {reward.Points_Required}
                                         </Typography>
                                         <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                                            {reward.Reward_Amount}
+                                            Reward Amount: {reward.Reward_Amount}
                                         </Typography>
                                     </CardContent>
                                 </Card>
