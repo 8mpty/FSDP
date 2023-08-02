@@ -39,7 +39,7 @@ function Admindashboard() {
         // Convert the bookingCountByDay object to an array of objects with name (day) and Day (booking count) properties
         const formattedData = Object.keys(bookingCountByDay).map((day) => ({
           name: `Day ${day}`, // Format the day label as "Day YYYY-MM-DD"
-          Day: bookingCountByDay[day], // Number of bookings for the day
+          Rides: bookingCountByDay[day], // Number of bookings for the day
         }));
 
         setRidehistoryList(formattedData);
@@ -69,7 +69,7 @@ function Admindashboard() {
       <YAxis />
       <Tooltip />
       <Legend />
-      <Line type="monotone" dataKey="Day" stroke="#8884d8" />
+      <Line type="monotone" dataKey="Rides" stroke="#8884d8" />
     </LineChart>
     </Box>
     </Box>
