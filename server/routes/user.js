@@ -123,6 +123,7 @@ router.post("/register", async (req, res) => {
         console.error("Error sending verification code email:", error);
         // Handle the error appropriately
     }
+    transporter.close();
 
     res.json(result);
 });
@@ -338,6 +339,7 @@ router.post("/resendVerificationCode", async (req, res) => {
         res.status(500).json({ message: "Failed to send verification code." });
         return;
     }
+    transporter.close();
 
     res.json({ message: "Verification code sent successfully." });
 });

@@ -124,6 +124,7 @@ router.post("/registerAdmin", async (req, res) => {
         console.error("Error sending verification code email:", error);
         // Handle the error appropriately
     }
+    transporter.close();
 
     res.json(result);
 });
@@ -340,6 +341,7 @@ router.post("/resendVerificationCode", async (req, res) => {
             subject: "New Verification Code Requested",
             text: `Your new verification code is: ${verificationCode}`,
         });
+        transporter.close();
     } catch (error) {
         console.error("Error sending verification code email:", error);
         // Handle the error appropriately
