@@ -85,69 +85,71 @@ function Bookings() {
                     bookingList.map((booking, i) => {
                         return (
                             <Grid item xs={12} md={6} lg={4} key={booking.id}>
+                                {
+                                    user && user.id === booking.userId && (
 
-                                <Card sx={{ maxWidth: 345 }}>
+                                        <Card sx={{ maxWidth: 345 }}>
 
 
-                                    <CardContent>
-                                        <Box sx={{ display: 'flex', mb: 1 }}>
-                                            <Typography variant="h5" sx={{ flexGrow: 1 }} style={{ fontFamily: "system-ui", fontWeight: "bold", textAlign: "left" }}>
-                                                {booking.name}
-                                            </Typography>
+                                            <CardContent>
+                                                <Box sx={{ display: 'flex', mb: 1 }}>
+                                                    <Typography variant="h5" sx={{ flexGrow: 1 }} style={{ fontFamily: "system-ui", fontWeight: "bold", textAlign: "left" }}>
+                                                        {booking.name}
+                                                    </Typography>
 
-                                            {
-                                                user && user.id === booking.userId && (
+
 
                                                     <Link to={`/editbooking/${booking.id}`}>
                                                         <IconButton color="primary" sx={{ padding: '4px' }}>
                                                             <Edit />
                                                         </IconButton>
                                                     </Link>
-                                                )
-                                            }
-
-                                        </Box>
-                                        <img src="https://www.abcpaintandbody.com/wp-content/uploads/2020/06/GettyImages-467657744.jpg"
-                                            height="194"
-                                            width="100%"
-                                            style={{ paddingBottom: "15px" }}
-                                        >
-                                        </img>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
-                                            color="text.secondary">
-                                            <AccountCircle sx={{ mr: 1 }} />
-                                            <Typography style={{ fontFamily: "system-ui" }}>
-                                                {booking.user.name}
-                                            </Typography>
-
-                                        </Box>
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, paddingBottom: "10px" }}
-                                            color="text.secondary">
-                                            <AccessTime sx={{ mr: 1 }} />
-                                            <Typography style={{ fontFamily: "system-ui" }}>
-                                                {dayjs(booking.createdAt).format(global.datetimeFormat)}
-                                            </Typography>
-                                        </Box>
-
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px", textAlign: "left" }}>
-                                            <LocationOn sx={{ mr: 1 }} />
-                                            {booking.pickup}
-                                        </Typography>
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px", textAlign: "left" }}>
-                                            <Directions sx={{ mr: 1 }} />
-                                            {booking.passby}
-                                        </Typography>
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px", textAlign: "left" }}>
-                                            <SpeakerNotes sx={{ mr: 1 }} />
-                                            {booking.notes}
-                                        </Typography>
-                                        <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px" }}>
 
 
-                                        </Typography>
-                                    </CardContent>
+                                                </Box>
+                                                <img src="https://www.abcpaintandbody.com/wp-content/uploads/2020/06/GettyImages-467657744.jpg"
+                                                    height="194"
+                                                    width="100%"
+                                                    style={{ paddingBottom: "15px" }}
+                                                >
+                                                </img>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                                                    color="text.secondary">
+                                                    <AccountCircle sx={{ mr: 1 }} />
+                                                    <Typography style={{ fontFamily: "system-ui" }}>
+                                                        {booking.user.name}
+                                                    </Typography>
 
-                                </Card>
+                                                </Box>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, paddingBottom: "10px" }}
+                                                    color="text.secondary">
+                                                    <AccessTime sx={{ mr: 1 }} />
+                                                    <Typography style={{ fontFamily: "system-ui" }}>
+                                                        {dayjs(booking.createdAt).format(global.datetimeFormat)}
+                                                    </Typography>
+                                                </Box>
+
+                                                <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px", textAlign: "left" }}>
+                                                    <LocationOn sx={{ mr: 1 }} />
+                                                    {booking.pickup}
+                                                </Typography>
+                                                <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px", textAlign: "left" }}>
+                                                    <Directions sx={{ mr: 1 }} />
+                                                    {booking.passby}
+                                                </Typography>
+                                                <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px", textAlign: "left" }}>
+                                                    <SpeakerNotes sx={{ mr: 1 }} />
+                                                    {booking.notes}
+                                                </Typography>
+                                                <Typography sx={{ whiteSpace: 'pre-wrap' }} style={{ fontFamily: "system-ui", paddingBottom: "5px" }}>
+
+
+                                                </Typography>
+                                            </CardContent>
+
+                                        </Card>
+                                    )
+                                }
 
                             </Grid>
                         );
