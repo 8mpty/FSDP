@@ -42,6 +42,7 @@ import Rewards from './pages/Rewards/Rewards';
 import AddReward from './pages/Rewards/AddReward';
 import EditReward from './pages/Rewards/EditReward';
 
+import NotFound from "./pages/NotFound";
 
 import http from "./http";
 
@@ -55,6 +56,38 @@ function App() {
   const [dropMenu, setdropMenu] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
+
+  const userRoutes = [
+    { path: "/profile", component: <ProfileUser /> },
+    { path: "/ridehistory", component: <Ridehistory /> },
+    { path: "/ridehistory/:id", component: <Ridehistory /> },
+    { path: "/drivehistory", component: <Drivehistory /> },
+    { path: "/drivehistory/:id", component: <Drivehistory /> },
+    { path: "/editridehistory/:id", component: <Editridehistory /> },
+    { path: "/addbooking", component: <AddBooking /> },
+    { path: "/editbooking/:id", component: <EditBooking /> },
+    { path: "/bookings", component: <Bookings /> },
+  ];
+
+  const adminRoutes = [
+    { path: "/profileAdmin", component: <ProfileAdmin /> },
+    { path: "/registerAdmin", component: <RegisterAdmin /> },
+    { path: "/addadminbooking", component: <AddAdminBooking /> },
+    { path: "/editadminbooking/:id", component: <EditAdminBooking /> },
+    { path: "/adminPanel", component: <AdminPanel /> },
+    { path: "/adminridehistory", component: <Adminridehistory /> },
+    { path: "/adminridehistory/:id", component: <Adminridehistory /> },
+    { path: "/deleteridehistory/:id", component: <Deleteridehistory /> },
+    { path: "/admindashboard", component: <Admindashboard /> },
+    { path: "/adminbookings", component: <AdminBookings /> },
+    { path: "/editAnnouncement/:id", component: <UpdateAnnouncement /> },
+    { path: "/announcementPanel", component: <AnnouncementPanel /> },
+    { path: "/addAnnouncement", component: <AddAnnouncement /> },
+    { path: "/rewards", component: <Rewards /> },
+    { path: "/addreward", component: <AddReward /> },
+    { path: "/editreward/:id", component: <EditReward /> },
+    { path: "/userCreationDashboard", component: <UserCreationDashboard /> },
+  ];
 
   const closeAnnouncement = () => {
     setDisplayedAnnouncementIndex((prevIndex) => prevIndex + 1);
@@ -215,7 +248,6 @@ function App() {
                     <Typography className="a">Dashboard</Typography>
                   </Link>
 
-
                   <Link to="/rewards" className="tabs" >
                     <Typography>Rewards</Typography>
                   </Link>
@@ -247,62 +279,8 @@ function App() {
 
           <Container>
             <Routes>
-              <Route path={"/"} />
-              {/* User Stuff */}
-              {user ? (
-                <>
-                  <Route path={"/ridehistory"} element={<Ridehistory />} />
-                  <Route path={"/profile"} element={<ProfileUser />} />
-
-                  {/* User Ride History Stuff */}
-                  <Route path={"/ridehistory"} element={<Ridehistory />} />
-                  <Route path={"/ridehistory/:id"} element={<Ridehistory />} />
-                  <Route path={"/drivehistory"} element={<Drivehistory />} />
-                  <Route path={"/drivehistory/:id"} element={<Drivehistory />} />
-                  <Route path={"/editridehistory/:id"} element={<Editridehistory />} />
-
-                  {/* User Booking Stuff */}
-                  <Route path={"/addbooking"} element={<AddBooking />} />
-                  <Route path={"/editbooking/:id"} element={<EditBooking />} />
-                  <Route path={"/bookings"} element={<Bookings />} />
-                </>
-              ) : null}
-
-              {admin && !user ? (
-                <>
-                  <Route path={"/adminridehistory"} element={<Adminridehistory />} />
-                  <Route path={"/profileAdmin"} element={<ProfileAdmin />} />
-                  <Route path={"/registerAdmin"} element={<RegisterAdmin />} />
-
-                  {/* Admin Booking Stuff */}
-                  <Route path={"/addadminbooking"} element={<AddAdminBooking />} />
-                  <Route path={"/editadminbooking/:id"} element={<EditAdminBooking />} />
-                  <Route path={"/adminPanel"} element={<AdminPanel />} />
-
-                  {/* Admin Ride History Stuff */}
-                  <Route path={"/adminridehistory"} element={<Adminridehistory />} />
-                  <Route path={"/adminridehistory/:id"} component={<Adminridehistory />} />
-                  <Route path={"/deleteridehistory/:id"} element={<Deleteridehistory />} />
-                  <Route path={"/admindashboard"} element={<Admindashboard />} />
-
-                  {/* Admin Booking Stuff */}
-                  <Route path={"/adminbookings"} element={<AdminBookings />} />
-
-                  {/* Admin Announcement Stuff */}
-                  <Route path={"/editAnnouncement/:id"} element={<UpdateAnnouncement />} />
-                  <Route path={"/announcementPanel"} element={<AnnouncementPanel />} />
-                  <Route path={"/addAnnouncement"} element={<AddAnnouncement />} />
-
-                  {/* Admin Rewards Stuff */}
-                  <Route path={"/rewards"} element={<Rewards />} />
-                  <Route path={"/addreward"} element={<AddReward />} />
-                  <Route path={"/editreward/:id"} element={<EditReward />} />
-
-                  <Route path={"/userCreationDashboard"} element={<UserCreationDashboard />} />
-
-                </>
-              ) : null}
               {/* Common Routes Accessible By Anyone */}
+              <Route path={"/"} />
 
               {/* User Stuff */}
               <Route path={"/register"} element={<RegisterUser />} />
@@ -316,6 +294,32 @@ function App() {
               {/* Announcement Stuff */}
               <Route path={"/announcement"} element={<Announcement />} />
 
+              {/* Redirects anyone that goes to a non-existent or unauthorized page */}
+              <Route path={"*"} element={<NotFound />} />
+              
+              {/* User Stuff */}
+              {user ? (
+                <>
+                  {userRoutes.map((route, index) => (
+                    <Route
+                      key={index}
+                      path={route.path}
+                      element={route.component} />
+                  ))}
+                </>
+              ) : null}
+
+              {/* Admin Stuff */}
+              {admin && !user ? (
+                <>
+                  {adminRoutes.map((route, index) => (
+                    <Route
+                      key={index}
+                      path={route.path}
+                      element={route.component} />
+                  ))}
+                </>
+              ) : null}
             </Routes>
           </Container>
         </Router>

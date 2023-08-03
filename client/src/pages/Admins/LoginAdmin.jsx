@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Typography, TextField, Button, Link, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import PasswordIcon from '@mui/icons-material/Password';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { AdminContext } from '../../contexts/AccountContext';
 import * as yup from 'yup';
@@ -68,11 +68,9 @@ function LoginAdmin() {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
-
         <Box>
           <Link to="/accountRecoveryAdmin"><IconButton><PasswordIcon /></IconButton></Link>
         </Box>
-
         <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
           Login
         </Button>
