@@ -14,12 +14,16 @@ module.exports = (sequelize, DataTypes) => {
         },
         isAdmin: {
             type: DataTypes.BOOLEAN,
-            defaultValue: true, // Set the default value to false for regular users
+            defaultValue: true,
         },
-        verificationCode: { // Add this field to store the verification code
+        verificationCode: {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        isDeleted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        }
     });
     Admin.associate = (models) => {
         Admin.hasMany(models.Announcement, {

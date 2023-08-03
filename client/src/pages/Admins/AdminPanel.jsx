@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Input, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { Search, Clear, Edit, Delete } from '@mui/icons-material';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,6 +20,7 @@ function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [showAdmins, setShowAdmins] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const itemsPerPage = 5;
 
 
@@ -120,21 +122,41 @@ function AdminPanel() {
       });
   };
 
-  const deleteUser = (id, requestDelete) => {
+  // Don't Use
+  // const deleteUser = (id, requestDelete) => {
+  //   if (requestDelete) {
+  //     http.delete(`/user/${id}`)
+  //       .then(response => {
+  //         if (response.data.message) {
+  //           toast.success(`Successfully deleted user`);
+  //           setUsers(users.filter(user => user.id !== id));
+  //         }
+  //       })
+  //       .catch(error => {
+  //         toast.error(`Error when deleting user`, error);
+  //         console.error(`Error deleting user with ID ${id}:`, error);
+  //       });
+  //   } else {
+  //     toast.info("User has not requested account deletion.");
+  //   }
+  // };
+
+  const softDelete = (id, requestDelete) => {
     if (requestDelete) {
-      http.delete(`/user/${id}`)
+      http.put(`/user/softDelete/${id}`)
         .then(response => {
-          if (response.data.message) {
-            toast.success(`Successfully deleted user`);
-            setUsers(users.filter(user => user.id !== id));
-          }
+          toast.success(`Account Deleted Successfully.`);
+          setUsers(users.map(user => user.id === id ? {
+            ...user, isDeleted: true
+          } : user));
         })
         .catch(error => {
-          toast.error(`Error when deleting user`, error);
-          console.error(`Error deleting user with ID ${id}:`, error);
+          toast.error(`Error when deleting ${users.id} `, error);
+          console.error(`Error deleting user  with ID ${id}:`, error);
         });
     } else {
-      toast.info("User has not requested account deletion.");
+      console.log("requestDelete - Not eligible.");
+      toast.info("User has not requested to delete their account!");
     }
   };
 
@@ -155,6 +177,19 @@ function AdminPanel() {
       console.log("setDriver - Not eligible for approval.");
       toast.info("User has not requested to be a driver!");
     }
+  };
+
+  const resendVerificationCode = (userId) => {
+    http.post(`/user/resendVerificationCode`, { userId })
+      .then(response => {
+        if (response.data.message) {
+          toast.success(`Successfully sent new verification code.`);
+        }
+      })
+      .catch(error => {
+        toast.error(`Error when resending verification code`, error);
+        console.error(`Error resending verification code for user with ID ${userId}:`, error);
+      });
   };
 
 
@@ -202,6 +237,14 @@ function AdminPanel() {
     return Math.ceil(totalItems / itemsPerPage);
   };
 
+  const filterActiveUsers = (users) => {
+    return users.filter((user) => !user.isDeleted);
+  };
+
+  const filterActiveAdmins = (admins) => {
+    return admins.filter((admin) => !admin.isDeleted);
+  };
+
   return (
     <Box>
 
@@ -241,7 +284,7 @@ function AdminPanel() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {renderTableData(admins).map(admin => (
+                {renderTableData(filterActiveAdmins(admins)).map(admin => (
                   <TableRow key={admin.id}>
                     <TableCell>{admin.id}</TableCell>
                     <TableCell>{admin.name}</TableCell>
@@ -327,10 +370,11 @@ function AdminPanel() {
                   <TableCell>Updated At</TableCell>
                   <TableCell>Extra Actions</TableCell>
                   <TableCell>Approve</TableCell>
+                  <TableCell>Resend Code</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {renderTableData(users).map(user => (
+                {renderTableData(filterActiveUsers(users)).map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.name}</TableCell>
@@ -356,7 +400,7 @@ function AdminPanel() {
                                 Cancel
                               </Button>
                               <Button variant="contained" color="error"
-                                onClick={() => deleteUser(user.id, user.requestDelete)}>
+                                onClick={() => softDelete(user.id, user.requestDelete)}>
                                 Delete
                               </Button>
                             </DialogActions>
@@ -390,6 +434,11 @@ function AdminPanel() {
                           </Dialog>
                         </Box>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton color="secondary" onClick={() => resendVerificationCode(user.id)}>
+                        <VpnKeyIcon />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}

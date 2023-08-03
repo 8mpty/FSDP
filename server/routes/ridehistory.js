@@ -3,7 +3,6 @@ const router = express.Router();
 const { User, ridehistory, Sequelize } = require("../models");
 const yup = require("yup");
 const { validateToken } = require("../middlewares/auth");
-const nodemailer = require("nodemailer"); // Import nodemailer module
 
 
 router.post("/", validateToken, async (req, res) => {
@@ -126,18 +125,5 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
-
-const brevSMTP = {
-  host: "smtp-relay.brevo.com",
-  port: 587, // The default port for Brevo SMTP
-  secure: false,
-  auth: {
-    user: "gabrielquek5@gmail.com",
-    pass: "1gROUpGWT6wz4bdZ",
-  },
-};
-
-const transporter = nodemailer.createTransport(brevSMTP);
-
 
 module.exports = router;

@@ -11,14 +11,13 @@ require('dotenv').config();
 
 const brevSMTP = {
     host: "smtp-relay.brevo.com",
-    port: 587, // The default port for Brevo SMTP
+    port: 587,
     secure: false,
     auth: {
-        user: "mohd.khairin62@gmail.com",
-        pass: "1gROUpGWT6wz4bdZ",
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_PASS,
     },
 };
-
 const transporter = nodemailer.createTransport(brevSMTP);
 function generateVerificationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -38,7 +37,7 @@ router.get("/getAllUsers", async (req, res) => {
         }
         const users = await User.findAll({
             where: condition,
-            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete', 'requestAsDriver', 'driverStatus'],
+            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete', 'requestAsDriver', 'driverStatus','isDeleted', 'loginSuccess'],
         });
 
         res.json(users);
@@ -89,23 +88,43 @@ router.post("/register", async (req, res) => {
     let user = await User.findOne({
         where: { email: data.email }
     });
+
+    let countUsers = await User.count({
+        where: { email: data.email }
+    });
+
+    if (countUsers > 1) {
+        let existingUser = await User.findOne({
+            where: { email: data.email, isDeleted: false }
+        });
+        if (existingUser) {
+            res.status(400).json({ message: "Email already exists." });
+            return;
+        } else if (!existingUser) {
+            user = existingUser;
+        }
+    }
+    // If user exists
     if (user) {
-        res.status(400).json({ message: "Email already exists." });
-        return;
+        // If the user exists, check if it is marked as not deleted
+        if (user.isDeleted === false) {
+            res.status(400).json({ message: "Email already exists." });
+            return;
+        } else if (user.isDeleted === true && countUsers > 1) {
+            res.status(400).json({ message: "Email already exists." });
+            return;
+        }
     }
 
-    // Hash passowrd
     data.password = await bcrypt.hash(data.password, 10);
 
-    // Generate a verification code
     const verificationCode = generateVerificationCode();
-
-    // Save the verification code in the database (you may need to add a new field for this)
     data.verificationCode = verificationCode;
 
     data.requestDelete = false;
     data.requestAsDriver = false;
     data.driverStatus = false;
+    data.isDeleted = false;
 
     // Create User
     let result = await User.create(data);
@@ -113,7 +132,7 @@ router.post("/register", async (req, res) => {
     // Send the verification code to the user's email
     try {
         await transporter.sendMail({
-            from: "mohd.khairin62@gmail.com", // Set your email address here
+            from: process.env.BREVO_USER,
             to: data.email,
             subject: "Account Secure Code",
             text: `Your account verification code is: ${verificationCode}. 
@@ -121,7 +140,6 @@ router.post("/register", async (req, res) => {
         });
     } catch (error) {
         console.error("Error sending verification code email:", error);
-        // Handle the error appropriately
     }
     transporter.close();
 
@@ -155,15 +173,41 @@ router.post("/login", async (req, res) => {
     let user = await User.findOne({
         where: { email: data.email }
     });
+
     if (!user) {
         res.status(400).json({ message: errorMsg });
         return;
     }
+
+    let countUsers = await User.count({
+        where: { email: data.email }
+    });
+
+    if (countUsers > 1) {
+        let hasActiveUser = await User.findOne({
+            where: { email: data.email, isDeleted: false }
+        });
+        if (hasActiveUser) {
+            user = hasActiveUser;
+        } else {
+            res.status(400).json({ message: errorMsg });
+            return;
+        }
+    }
+
+    if (user.isDeleted) {
+        res.status(400).json({ message: errorMsg });
+        return;
+    }
+
     let match = await bcrypt.compare(data.password, user.password);
     if (!match) {
         res.status(400).json({ message: errorMsg });
         return;
     }
+
+    user.loginSuccess = user.loginSuccess + 1;
+    await user.save();
 
     // Return User info
     let userInfo = {
@@ -244,7 +288,7 @@ router.put("/updateUser/:id", validateToken, async (req, res) => {
     }
     if (data.password) {
         data.password = data.password.trim();
-        data.password = await bcrypt.hash(data.password, 10); // Hash the new password
+        data.password = await bcrypt.hash(data.password, 10);
     }
 
     // Update User
@@ -269,12 +313,11 @@ router.put("/updateUser/:id", validateToken, async (req, res) => {
     }
 });
 
-// Account Recovery - Verify email and verification code and update password
 router.post("/accountRecovery", async (req, res) => {
     const { email, newPassword, confirmPassword, verificationCode } = req.body;
 
-    // Find the user by email
-    const user = await User.findOne({ where: { email } });
+    // Find the user only by email WITH isDeleted false
+    const user = await User.findOne({ where: { email, isDeleted: false } });
 
     if (!user) {
         res.status(404).json({ message: "User not found." });
@@ -300,51 +343,46 @@ router.post("/accountRecovery", async (req, res) => {
     user.password = hashedPassword;
     // user.verificationCode = null; // Reset the verification code after successful password reset
 
-    // Save the user with the verification code intact
     await user.save();
-
     res.json({ message: "Password updated successfully." });
 });
 
-// Account Recovery - Resend verification code
 router.post("/resendVerificationCode", async (req, res) => {
-    const { email } = req.body;
+    const { email, userId } = req.body;
 
-    // Find the user by email
-    const user = await User.findOne({ where: { email } });
-
-    if (!user) {
-        res.status(404).json({ message: "User not found." });
-        return;
-    }
-
-    // Generate a new verification code for password reset
-    const verificationCode = generateVerificationCode();
-
-    // Update the verification code in the database
-    user.verificationCode = verificationCode;
-    await user.save();
-
-    // Send the verification code to the user's email
     try {
+        let user;
+        if (userId) {
+            // If userId is provided, it means the request is from an admin
+            user = await User.findByPk(userId);
+        } else {
+            // Otherwise, the request is from a regular user WITH isDeleted false
+            user = await User.findOne({ where: { email, isDeleted: false } });
+        }
+
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+
+        const verificationCode = generateVerificationCode();
+        user.verificationCode = verificationCode;
+        await user.save();
+
         await transporter.sendMail({
-            from: "mohd.khairin62@gmail.com", // Set your email address here
-            to: email,
+            from: process.env.BREVO_USER,
+            to: user.email,
             subject: "New Verification Code Requested",
             text: `Your new verification code is: ${verificationCode}`,
         });
-    } catch (error) {
-        console.error("Error sending verification code email:", error);
-        // Handle the error appropriately
-        res.status(500).json({ message: "Failed to send verification code." });
-        return;
-    }
-    transporter.close();
 
-    res.json({ message: "Verification code sent successfully." });
+        res.json({ message: "Verification code sent successfully." });
+    } catch (error) {
+        console.error("Error resending verification code:", error);
+        res.status(500).json({ message: "Failed to send verification code." });
+    }
 });
 
-// Update the Request Delete status for a User
 router.put("/requestDelete/:id", validateToken, async (req, res) => {
     const id = req.params.id;
 
@@ -370,17 +408,13 @@ router.put("/requestDelete/:id", validateToken, async (req, res) => {
 
 router.put("/requestAsDriver/:id", validateToken, async (req, res) => {
     const id = req.params.id;
-
     try {
         let user = await User.findByPk(id);
-
         if (!user) {
             res.status(404).json({ message: `User with ID ${id} not found.` });
             return;
         }
-
         user.requestAsDriver = true;
-
         // Save the updated status of user
         await user.save();
 
@@ -402,8 +436,8 @@ router.put("/setDriverStatus/:id", validateToken, async (req, res) => {
             return;
         }
 
-        if (user.requestAsDriver && !user.driverStatus) { // Check for requestAsDriver and !driverStatus
-            user.requestAsDriver = false; // Set the requestAsDriver attribute to false
+        if (user.requestAsDriver && !user.driverStatus) {
+            user.requestAsDriver = false;
             user.driverStatus = true;
 
             // Save the updated status of user
@@ -415,6 +449,28 @@ router.put("/setDriverStatus/:id", validateToken, async (req, res) => {
         }
     } catch (error) {
         console.error('Error updating requestAsDriver status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.put("/softDelete/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+    try {
+        let user = await User.findByPk(id);
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+        if (user.requestDelete && !user.isDeleted) {
+            user.isDeleted = true;
+            // Save the updated status of user
+            await user.save();
+            res.json({ message: "User has been DELETED and can't be used to log in." });
+        } else {
+            res.status(400).json({ message: "User has not requested to delete their account or is its delete status is already true." });
+        }
+    } catch (error) {
+        console.error('Error updating isDeleted status:', error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });

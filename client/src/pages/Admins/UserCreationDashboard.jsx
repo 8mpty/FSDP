@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import http from "../../http";
 import dayjs from "dayjs";
 import global from '../../global';
@@ -12,7 +12,12 @@ function UserCreationDashboard() {
     const getUserData = () => {
         http.get('/user/getAllUsers')
             .then((response) => {
-                setUserData(response.data);
+                setUserData(response.data.map((user) => ({
+                    ...user,
+                    createdAtDate: dayjs(user.createdAt).startOf('day'),
+                    count: 1,
+                    loginSuccess: user.loginSuccess || 0,
+                })));
             })
             .catch((error) => {
                 console.error('Error fetching data from user database:', error);
@@ -25,19 +30,21 @@ function UserCreationDashboard() {
 
     const allData = (data) => {
         const groupedData = data.reduce((result, user) => {
-            const createdAtDate = dayjs(user.createdAt).format(global.datetimeFormat);
+            const createdAtDate = user.createdAtDate.format('D MMMM YYYY');
             if (!result[createdAtDate]) {
-                result[createdAtDate] = 1;
+                result[createdAtDate] = {
+                    date: createdAtDate,
+                    count: 1,
+                    loginSuccess: user.loginSuccess,
+                };
             } else {
-                result[createdAtDate]++;
+                result[createdAtDate].count++;
+                result[createdAtDate].loginSuccess += user.loginSuccess;
             }
             return result;
         }, {});
 
-        return Object.keys(groupedData).map((date) => ({
-            date,
-            count: groupedData[date],
-        }));
+        return Object.values(groupedData);
     };
 
     const chartData = allData(userData);
@@ -49,16 +56,17 @@ function UserCreationDashboard() {
 
     return (
         <Box>
-            <Typography variant="h4">Users Registration Statistics</Typography>
+            <Typography variant="h4">Users Registration & Login Statistics</Typography>
             <Box className='graph-con'>
-                <LineChart width={800} height={400} data={chartData}>
+                <BarChart width={800} height={400} data={chartData} barSize={50}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" type="category" tickFormatter={(dateStr) => dayjs(dateStr).format(global.datetimeFormat)}/>
-                    <YAxis domain={[1]} /> 
-                    <Tooltip labelFormatter={(label) => `Date: ${dayjs(label).format(global.datetimeFormat)}`}formatter={(value) => [`Registrations: ${value}`]}/>
+                    <XAxis dataKey="date" type="category" tickFormatter={(dateStr) => dateStr} />
+                    <YAxis />
+                    <Tooltip labelFormatter={(label) => `Date: ${label}`} />
                     <Legend />
-                    <Line type="monotone" dataKey="count" name="Total User Registrations" stroke="#8884d8" />
-                </LineChart>
+                    <Bar dataKey="count" name="Total User Registrations" fill="#8884d8" />
+                    <Bar dataKey="loginSuccess" name="Login Success" fill="#82ca9d" />
+                </BarChart>
             </Box>
         </Box>
     );
