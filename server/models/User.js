@@ -34,7 +34,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     totalPoints:{
       type: DataTypes.INTEGER,
-      defaultValue:0,
+      defaultValue: 0,
+    },
+    isDeleted:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    loginSuccess:{
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     }
   });
   User.associate = (models) => {

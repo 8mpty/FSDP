@@ -1,25 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { Admin , Sequelize} = require('../models');
+const { Admin, Sequelize } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 require('dotenv').config();
 
-
-// Define your Brevo SMTP credentials
 const brevSMTP = {
     host: "smtp-relay.brevo.com",
-    port: 587, // The default port for Brevo SMTP
+    port: 587,
     secure: false,
     auth: {
-        user: "mohd.khairin62@gmail.com",
-        pass: "1gROUpGWT6wz4bdZ",
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_PASS,
     },
 };
-// Create a Nodemailer transporter
+
 const transporter = nodemailer.createTransport(brevSMTP);
 
 // Function to generate a random verification code
@@ -30,28 +28,27 @@ function generateVerificationCode() {
 // Get all Admins
 router.get("/getAllAdmins", async (req, res) => {
     try {
-      let condition = {};
-      let search = req.query.search;
-  
-      if (search) {
-        condition[Sequelize.Op.or] = [
-          { name: { [Sequelize.Op.like]: `%${search}%` } },
-          { email: { [Sequelize.Op.like]: `%${search}%` } }
-        ];
-      }
-  
-      let admins = await Admin.findAll({
-        where: condition,
-        attributes: ['id', 'name', 'email'],
-      });
-  
-      res.json(admins);
+        let condition = {};
+        let search = req.query.search;
+
+        if (search) {
+            condition[Sequelize.Op.or] = [
+                { name: { [Sequelize.Op.like]: `%${search}%` } },
+                { email: { [Sequelize.Op.like]: `%${search}%` } }
+            ];
+        }
+
+        let admins = await Admin.findAll({
+            where: condition,
+            attributes: ['id', 'name', 'email', 'isDeleted'],
+        });
+
+        res.json(admins);
     } catch (error) {
-      console.error('Error fetching admins:', error);
-      res.status(500).json({ message: "Internal Server Error" });
+        console.error('Error fetching admins:', error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
-  });
-  
+});
 
 // Authorization Checks
 router.get("/auth", validateToken, (req, res) => {
@@ -94,27 +91,44 @@ router.post("/registerAdmin", async (req, res) => {
     let admin = await Admin.findOne({
         where: { email: data.email }
     });
+
+    let adminCount = await Admin.count({
+        where: { email: data.email }
+    });
+
+    if (adminCount > 1) {
+        let existingAdmin = await Admin.findOne({
+            where: { email: data.email, isDeleted: false }
+        });
+        if (existingAdmin) {
+            res.status(400).json({ message: "Email already exists." });
+            return;
+        } else if (!existingAdmin) {
+            admin = existingAdmin;
+        }
+    }
+
     if (admin) {
-        res.status(400).json({ message: "Email already exists." });
-        return;
+        if (admin.isDeleted === false) {
+            res.status(400).json({ message: "Email already exists." });
+            return;
+        } else if (admin.isDeleted === true && adminCount > 1) {
+            res.status(400).json({ message: "Email already exists." });
+            return;
+        }
     }
 
     // Hash passowrd
     data.password = await bcrypt.hash(data.password, 10);
 
-    // Generate a verification code
     const verificationCode = generateVerificationCode();
-
-    // Save the verification code in the database (you may need to add a new field for this)
     data.verificationCode = verificationCode;
 
-    // Create Admin
     let result = await Admin.create(data);
 
-    // Send the verification code to the admin's email
     try {
         await transporter.sendMail({
-            from: "mohd.khairin62@gmail.com", // Set your email address here
+            from: process.env.BREVO_USER,
             to: data.email,
             subject: "Account Secure Code",
             text: `Your account verification code is: ${verificationCode}. 
@@ -122,7 +136,6 @@ router.post("/registerAdmin", async (req, res) => {
         });
     } catch (error) {
         console.error("Error sending verification code email:", error);
-        // Handle the error appropriately
     }
     transporter.close();
 
@@ -160,6 +173,28 @@ router.post("/loginadmin", async (req, res) => {
         res.status(400).json({ message: errorMsg });
         return;
     }
+
+    let adminCount = await Admin.count({
+        where: { email: data.email }
+    });
+
+    if (adminCount > 1) {
+        let hasActiveAdmin = await Admin.findOne({
+            where: { email: data.email, isDeleted: false }
+        });
+        if (hasActiveAdmin) {
+            admin = hasActiveAdmin;
+        } else {
+            res.status(400).json({ message: errorMsg });
+            return;
+        }
+    }
+
+    if (admin.isDeleted) {
+        res.status(400).json({ message: errorMsg });
+        return;
+    }
+
     let match = await bcrypt.compare(data.password, admin.password);
     if (!match) {
         res.status(400).json({ message: errorMsg });
@@ -282,7 +317,7 @@ router.post("/accountRecoveryAdmin", async (req, res) => {
     const { email, newPassword, confirmPassword, verificationCode } = req.body;
 
     // Find the admin by email
-    const admin = await Admin.findOne({ where: { email } });
+    const admin = await Admin.findOne({ where: { email, isDeleted: false } });
 
     if (!admin) {
         res.status(404).json({ message: "Admin not found." });
@@ -319,24 +354,20 @@ router.post("/resendVerificationCode", async (req, res) => {
     const { email } = req.body;
 
     // Find the admin by email
-    const admin = await Admin.findOne({ where: { email } });
+    const admin = await Admin.findOne({ where: { email, isDeleted: false } });
 
     if (!admin) {
         res.status(404).json({ message: "Admin not found." });
         return;
     }
 
-    // Generate a new verification code for password reset
     const verificationCode = generateVerificationCode();
-
-    // Update the verification code in the database
     admin.verificationCode = verificationCode;
     await admin.save();
 
-    // Send the verification code to the admin's email
     try {
         await transporter.sendMail({
-            from: "mohd.khairin62@gmail.com",
+            from: process.env.BREVO_USER,
             to: email,
             subject: "New Verification Code Requested",
             text: `Your new verification code is: ${verificationCode}`,
@@ -344,12 +375,33 @@ router.post("/resendVerificationCode", async (req, res) => {
         transporter.close();
     } catch (error) {
         console.error("Error sending verification code email:", error);
-        // Handle the error appropriately
         res.status(500).json({ message: "Failed to send verification code." });
         return;
     }
 
     res.json({ message: "Verification code sent successfully." });
+});
+
+router.put("/softDeleteAdmin/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+    try {
+        let admin = await Admin.findByPk(id);
+        if (!admin) {
+            res.status(404).json({ message: `Admin with ID ${id} not found.` });
+            return;
+        }
+        if (!admin.isDeleted) {
+            admin.isDeleted = true;
+            // Save the updated status of admin
+            await admin.save();
+            res.json({ message: "Admin has been DELETED and can't be used to log in." });
+        } else {
+            res.status(400).json({ message: "Admin is already in deleted status" });
+        }
+    } catch (error) {
+        console.error('Error updating isDeleted status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
 
