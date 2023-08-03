@@ -282,18 +282,7 @@ function Adminridehistory() {
                   <TableCell align="right">{ridehistory.start}</TableCell>
                   <TableCell align="right">{ridehistory.end}</TableCell>
                   <TableCell align="right">{ridehistory.points}</TableCell>
-                  <TableCell align="right">
-                    
-                      <IconButton
-                        sx={{
-                          color: "red",
-                        }}
-                        onClick={() => openDeleteModal(ridehistory)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    
-                  </TableCell>
+                  
                 </TableRow>
                 
               ))}
