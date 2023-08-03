@@ -88,7 +88,7 @@ router.put("/:id", validateToken, async (req, res) => {
     // Validate request body
     let validationSchema = yup.object().shape({
         drivername: yup.string().trim().min(3).max(100).required(),
-        driverposition: yup.string().trim(1).min().max(500).required(),
+        driverposition: yup.string().trim().min(1).max(500).required(),
         fare: yup.string().trim().min(3).max(500).required(),
         totalearning: yup.string().trim().min(3).max(500).required(),
         

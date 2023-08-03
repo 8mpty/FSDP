@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Select, MenuItem } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import http from '../../http';
 import { useFormik } from 'formik';
@@ -14,6 +14,20 @@ function EditAdminBooking() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
+
+    const options = [
+        { value: '1', label: 'Class 1' },
+        { value: '2B', label: 'Class 2B' },
+        { value: '2A', label: 'Class 2A' },
+        { value: '2', label: 'Class 2' },
+        { value: '3', label: 'Class 3' },
+        { value: '3A', label: 'Class 3A' },
+        { value: '3C', label: 'Class 3C' },
+        { value: '3CA', label: 'Class 3CA' },
+        { value: '4A', label: 'Class 4A' },
+        { value: '4', label: 'Class 4' },
+        { value: '5', label: 'Class 5' }
+    ];
 
     const [adminbooking, setAdminBooking] = useState({
         drivername: "",
@@ -38,7 +52,7 @@ function EditAdminBooking() {
                 .max(100, 'Driver Name must be at most 100 characters')
                 .required('Driver Name is required'),
             driverposition: yup.string().trim()
-                .min(3, 'Driver Position must be at least 3 characters')
+                .min(1, 'Driver Position must be at least 1 characters')
                 .max(500, 'Driver Position must be at most 500 characters')
                 .required('Driver Position is required'),
 
@@ -143,16 +157,29 @@ function EditAdminBooking() {
                             helperText={formik.touched.drivername && formik.errors.drivername}
                             style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
                         />
-                        <TextField
-                            fullWidth margin="normal" autoComplete="off"
-                            label="DriverPosition"
+                        <Select
+                            fullWidth
+                            margin="normal"
+                            label="Driver Position"
                             name="driverposition"
                             value={formik.values.driverposition}
                             onChange={formik.handleChange}
                             error={formik.touched.driverposition && Boolean(formik.errors.driverposition)}
-                            helperText={formik.touched.driverposition && formik.errors.driverposition}
-                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
-                        />
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign: "left" }}
+                            displayEmpty
+                        >
+
+                            <MenuItem value="" disabled>
+                                Driver Position
+                            </MenuItem>
+
+
+                            {options.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
                         <TextField
                             fullWidth margin="normal" autoComplete="off"
                             multiline minRows={2}
