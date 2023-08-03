@@ -22,11 +22,11 @@ function AddAnnouncement() {
         },
         validationSchema: yup.object({
             title: yup.string().trim()
-                .min(3, 'Title must be at least 5 characters')
+                .min(5, 'Title must be at least 5 characters')
                 .max(100, 'Title must be at most 50 characters')
                 .required('Title is required'),
             description: yup.string().trim()
-                .min(3, 'Description must be at least 10 characters')
+                .min(10, 'Description must be at least 10 characters')
                 .max(500, 'Description must be at most 100 characters')
                 .required('Description is required'),
             endDate: yup.date().nullable(true)
@@ -36,6 +36,9 @@ function AddAnnouncement() {
             data.title = data.title.trim();
             data.description = data.description.trim();
             data.endDate = data.endDate;
+
+            console.log("Submitting data:", data); // Check if data is being captured correctly
+
             http.post("/announcement/createAnnouncement", data)
                 .then((res) => {
                     console.log(res.data);
@@ -43,7 +46,8 @@ function AddAnnouncement() {
                     navigate("/announcementPanel");
                 })
                 .catch((err) => {
-                    toast.error("Error creating announcement. Please Try Again!");
+                    console.error("Error creating announcement:", err); // Log the error for debugging
+                    toast.error(`Error creating announcement. ${err}`);
                 });
         }
     });

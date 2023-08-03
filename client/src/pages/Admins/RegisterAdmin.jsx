@@ -4,11 +4,17 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
+import dayjs from 'dayjs';
+import global from '../../global';
 import * as yup from 'yup';
 import http from '../../http';
 
 function RegisterAdmin() {
   const navigate = useNavigate();
+
+  const dateChange = (increment) =>{
+    return dayjs().add(increment, 'days').format(global.datetimeFormat);
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -40,6 +46,7 @@ function RegisterAdmin() {
       data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
       data.isAdmin = true;
+      data.createdAt = dateChange(0);
       http.post("/admin/registerAdmin", data)
         .then((res) => {
           toast.success(`Admin has been registered!`);
@@ -61,7 +68,7 @@ function RegisterAdmin() {
       <ToastContainer />
       <Typography variant="h5" sx={{ my: 2 }}> Register </Typography>
 
-      <Box component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >
+      <Box className="regis-con" component="form" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit} >
         <TextField
           fullWidth margin="normal" autoComplete="off"
           label="Name"

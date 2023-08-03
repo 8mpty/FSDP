@@ -11,7 +11,10 @@ import http from '../../http';
 
 function RegisterUser() {
   const navigate = useNavigate();
-  const today = dayjs().format(global.datetimeFormat); // Default format for all
+
+  const dateChange = (increment) => {
+    return dayjs().add(increment, 'days').format(global.datetimeFormat);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -43,7 +46,7 @@ function RegisterUser() {
       data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
       data.isAdmin = false;
-      data.createdAt = today;
+      data.createdAt = dateChange(0);
       http.post("/user/register", data)
         .then((res) => {
           toast.success(`Register Successfull!!`);
