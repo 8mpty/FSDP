@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     driverStatus:{
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    totalPoints:{
+      type: DataTypes.INTEGER,
+      defaultValue:0,
     }
   });
   User.associate = (models) => {

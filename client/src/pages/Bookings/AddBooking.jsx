@@ -67,7 +67,7 @@ function AddBooking() {
                         points: 100,
                         role: 'rider'
                     };
-
+                                      
                     // Call the backend API to create the ride history entry
                     http.post('/ridehistory', rideHistoryData)
                         .then((rideHistoryRes) => {

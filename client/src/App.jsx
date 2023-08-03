@@ -5,6 +5,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import RegisterAdmin from "./pages/Admins/RegisterAdmin";
 import LoginAdmin from "./pages/Admins/LoginAdmin";
@@ -164,7 +165,7 @@ function App() {
                       <Typography style={{ fontFamily: "system-ui" }}>Bookings</Typography>
                     </Link>
                     <Button onClick={handleMenuOpen}>
-                      <Typography className="a">Account</Typography>
+                      <AccountCircleIcon/>
                     </Button>
                     <Menu anchorEl={dropMenu} open={Boolean(dropMenu)} onClose={handleMenuClose}>
                       <MenuItem component={Link} to="/profile" onClick={handleMenuClose}>
@@ -179,7 +180,7 @@ function App() {
                   <>
                     <Link to="/adminPanel"><IconButton><AdminPanelSettingsIcon /></IconButton></Link>
                     <Button onClick={handleMenuOpen}>
-                      <Typography className="a">Admin {admin.id}</Typography>
+                      <AccountCircleIcon/>
                     </Button>
                     <Menu anchorEl={dropMenu} open={Boolean(dropMenu)} onClose={handleMenuClose}>
                       <MenuItem component={Link} to="/profileAdmin" onClick={handleMenuClose}>
