@@ -1,71 +1,96 @@
 import React, { useEffect, useState } from "react";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import http from "../../http";
 import dayjs from "dayjs";
-import global from '../../global';
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import "../../dashboard.css";
 
 function UserCreationDashboard() {
-    const [userData, setUserData] = useState([]);
+    const [loginLogs, setLoginLogs] = useState([]);
+    const [createdData, setCreatedData] = useState([]);
 
-    const getUserData = () => {
+    const getCreatedData = () => {
         http.get('/user/getAllUsers')
             .then((response) => {
-                setUserData(response.data.map((user) => ({
+                setCreatedData(response.data.map((user) => ({
                     ...user,
                     createdAtDate: dayjs(user.createdAt).startOf('day'),
-                    count: 1,
-                    loginSuccess: user.loginSuccess || 0,
                 })));
             })
             .catch((error) => {
-                console.error('Error fetching data from user database:', error);
+                console.error('Error fetching Created Data:', error);
+            });
+    }
+
+    const getLoginLogsForDays = () => {
+        http.get('/user/loginLogs')
+            .then((response) => {
+                setLoginLogs(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching login logs:', error);
             });
     };
 
     useEffect(() => {
-        getUserData();
+        getLoginLogsForDays();
+        getCreatedData();
     }, []);
 
-    const allData = (data) => {
-        const groupedData = data.reduce((result, user) => {
-            const createdAtDate = user.createdAtDate.format('D MMMM YYYY');
-            if (!result[createdAtDate]) {
-                result[createdAtDate] = {
-                    date: createdAtDate,
-                    count: 1,
-                    loginSuccess: user.loginSuccess,
+    console.log("loginLogs:", loginLogs);
+    console.log("createdData:", createdData);
+
+    const allData = (loginLogs, createdData) => {
+        const groupedData = loginLogs.reduce((result, log) => {
+            const logDate = dayjs(log.date).format('D MMMM YYYY');
+
+            if (!result[logDate]) {
+                result[logDate] = {
+                    date: logDate,
+                    loginSuccess: log.loginSuccess,
+                    registration: 0,
                 };
             } else {
-                result[createdAtDate].count++;
-                result[createdAtDate].loginSuccess += user.loginSuccess;
+                result[logDate].loginSuccess += log.loginSuccess;
             }
             return result;
         }, {});
 
+        createdData.forEach((user) => {
+            const createdAtDate = dayjs(user.createdAtDate).format('D MMMM YYYY');
+            if (!groupedData[createdAtDate]) {
+                groupedData[createdAtDate] = {
+                    date: createdAtDate,
+                    loginSuccess: 0,
+                    registration: 1,
+                };
+            } else {
+                groupedData[createdAtDate].registration += 1;
+            }
+        });
+
         return Object.values(groupedData);
     };
 
-    const chartData = allData(userData);
+    const chartData = allData(loginLogs, createdData);
 
-    // Just to check if the user database is empty
-    if (chartData.length === 0) {
-        return <Box>There is no User Data to be displayed!😒</Box>;
+    // Check if either loginLogs or createdData has data
+    if (loginLogs.length === 0 && createdData.length === 0) {
+        return <Box>No data available to display!😒</Box>;
     }
 
     return (
         <Box>
             <Typography variant="h4">Users Registration & Login Statistics</Typography>
             <Box className='graph-con'>
-                <BarChart width={800} height={400} data={chartData} barSize={50}>
+                <BarChart width={800} height={400} data={chartData} barSize={30}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" type="category" tickFormatter={(dateStr) => dateStr} />
                     <YAxis />
                     <Tooltip labelFormatter={(label) => `Date: ${label}`} />
                     <Legend />
-                    <Bar dataKey="count" name="Total User Registrations" fill="#8884d8" />
-                    <Bar dataKey="loginSuccess" name="Login Success" fill="#82ca9d" />
+                    <Bar dataKey="registration" name="Registrations" fill="#8884d8" />
+                    <Bar dataKey="loginSuccess" name="Logins" fill="#82ca9d" />
                 </BarChart>
             </Box>
         </Box>

@@ -369,7 +369,7 @@ function AdminPanel() {
                   <TableCell>Created At</TableCell>
                   <TableCell>Updated At</TableCell>
                   <TableCell>Extra Actions</TableCell>
-                  <TableCell>Approve</TableCell>
+                  <TableCell>Approve Driver</TableCell>
                   <TableCell>Resend Code</TableCell>
                 </TableRow>
               </TableHead>
