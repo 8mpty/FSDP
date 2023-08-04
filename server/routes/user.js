@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { User, Sequelize } = require('../models');
+const { User, Sequelize, UserLoginHistory } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const dayjs = require('dayjs');
 require('dotenv').config();
 
 
@@ -37,7 +38,7 @@ router.get("/getAllUsers", async (req, res) => {
         }
         const users = await User.findAll({
             where: condition,
-            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete', 'requestAsDriver', 'driverStatus','isDeleted', 'loginSuccess'],
+            attributes: ['id', 'name', 'email', 'createdAt', 'updatedAt', 'requestDelete', 'requestAsDriver', 'driverStatus', 'isDeleted'],
         });
 
         res.json(users);
@@ -153,13 +154,11 @@ router.post("/login", async (req, res) => {
     // Validate request body
     let validationSchema = yup.object({
         email: yup.string().trim().email().max(50).required(),
-        password: yup.string().trim().min(8).max(50).required()
-    })
+        password: yup.string().trim().min(8).max(50).required(),
+    });
     try {
-        await validationSchema.validate(data,
-            { abortEarly: false, strict: true });
-    }
-    catch (err) {
+        await validationSchema.validate(data, { abortEarly: false, strict: true });
+    } catch (err) {
         res.status(400).json({ errors: err.errors });
         return;
     }
@@ -168,58 +167,96 @@ router.post("/login", async (req, res) => {
     data.email = data.email.trim().toLowerCase();
     data.password = data.password.trim();
 
-    // Check email and password
-    let errorMsg = "Email or password is not correct.";
-    let user = await User.findOne({
-        where: { email: data.email }
-    });
-
-    if (!user) {
-        res.status(400).json({ message: errorMsg });
-        return;
-    }
-
-    let countUsers = await User.count({
-        where: { email: data.email }
-    });
-
-    if (countUsers > 1) {
-        let hasActiveUser = await User.findOne({
-            where: { email: data.email, isDeleted: false }
+    try {
+        // Check email and password
+        let errorMsg = "Email or password is not correct.";
+        let user = await User.findOne({
+            where: { email: data.email },
         });
-        if (hasActiveUser) {
-            user = hasActiveUser;
-        } else {
+
+        if (!user) {
             res.status(400).json({ message: errorMsg });
             return;
         }
+
+        let countUsers = await User.count({
+            where: { email: data.email },
+        });
+
+        if (countUsers > 1) {
+            let hasActiveUser = await User.findOne({
+                where: { email: data.email, isDeleted: false },
+            });
+            if (hasActiveUser) {
+                user = hasActiveUser;
+            } else {
+                res.status(400).json({ message: errorMsg });
+                return;
+            }
+        }
+
+        if (user.isDeleted) {
+            res.status(400).json({ message: errorMsg });
+            return;
+        }
+
+        let match = await bcrypt.compare(data.password, user.password);
+        if (!match) {
+            res.status(400).json({ message: errorMsg });
+            return;
+        }
+
+        const today = dayjs().add(0, 'days').format('YYYY-MM-DD');
+
+        let logDetails = await UserLoginHistory.findOne({
+            where: { 
+                userId: user.id, 
+                date: today 
+            },
+        });
+
+        if (!logDetails) {
+            logDetails = await UserLoginHistory.create({
+                userId: user.id,
+                date: today,
+                loginSuccess: 1,
+            });
+        } else {
+            logDetails.loginSuccess += 1;
+            await logDetails.save();
+        }
+        await user.save();
+
+        // Return User info
+        let userInfo = {
+            id: user.id,
+            email: user.email,
+            name: user.name
+        };
+        let accessToken = sign(userInfo, process.env.APP_SECRET);
+        res.json({
+            accessToken: accessToken,
+            user: userInfo
+        });
+
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
+});
 
-    if (user.isDeleted) {
-        res.status(400).json({ message: errorMsg });
-        return;
+
+router.get("/loginLogs", async (req, res) => {
+    try {
+        const loginLogs = await UserLoginHistory.findAll({
+            attributes: ["userId", "date", "loginSuccess"],
+        });
+
+        res.json(loginLogs);
+    } catch (error) {
+        console.error('Error fetching login logs:', error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
-
-    let match = await bcrypt.compare(data.password, user.password);
-    if (!match) {
-        res.status(400).json({ message: errorMsg });
-        return;
-    }
-
-    user.loginSuccess = user.loginSuccess + 1;
-    await user.save();
-
-    // Return User info
-    let userInfo = {
-        id: user.id,
-        email: user.email,
-        name: user.name
-    };
-    let accessToken = sign(userInfo, process.env.APP_SECRET);
-    res.json({
-        accessToken: accessToken,
-        user: userInfo
-    });
 });
 
 // Get the Details of User from Specific ID

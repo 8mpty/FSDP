@@ -24,29 +24,29 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    requestAsDriver:{
+    requestAsDriver: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    driverStatus:{
+    driverStatus: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    totalPoints:{
+    totalPoints: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
-    isDeleted:{
+    isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    },
-    loginSuccess:{
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
     }
   });
   User.associate = (models) => {
     User.hasMany(models.ridehistory, {
+      foreignKey: "userId",
+      onDelete: "cascade",
+    });
+    User.hasMany(models.UserLoginHistory, {
       foreignKey: "userId",
       onDelete: "cascade",
     });
