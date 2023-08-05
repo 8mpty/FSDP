@@ -33,7 +33,6 @@ import AddBooking from './pages/Bookings/AddBooking';
 import EditBooking from './pages/Bookings/EditBooking';
 import AddDriverBooking from './pages/Bookings/AddDriverBooking';
 import EditDriverBooking from './pages/Bookings/EditDriverBooking';
-import ChatContainer from './pages/Bookings/ChatContainer';
 import Context from './pages/Bookings/Context';
 
 import Announcement from "./pages/Announcement/Announcement";
