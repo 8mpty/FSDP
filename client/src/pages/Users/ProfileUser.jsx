@@ -190,7 +190,7 @@ function ProfileUser() {
           <Button variant="contained" type="submit" onClick={formik.handleSubmit}>
             Update
           </Button>
-          
+
           {prof && prof.requestDelete ? (
             <Button variant="contained" sx={{ ml: 2 }} color="info" disabled>Deletion Requested</Button>
           ) : (
@@ -200,10 +200,20 @@ function ProfileUser() {
           <Button variant="contained" sx={{ ml: 2 }} onClick={resendVerificationCode}>Resend New Verification Code</Button>
 
           {prof && prof.driverStatus ? (
-            <Button variant="contained" sx={{ ml: 2 }} color="info" disabled>Already a Driver</Button>
+            <Button variant="contained" sx={{ ml: 2 }} color="info" disabled>
+              Already a Driver
+            </Button>
+          ) : prof && prof.requestAsDriver ? (
+            <Button variant="contained" sx={{ ml: 2 }} color="info" disabled>
+              Requested to be a Driver
+            </Button>
           ) : (
-            <Button variant="contained" sx={{ ml: 2 }} color="info" onClick={handleOpenDriverDialog}>Request to be a Driver</Button>
+            <Button variant="contained" sx={{ ml: 2 }} color="info"
+              onClick={handleOpenDriverDialog}>
+              Request to be a Driver
+            </Button>
           )}
+
         </Box>
 
         <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>

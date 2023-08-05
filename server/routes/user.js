@@ -9,7 +9,6 @@ const nodemailer = require("nodemailer");
 const dayjs = require('dayjs');
 require('dotenv').config();
 
-
 const brevSMTP = {
     host: "smtp-relay.brevo.com",
     port: 587,
@@ -209,9 +208,9 @@ router.post("/login", async (req, res) => {
         const today = dayjs().add(0, 'days').format('YYYY-MM-DD');
 
         let logDetails = await UserLoginHistory.findOne({
-            where: { 
-                userId: user.id, 
-                date: today 
+            where: {
+                userId: user.id,
+                date: today
             },
         });
 
@@ -244,7 +243,6 @@ router.post("/login", async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
-
 
 router.get("/loginLogs", async (req, res) => {
     try {
@@ -480,7 +478,49 @@ router.put("/setDriverStatus/:id", validateToken, async (req, res) => {
             // Save the updated status of user
             await user.save();
 
+            await transporter.sendMail({
+                from: process.env.BREVO_USER,
+                to: user.email,
+                subject: "Driver Status",
+                text: `Your driver status has been APPROVED!!`,
+            });
+
             res.json({ message: "User has been approved as a driver." });
+
+        } else {
+            res.status(400).json({ message: "User has not requested to be a driver or is already approved." });
+        }
+    } catch (error) {
+        console.error('Error updating requestAsDriver status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.put("/rejectDriver/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+    try {
+        let user = await User.findByPk(id);
+
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+
+        if (user.requestAsDriver && !user.driverStatus) {
+            user.requestAsDriver = false;
+            user.driverStatus = false;
+
+            // Save the updated status of user
+            await user.save();
+
+            await transporter.sendMail({
+                from: process.env.BREVO_USER,
+                to: user.email,
+                subject: "Driver Status",
+                text: `Your driver status has been REJECTED!!`,
+            });
+
+            res.json({ message: "User has been rejected to be a driver." });
         } else {
             res.status(400).json({ message: "User has not requested to be a driver or is already approved." });
         }
@@ -503,6 +543,28 @@ router.put("/softDelete/:id", validateToken, async (req, res) => {
             // Save the updated status of user
             await user.save();
             res.json({ message: "User has been DELETED and can't be used to log in." });
+        } else {
+            res.status(400).json({ message: "User has not requested to delete their account or is its delete status is already true." });
+        }
+    } catch (error) {
+        console.error('Error updating isDeleted status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.put("/rejectDelete/:id", validateToken, async (req, res) => {
+    const id = req.params.id;
+    try {
+        let user = await User.findByPk(id);
+        if (!user) {
+            res.status(404).json({ message: `User with ID ${id} not found.` });
+            return;
+        }
+        if (user.requestDelete && !user.isDeleted) {
+            user.requestDelete = false;
+            user.isDeleted = false;
+            await user.save();
+            res.json({ message: "User Deletion has been REJECTED." });
         } else {
             res.status(400).json({ message: "User has not requested to delete their account or is its delete status is already true." });
         }

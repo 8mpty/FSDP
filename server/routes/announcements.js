@@ -13,15 +13,14 @@ router.post("/createAnnouncement", validateToken, async (req, res) => {
         description: yup.string().trim().min(10).max(100).required(),
         endDate: yup.date().nullable(),
     });
+
     try {
-        await validationSchema.validate(data,
-            { abortEarly: false });
-    }
-    catch (err) {
+        await validationSchema.validate(data, { abortEarly: false });
+    } catch (err) {
         console.error(err);
-        res.status(400).json({ errors: err.errors });
-        return;
+        return res.status(400).json({ errors: err.errors });
     }
+
     data.title = data.title.trim();
     data.description = data.description.trim();
     data.adminId = req.admin.id;
@@ -36,7 +35,6 @@ router.post("/createAnnouncement", validateToken, async (req, res) => {
     } else {
         data.endDate = new Date();
     }
-
 
     let result = await Announcement.create(data);
     res.json(result);
@@ -99,6 +97,7 @@ router.put("/:id", validateToken, async (req, res) => {
     }
     data.title = data.title.trim();
     data.description = data.description.trim();
+    data.endDate = data.endDate;
     let num = await Announcement.update(data, {
         where: { id: id }
     });

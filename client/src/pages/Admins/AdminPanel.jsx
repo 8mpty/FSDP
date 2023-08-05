@@ -22,6 +22,8 @@ function AdminPanel() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const itemsPerPage = 5;
+  const [confirmationInput, setConfirmationInput] = useState('');
+
 
 
   const onSearchChange = (e) => {
@@ -48,10 +50,6 @@ function AdminPanel() {
       });
   }
 
-
-
-
-
   const searchAdmin = () => {
     http.get(`/admin/getAllAdmins?search=${search}`)
       .then((res) => {
@@ -72,7 +70,6 @@ function AdminPanel() {
       searchAdmin();
     }
   };
-
   const onSearchKeyDownUser = (e) => {
     if (e.key === "Enter") {
       searchUser();
@@ -80,27 +77,22 @@ function AdminPanel() {
   };
 
 
-
   const onClickSearchAdmin = () => {
     searchAdmin();
   }
+  const onClickSearchUser = () => {
+    searchUser();
+  }
+
 
   const onClickClearAdmin = () => {
     setSearch('');
     getAllAdmins();
   };
-
-
-
-  const onClickSearchUser = () => {
-    searchUser();
-  }
-
   const onClickClearUser = () => {
     setSearch('');
     getAllUsers();
   };
-
 
 
   useEffect(() => {
@@ -121,25 +113,6 @@ function AdminPanel() {
         console.error(`Error deleting admin with ID ${id}:`, error);
       });
   };
-
-  // Don't Use
-  // const deleteUser = (id, requestDelete) => {
-  //   if (requestDelete) {
-  //     http.delete(`/user/${id}`)
-  //       .then(response => {
-  //         if (response.data.message) {
-  //           toast.success(`Successfully deleted user`);
-  //           setUsers(users.filter(user => user.id !== id));
-  //         }
-  //       })
-  //       .catch(error => {
-  //         toast.error(`Error when deleting user`, error);
-  //         console.error(`Error deleting user with ID ${id}:`, error);
-  //       });
-  //   } else {
-  //     toast.info("User has not requested account deletion.");
-  //   }
-  // };
 
   const softDelete = (id, requestDelete) => {
     if (requestDelete) {
@@ -192,10 +165,52 @@ function AdminPanel() {
       });
   };
 
+  const rejectDelete = (id, requestDelete, isDeleted) => {
+    if (requestDelete && !isDeleted) {
+      http.put(`/user/rejectDelete/${id}`)
+        .then(response => {
+          toast.success(`Account Deletion Rejected Successfully.`);
+          setUsers(users.map(user => user.id === id ? {
+            ...user,
+            requestDelete: false,
+            isDeleted: false
+          } : user));
+        })
+        .catch(error => {
+          toast.error(`Error when rejecting deletion of ${users.id} `, error);
+          console.error(`Error rejecting user with ID ${id}:`, error);
+        });
+    } else {
+      console.log("requestDelete - Not eligible.");
+      toast.info("User has not requested to delete their account!");
+    }
+  };
+
+  const rejectDriver = (id, requestAsDriver, driverStatus) => {
+    if (requestAsDriver && !driverStatus) {
+      http.put(`/user/rejectDriver/${id}`)
+        .then(response => {
+          toast.success(`User is has been rejected to be a driver.`);
+          setUsers(users.map(user => user.id === id ? {
+            ...user,
+            requestAsDriver: false,
+            driverStatus: false
+          } : user));
+        })
+        .catch(error => {
+          toast.error(`Error when rejecting ${users.id} driver status`, error);
+          console.error(`Error updating driver status of user with ID ${id}:`, error);
+        });
+    } else {
+      console.log("setDriver - Not eligible for approval.");
+      toast.info("User has not requested to be a driver!");
+    }
+  };
 
 
   const handleOpenUser = () => {
     setOpenDelUser(true);
+    setConfirmationInput('');
   };
   const handleOpenAdmin = () => {
     setOpenDelAdmin(true);
@@ -243,6 +258,14 @@ function AdminPanel() {
 
   const filterActiveAdmins = (admins) => {
     return admins.filter((admin) => !admin.isDeleted);
+  };
+
+  const handleConfirmationInputChange = (e) => {
+    setConfirmationInput(e.target.value);
+  };
+
+  const isConfirmationValid = () => {
+    return confirmationInput.toLowerCase() === 'confirm';
   };
 
   return (
@@ -368,7 +391,7 @@ function AdminPanel() {
                   <TableCell>Email</TableCell>
                   <TableCell>Created At</TableCell>
                   <TableCell>Updated At</TableCell>
-                  <TableCell>Extra Actions</TableCell>
+                  <TableCell>Deletion Request</TableCell>
                   <TableCell>Approve Driver</TableCell>
                   <TableCell>Resend Code</TableCell>
                 </TableRow>
@@ -393,14 +416,37 @@ function AdminPanel() {
                               <DialogContentText>
                                 Are you sure you want to delete user account {user.id}?
                               </DialogContentText>
+                              <DialogContentText>
+                                <Input
+                                  placeholder="Type 'confirm' to delete"
+                                  value={confirmationInput}
+                                  onChange={handleConfirmationInputChange}
+                                />
+                              </DialogContentText>
                             </DialogContent>
                             <DialogActions>
                               <Button variant="contained" color="inherit"
                                 onClick={handleCloseUser}>
                                 Cancel
                               </Button>
-                              <Button variant="contained" color="error"
-                                onClick={() => softDelete(user.id, user.requestDelete)}>
+
+                              <Button variant="contained" color="warning"
+                                onClick={() => rejectDelete(user.id, user.requestDelete, user.isDeleted)}>
+                                Reject
+                              </Button>
+
+                              <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => {
+                                  if (isConfirmationValid()) {
+                                    softDelete(user.id, user.requestDelete);
+                                  } else {
+                                    toast.error('Please type "confirm" to proceed with deletion.');
+                                  }
+                                }}
+                                disabled={!isConfirmationValid()}
+                              >
                                 Delete
                               </Button>
                             </DialogActions>
@@ -420,16 +466,44 @@ function AdminPanel() {
                               <DialogContentText>
                                 Are you sure you want to approve the driver request of user account {user.id}?
                               </DialogContentText>
+                              <DialogContentText>
+                                <Input
+                                  placeholder="Type 'confirm' to approve"
+                                  value={confirmationInput}
+                                  onChange={handleConfirmationInputChange}
+                                />
+                              </DialogContentText>
                             </DialogContent>
                             <DialogActions>
                               <Button variant="contained" color="inherit"
                                 onClick={handleCloseDriver}>
                                 Cancel
                               </Button>
+
                               <Button variant="contained" color="warning"
-                                onClick={() => setDriver(user.id, user.requestAsDriver, user.driverStatus)}>
+                                onClick={() => rejectDriver(user.id, user.requestAsDriver, user.driverStatus)}>
+                                Reject
+                              </Button>
+
+
+                              <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => {
+                                  if (isConfirmationValid()) {
+                                    setDriver(user.id, user.requestAsDriver, user.driverStatus);
+                                  } else {
+                                    toast.error('Please type "confirm" to proceed.');
+                                  }
+                                }}
+                                disabled={!isConfirmationValid()}
+                              >
                                 Approve
                               </Button>
+
+
+
+
                             </DialogActions>
                           </Dialog>
                         </Box>

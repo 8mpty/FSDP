@@ -7,12 +7,13 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useFormik } from 'formik';
+import dayjs from 'dayjs';
 import * as yup from 'yup';
 import http from '../../http';
 
 function AddAnnouncement() {
     const navigate = useNavigate();
-    const currentDate = new Date();
+    const currentDate = dayjs();
 
     const formik = useFormik({
         initialValues: {
@@ -37,7 +38,10 @@ function AddAnnouncement() {
             data.description = data.description.trim();
             data.endDate = data.endDate;
 
-            console.log("Submitting data:", data); // Check if data is being captured correctly
+            if (!data.endDate || data.endDate === currentDate) {
+                toast.error("Please pick a valid EndDate.");
+                return;
+            }
 
             http.post("/announcement/createAnnouncement", data)
                 .then((res) => {
@@ -46,11 +50,16 @@ function AddAnnouncement() {
                     navigate("/announcementPanel");
                 })
                 .catch((err) => {
-                    console.error("Error creating announcement:", err); // Log the error for debugging
+                    console.error("Error creating announcement:", err);
                     toast.error(`Error creating announcement. ${err}`);
                 });
         }
     });
+
+    const isDateBeforeCurrent = (date) => {
+        return date < currentDate;
+    };
+
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Box className="edit-container" sx={{
@@ -62,7 +71,7 @@ function AddAnnouncement() {
                 <Typography variant="h5" sx={{ my: 2 }}>
                     Add New Announcement
                 </Typography>
-                <Box component="form" onSubmit={formik.handleSubmit} sx={{ maxWidth: '500px' }}>
+                <Box className="announ" component="form" onSubmit={formik.handleSubmit} sx={{ maxWidth: '500px' }}>
                     <TextField
                         fullWidth margin="normal" autoComplete="off"
                         label="Title"
@@ -90,6 +99,7 @@ function AddAnnouncement() {
                         renderInput={(props) => <TextField {...props} />}
                         error={formik.touched.endDate && Boolean(formik.errors.endDate)}
                         helperText={formik.touched.endDate && formik.errors.endDate}
+                        shouldDisableDate={isDateBeforeCurrent}
                     />
                     <Box sx={{ mt: 2 }}>
                         <Button variant="contained" type="submit">

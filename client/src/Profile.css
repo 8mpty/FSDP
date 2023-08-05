@@ -54,7 +54,9 @@
 .regis-con,
 .login-admin,
 .forget-con-user,
-.forget-con-admin, .admin-panel {
+.announ,
+.forget-con-admin, 
+.admin-panel {
     background: rgb(250, 250, 250);
     padding: 50px;
     border: 5px solid rgb(25, 118, 210);
