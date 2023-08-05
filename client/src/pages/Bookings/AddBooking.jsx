@@ -59,6 +59,19 @@ function AddBooking() {
                     console.log(res.data);
                     navigate("/bookings");
 
+                    const driverBookingData = {
+                        destination: data.name,
+                        pickup: data.pickup,
+                        passby: data.passby,
+                        notes: data.notes,
+                        drivername: "NULL",
+                        driverposition: "NULL",
+                        fare: "NULL",
+                        totalearning: "NULL",
+                        status: "Pending"
+
+                    };
+
                     const rideHistoryData = {
                         driver: data.name,
                         rider: user.name,
@@ -67,15 +80,21 @@ function AddBooking() {
                         points: 100,
                         role: 'rider'
                     };
-                                      
+
                     // Call the backend API to create the ride history entry
                     http.post('/ridehistory', rideHistoryData)
                         .then((rideHistoryRes) => {
                             console.log('Ride history entry created successfully:', rideHistoryRes.data);
-                        
+
                         })
                         .catch((error) => {
                             console.log('Error creating ride history entry:', error);
+                        });
+
+                    http.post('/driverbooking', driverBookingData)
+                        
+                        .catch((error) => {
+                            console.log('Error creating driver booking entry:', error);
                         });
                 })
                 .catch((error) => {

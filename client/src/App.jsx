@@ -28,10 +28,13 @@ import Admindashboard from "./pages/Ridehistory/admindashboard";
 
 import Bookings from './pages/Bookings/Bookings';
 import AdminBookings from './pages/Bookings/AdminBookings';
+import DriverBookings from './pages/Bookings/DriverBookings';
 import AddBooking from './pages/Bookings/AddBooking';
 import EditBooking from './pages/Bookings/EditBooking';
-import AddAdminBooking from './pages/Bookings/AddAdminBooking';
-import EditAdminBooking from './pages/Bookings/EditAdminBooking';
+import AddDriverBooking from './pages/Bookings/AddDriverBooking';
+import EditDriverBooking from './pages/Bookings/EditDriverBooking';
+import ChatContainer from './pages/Bookings/ChatContainer';
+import Context from './pages/Bookings/Context';
 
 import Announcement from "./pages/Announcement/Announcement";
 import UpdateAnnouncement from "./pages/Announcement/UpdateAnnouncement";
@@ -57,6 +60,11 @@ function App() {
   const [announcements, setAnnouncements] = useState([]);
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
 
+  const store = {
+    user,
+    setUser,
+  };
+
   const userRoutes = [
     { path: "/profile", component: <ProfileUser /> },
     { path: "/ridehistory", component: <Ridehistory /> },
@@ -66,14 +74,15 @@ function App() {
     { path: "/editridehistory/:id", component: <Editridehistory /> },
     { path: "/addbooking", component: <AddBooking /> },
     { path: "/editbooking/:id", component: <EditBooking /> },
+    { path: "/adddriverbooking", component: <AddDriverBooking /> },
+    { path: "/editdriverbooking/:id", component: <EditDriverBooking /> },
+    { path: "/driverbookings", component: <DriverBookings /> },
     { path: "/bookings", component: <Bookings /> },
   ];
 
   const adminRoutes = [
     { path: "/profileAdmin", component: <ProfileAdmin /> },
     { path: "/registerAdmin", component: <RegisterAdmin /> },
-    { path: "/addadminbooking", component: <AddAdminBooking /> },
-    { path: "/editadminbooking/:id", component: <EditAdminBooking /> },
     { path: "/adminPanel", component: <AdminPanel /> },
     { path: "/adminridehistory", component: <Adminridehistory /> },
     { path: "/adminridehistory/:id", component: <Adminridehistory /> },
@@ -88,6 +97,8 @@ function App() {
     { path: "/editreward/:id", component: <EditReward /> },
     { path: "/userCreationDashboard", component: <UserCreationDashboard /> },
   ];
+
+  
 
   const closeAnnouncement = () => {
     setDisplayedAnnouncementIndex((prevIndex) => prevIndex + 1);
@@ -197,6 +208,10 @@ function App() {
                     <Link to="/bookings">
                       <Typography style={{ fontFamily: "system-ui" }}>Bookings</Typography>
                     </Link>
+                    <Link to="/driverbookings">
+                      <Typography style={{ fontFamily: "system-ui" }}>Driver Bookings</Typography>
+                    </Link>
+                    
                     <Button onClick={handleMenuOpen}>
                       <AccountCircleIcon/>
                     </Button>

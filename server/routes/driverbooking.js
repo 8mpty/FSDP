@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Admin, AdminBooking, Sequelize } = require('../models');
+const { User, DriverBooking, Sequelize } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 
@@ -11,7 +11,12 @@ router.post("/", validateToken, async (req, res) => {
         drivername: yup.string().trim().min(3).max(100).required(),
         driverposition: yup.string().trim().min(1).max(100).required(),
         fare: yup.string().trim().min(3).max(500).required(),
-        totalearning: yup.string().trim().min(3).max(500).required()
+        totalearning: yup.string().trim().min(3).max(500).required(),
+        status: yup.string().trim().min(3).max(500).required(),
+        destination: yup.string().trim().min(3).max(100).required(),
+        pickup: yup.string().trim().min(3).max(500).required(),
+        notes: yup.string().trim().min(3).max(500).required(),
+        passby: yup.string().trim().min(3).max(500).required()
         
     });
     try {
@@ -27,9 +32,14 @@ router.post("/", validateToken, async (req, res) => {
     data.driverposition = data.driverposition.trim();
     data.fare = data.fare.trim();
     data.totalearning = data.totalearning.trim();
+    data.status = data.status.trim();
+    data.destination = data.destination.trim();
+    data.pickup = data.pickup.trim();
+    data.passby = data.passby.trim();
+    data.notes = data.notes.trim();
     
-    data.adminId = req.admin.id;
-    let result = await AdminBooking.create(data);
+    data.userId = req.user.id;
+    let result = await DriverBooking.create(data);
     res.json(result);
 });
 
@@ -42,44 +52,49 @@ router.get("/", async (req, res) => {
             { driverposition: { [Sequelize.Op.like]: `%${search}%` } },
             { fare: { [Sequelize.Op.like]: `%${search}%` } },
             { totalearning: { [Sequelize.Op.like]: `%${search}%` } },
+            { status: { [Sequelize.Op.like]: `%${search}%` } },
+            { destination: { [Sequelize.Op.like]: `%${search}%` } },
+            { pickup: { [Sequelize.Op.like]: `%${search}%` } },
+            { passby: { [Sequelize.Op.like]: `%${search}%` } },
+            { notes: { [Sequelize.Op.like]: `%${search}%` } },
             
 
         ];
     }
 
-    let list = await AdminBooking.findAll({
+    let list = await DriverBooking.findAll({
         where: condition,
         order: [['createdAt', 'DESC']],
-        include: { model: Admin, as: "admin", attributes: ['name'] }
+        include: { model: User, as: "user", attributes: ['name'] }
     });
     res.json(list);
 });
 
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
-    let adminbooking = await AdminBooking.findByPk(id, {
-        include: { model: Admin, as: "admin", attributes: ['name'] }
+    let driverbooking = await DriverBooking.findByPk(id, {
+        include: { model: User, as: "user", attributes: ['name'] }
     });
     // Check id not found
-    if (!adminbooking) {
+    if (!driverbooking) {
         res.sendStatus(404);
         return;
     }
-    res.json(adminbooking);
+    res.json(driverbooking);
 });
 
 router.put("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
     // Check id not found
-    let adminbooking = await AdminBooking.findByPk(id);
-    if (!adminbooking) {
+    let driverbooking = await DriverBooking.findByPk(id);
+    if (!driverbooking) {
         res.sendStatus(404);
         return;
     }
 
     // Check request admin id
-    let adminId = req.admin.id;
-    if (adminbooking.adminId != adminId) {
+    let userId = req.user.id;
+    if (driverbooking.userId != userId) {
         res.sendStatus(403);
         return;
     }
@@ -91,6 +106,11 @@ router.put("/:id", validateToken, async (req, res) => {
         driverposition: yup.string().trim().min(1).max(500).required(),
         fare: yup.string().trim().min(3).max(500).required(),
         totalearning: yup.string().trim().min(3).max(500).required(),
+        status: yup.string().trim().min(3).max(500).required(),
+        destination: yup.string().trim().min(3).max(100).required(),
+        pickup: yup.string().trim().min(3).max(500).required(),
+        notes: yup.string().trim().min(3).max(500).required(),
+        passby: yup.string().trim().min(3).max(500).required()
         
     });
     try {
@@ -106,8 +126,13 @@ router.put("/:id", validateToken, async (req, res) => {
     data.driverposition = data.driverposition.trim();
     data.fare = data.fare.trim();
     data.totalearning = data.totalearning.trim();
+    data.status = data.status.trim();
+    data.destination = data.destination.trim();
+    data.pickup = data.pickup.trim();
+    data.passby = data.passby.trim();
+    data.notes = data.notes.trim();
     
-    let num = await AdminBooking.update(data, {
+    let num = await DriverBooking.update(data, {
         where: { id: id }
     });
     if (num == 1) {
@@ -125,20 +150,20 @@ router.put("/:id", validateToken, async (req, res) => {
 router.delete("/:id", validateToken, async (req, res) => {
     let id = req.params.id;
     // Check id not found
-    let adminbooking = await AdminBooking.findByPk(id);
-    if (!adminbooking) {
+    let driverbooking = await DriverBooking.findByPk(id);
+    if (!driverbooking) {
         res.sendStatus(404);
         return;
     }
 
     // Check request admin id
-    let adminId = req.admin.id;
-    if (adminbooking.adminId != adminId) {
+    let userId = req.user.id;
+    if (driverbooking.userId != userId) {
         res.sendStatus(403);
         return;
     }
 
-    let num = await AdminBooking.destroy({
+    let num = await DriverBooking.destroy({
         where: { id: id }
     })
     if (num == 1) {

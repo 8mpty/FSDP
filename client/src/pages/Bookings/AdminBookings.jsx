@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { AdminContext } from '../../contexts/AccountContext';
+import { AdminContext, UserContext } from '../../contexts/AccountContext';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
 import { AccountCircle, AccessTime, Search, Clear, Edit, LocationOn, SpeakerNotes, Directions, PostAdd } from '@mui/icons-material';
@@ -11,7 +11,7 @@ import '../../App.css';
 
 
 function AdminBookings() {
-    const [adminbookingList, setAdminBookingList] = useState([]);
+    const [bookingList, setBookingList] = useState([]);
     const [search, setSearch] = useState('');
     const { admin } = useContext(AdminContext);
 
@@ -19,54 +19,36 @@ function AdminBookings() {
         setSearch(e.target.value);
     };
 
-    const getAdminBookings = () => {
-        http.get('/adminbooking').then((res) => {
-            setAdminBookingList(res.data);
+    const getBookings = () => {
+        http.get('/booking').then((res) => {
+            setBookingList(res.data);
         });
     };
 
-    const searchAdminBookings = () => {
-        http.get(`/adminbooking?search=${search}`).then((res) => {
-            setAdminBookingList(res.data);
+    const searchBookings = () => {
+        http.get(`/booking?search=${search}`).then((res) => {
+            setBookingList(res.data);
         });
     };
 
     useEffect(() => {
-        getAdminBookings();
+        getBookings();
     }, []);
 
     const onSearchKeyDown = (e) => {
         if (e.key === "Enter") {
-            searchAdminBookings();
+            searchBookings();
         }
     };
 
     const onClickSearch = () => {
-        searchAdminBookings();
+        searchBookings();
     }
 
     const onClickClear = () => {
         setSearch('');
-        getAdminBookings();
+        getBookings();
     };
-
-    const [open, setOpen] = useState(false);
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const deleteAdminBooking = () => {
-        http.delete(`/adminbooking/${id}`)
-            .then((res) => {
-                console.log(res.data);
-                navigate("/adminbookings");
-            });
-    }
 
     return (
         <Box style={{ FontFace }}>
@@ -103,10 +85,10 @@ function AdminBookings() {
                 <table className="ridetable" >
                     <tr   >
                         <th>ID</th>
-                        <th>Driver Name</th>
-                        <th>Driver Position</th>
-                        <th>Fare</th>
-                        <th>Total Earning</th>
+                        <th>Destination</th>
+                        <th>Pickup</th>
+                        <th>Passby</th>
+                        <th>Notes</th>
                         <th>Created At</th>
 
                         <th></th>
@@ -114,26 +96,18 @@ function AdminBookings() {
                     </tr>
                     {
 
-                        adminbookingList.map((adminbooking, i) => {
+                        bookingList.map((booking, i) => {
                             return (
 
 
-                                <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", textAlign: "center" }} key={adminbooking.id} >
-                                    <td   >{adminbooking.id}</td>
-                                    <td   >{adminbooking.drivername}</td>
-                                    <td   >Class {adminbooking.driverposition}</td>
-                                    <td   >{adminbooking.fare}</td>
-                                    <td   >{adminbooking.totalearning}</td>
-                                    <td   >{dayjs(adminbooking.createdAt).format(global.datetimeFormat)}</td>
-                                    <td>
-
-                                        <Link to={`/editadminbooking/${adminbooking.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
-
-                                    </td>
+                                <tr style={{ border: "1px solid", fontFamily: "system-ui", padding: "15px", textAlign: "center" }} key={booking.id} >
+                                    <td   >{booking.id}</td>
+                                    <td   >{booking.name}</td>
+                                    <td   >{booking.pickup}</td>
+                                    <td   >{booking.passby}</td>
+                                    <td   >{booking.notes}</td>
+                                    <td   >{dayjs(booking.createdAt).format(global.datetimeFormat)}</td>
+                                    
 
                                 </tr>
 

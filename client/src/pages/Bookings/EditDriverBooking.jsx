@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
-function EditAdminBooking() {
+function EditDriverBooking() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
@@ -29,22 +29,33 @@ function EditAdminBooking() {
         { value: '5', label: 'Class 5' }
     ];
 
-    const [adminbooking, setAdminBooking] = useState({
+    const statusoptions = [
+        { value: 'Accepted', label: 'Accept' },
+        { value: 'Rejected', label: 'Reject' }
+
+    ];
+
+    const [driverbooking, setDriverBooking] = useState({
         drivername: "",
         driverposition: "",
         fare: "",
         totalearning: "",
+        status: "",
+        destination: "",
+        pickup: "",
+        passby: "",
+        notes: ""
 
     });
 
     useEffect(() => {
-        http.get(`/adminbooking/${id}`).then((res) => {
-            setAdminBooking(res.data);
+        http.get(`/driverbooking/${id}`).then((res) => {
+            setDriverBooking(res.data);
         });
     }, []);
 
     const formik = useFormik({
-        initialValues: adminbooking,
+        initialValues: driverbooking,
         enableReinitialize: true,
         validationSchema: yup.object().shape({
             drivername: yup.string().trim()
@@ -65,6 +76,29 @@ function EditAdminBooking() {
                 .min(3, 'Total Earning must be at least 3 characters')
                 .max(500, 'Total Earning must be at most 500 characters')
                 .required('Total Earning is required'),
+            status: yup.string().trim()
+                .min(3, 'Status must be at least 3 characters')
+                .max(500, 'Staus must be at most 500 characters')
+                .required('Status is required'),
+
+            destination: yup.string().trim()
+                .min(3, 'Destination must be at least 3 characters')
+                .max(100, 'Destination must be at most 100 characters')
+                .required('Destination is required'),
+            pickup: yup.string().trim()
+                .min(3, 'Pickup Location must be at least 3 characters')
+                .max(500, 'Pickup Location must be at most 500 characters')
+                .required('Pickup Location is required'),
+
+            notes: yup.string().trim()
+                .min(3, 'Notes must be at least 3 characters')
+                .max(500, 'Notes must be at most 500 characters')
+                .required('Notes is required'),
+
+            passby: yup.string().trim()
+                .min(3, 'Passby Location must be at least 3 characters')
+                .max(500, 'Passby Location must be at most 500 characters')
+                .required('Passby Location is required')
 
 
 
@@ -77,11 +111,16 @@ function EditAdminBooking() {
             data.driverposition = data.driverposition.trim();
             data.fare = data.fare.trim();
             data.totalearning = data.totalearning.trim();
+            data.status = data.status.trim();
+            data.destination = data.destination.trim();
+            data.pickup = data.pickup.trim();
+            data.passby = data.passby.trim();
+            data.notes = data.notes.trim();
 
-            http.put(`/adminbooking/${id}`, data)
+            http.put(`/driverbooking/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/adminbookings");
+                    navigate("/driverbookings");
                 });
         }
     });
@@ -96,11 +135,11 @@ function EditAdminBooking() {
         setOpen(false);
     };
 
-    const deleteAdminBooking = () => {
-        http.delete(`/adminbooking/${id}`)
+    const deleteDriverBooking = () => {
+        http.delete(`/driverbooking/${id}`)
             .then((res) => {
                 console.log(res.data);
-                navigate("/adminbookings");
+                navigate("/driverbookings");
             });
     }
 
@@ -129,9 +168,9 @@ function EditAdminBooking() {
 
     return (
         <Box style={{ marginLeft: "150px", marginTop: "75px" }}>
-            
+
             <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
-                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "465px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
+                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "500px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
                     <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
                         <p style={{ fontFamily: "system-ui", paddingTop: "30px", fontSize: "15px" }}>
                             Feeling Lazy?
@@ -203,14 +242,35 @@ function EditAdminBooking() {
                             style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
                         />
 
+                        <Select
+                            fullWidth
+                            margin="normal"
+                            label="Status"
+                            name="status"
+                            value={formik.values.status}
+                            onChange={formik.handleChange}
+                            error={formik.touched.status && Boolean(formik.errors.status)}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign: "left" }}
+                            displayEmpty
+                        >
+
+                            <MenuItem value="" disabled>
+                                Accept/Reject Booking
+                            </MenuItem>
+
+
+                            {statusoptions.map((statusoption) => (
+                                <MenuItem key={statusoption.value} value={statusoption.value}>
+                                    {statusoption.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
                         <Box sx={{ mt: 2 }}>
                             <Button variant="contained" type="submit" style={{ fontFamily: "system-ui" }} className='milk'>
                                 Update
                             </Button>
-                            <Button variant="contained" sx={{ ml: 2 }} color="error"
-                                onClick={handleOpen} style={{ fontFamily: "system-ui" }} className='milk'>
-                                Delete
-                            </Button>
+                            
                         </Box>
 
                     </Grid>
@@ -233,7 +293,7 @@ function EditAdminBooking() {
                             Cancel
                         </Button>
                         <Button variant="contained" color="error" style={{ fontFamily: "system-ui" }}
-                            onClick={deleteAdminBooking} className='milk'>
+                            onClick={deleteDriverBooking} className='milk'>
                             Delete
                         </Button>
                     </DialogActions>
@@ -244,4 +304,4 @@ function EditAdminBooking() {
     );
 }
 
-export default EditAdminBooking;
+export default EditDriverBooking;

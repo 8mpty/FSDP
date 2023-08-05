@@ -10,7 +10,7 @@ import { PostAdd } from '@mui/icons-material';
 
 
 
-function AddAdminBooking() {
+function AddDriverBooking() {
     const navigate = useNavigate();
     const [imageFile, setImageFile] = useState(null);
 
@@ -28,6 +28,12 @@ function AddAdminBooking() {
         { value: '5', label: 'Class 5' }
     ];
 
+    const statusoptions = [
+        { value: 'Accepted', label: 'Accept' },
+        { value: 'Rejected', label: 'Reject' }
+
+    ];
+
 
     const defaultOption = options[0];
 
@@ -37,6 +43,11 @@ function AddAdminBooking() {
             driverposition: "",
             fare: "",
             totalearning: "",
+            status: "",
+            destination: "",
+            pickup: "",
+            passby: "",
+            notes: ""
 
 
 
@@ -57,7 +68,30 @@ function AddAdminBooking() {
             totalearning: yup.string().trim()
                 .min(3, 'Total Earning must be at least 3 characters')
                 .max(500, 'Total Earning must be at most 500 characters')
-                .required('Total Earning is required')
+                .required('Total Earning is required'),
+            status: yup.string().trim()
+                .min(3, 'Status must be at least 3 characters')
+                .max(500, 'Status must be at most 20 characters')
+                .required('Status is required'),
+            destination: yup.string().trim()
+                .min(3, 'Destination must be at least 3 characters')
+                .max(100, 'Destination must be at most 100 characters')
+                .required('Destination is required'),
+            pickup: yup.string().trim()
+                .min(3, 'Pickup Location must be at least 3 characters')
+                .max(500, 'Pickup Location must be at most 500 characters')
+                .required('Pickup Location is required'),
+            passby: yup.string().trim()
+                .min(3, 'Passby Location must be at least 3 characters')
+                .max(500, 'Passby Location must be at most 500 characters')
+                .required('Passby Location is required'),
+            notes: yup.string().trim()
+                .min(3, 'Notes must be at least 3 characters')
+                .max(500, 'Notes must be at most 500 characters')
+                .required('Notes is required')
+
+
+
 
 
         }),
@@ -69,11 +103,16 @@ function AddAdminBooking() {
             // data.driverposition = data.driverposition.trim();
             data.fare = data.fare.trim();
             data.totalearning = data.totalearning.trim();
+            data.status = data.status.trim();
+            data.destination = data.destination.trim();
+            data.pickup = data.pickup.trim();
+            data.passby = data.passby.trim();
+            data.notes = data.notes.trim();
 
-            http.post("/adminbooking", data)
+            http.post("/driverbooking", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/adminbookings");
+                    navigate("/driverbookings");
                 }).catch((error) => {
                     console.log(error);
                     toast.error(error);
@@ -109,7 +148,7 @@ function AddAdminBooking() {
 
 
             <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
-                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "450px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
+                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "505px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
                     <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
                         <p style={{ fontFamily: "system-ui", fontSize: "15px", marginRight: "10px" }}>
                             Enter additional information about bookings to increase efficiency for Admin needs
@@ -181,6 +220,30 @@ function AddAdminBooking() {
                             style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
                         />
 
+                        <Select
+                            fullWidth
+                            margin="normal"
+                            label="Status"
+                            name="status"
+                            value={formik.values.status}
+                            onChange={formik.handleChange}
+                            error={formik.touched.status && Boolean(formik.errors.status)}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign: "left" }}
+                            displayEmpty
+                        >
+
+                            <MenuItem value="" disabled>
+                                Accept/Reject Booking
+                            </MenuItem>
+
+
+                            {statusoptions.map((statusoption) => (
+                                <MenuItem key={statusoption.value} value={statusoption.value}>
+                                    {statusoption.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
                         <Box sx={{ mt: 2 }}>
                             <Button variant="contained" type="submit" style={{ fontFamily: "system-ui" }} className='milk'>
                                 Book
@@ -196,4 +259,4 @@ function AddAdminBooking() {
     );
 }
 
-export default AddAdminBooking;
+export default AddDriverBooking;
