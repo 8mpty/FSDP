@@ -111,8 +111,8 @@ app.use("/ridehistory", ridehistoryRoute);
 // Bookings Route
 const bookingRoute = require('./routes/booking');
 app.use("/booking", bookingRoute);
-const adminbookingRoute = require('./routes/adminbooking');
-app.use("/adminbooking", adminbookingRoute);
+const driverbookingRoute = require('./routes/driverbooking');
+app.use("/driverbooking", driverbookingRoute);
 
 // Announcement Route
 const announcementRoute = require('./routes/announcements');
@@ -144,3 +144,4 @@ async function initializeServer() {
 
 // Call the initializeServer function to start the server and create the default admin
 initializeServer();
+
