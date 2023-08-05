@@ -58,6 +58,7 @@ function App() {
   const [dropMenu, setdropMenu] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
+  const [showAllAnnouncements, setShowAllAnnouncements] = useState(true);
 
   const store = {
     user,
@@ -97,10 +98,12 @@ function App() {
     { path: "/userCreationDashboard", component: <UserCreationDashboard /> },
   ];
 
-  
-
   const closeAnnouncement = () => {
     setDisplayedAnnouncementIndex((prevIndex) => prevIndex + 1);
+  };
+  const closeAllAnnouncements = () => {
+    setDisplayedAnnouncementIndex(announcements.length);
+    setShowAllAnnouncements(false);
   };
 
   const getAllAnnouncements = () => {
@@ -201,18 +204,17 @@ function App() {
                 {/* Normal Toolbar */}
                 {user && !admin ? (
                   <>
-                    <Link to="/ridehistory">
+                    <Link to="/ridehistory" className="tabs">
                       <Typography className="a">Ride history</Typography>
                     </Link>
-                    <Link to="/bookings">
+                    <Link to="/bookings" className="tabs">
                       <Typography style={{ fontFamily: "system-ui" }}>Bookings</Typography>
                     </Link>
-                    <Link to="/driverbookings">
+                    <Link to="/driverbookings" className="tabs">
                       <Typography style={{ fontFamily: "system-ui" }}>Driver Bookings</Typography>
                     </Link>
-                    
                     <Button onClick={handleMenuOpen}>
-                      <AccountCircleIcon/>
+                      <AccountCircleIcon />
                     </Button>
                     <Menu anchorEl={dropMenu} open={Boolean(dropMenu)} onClose={handleMenuClose}>
                       <MenuItem component={Link} to="/profile" onClick={handleMenuClose}>
@@ -227,7 +229,7 @@ function App() {
                   <>
                     <Link to="/adminPanel"><IconButton><AdminPanelSettingsIcon /></IconButton></Link>
                     <Button onClick={handleMenuOpen}>
-                      <AccountCircleIcon/>
+                      <AccountCircleIcon />
                     </Button>
                     <Menu anchorEl={dropMenu} open={Boolean(dropMenu)} onClose={handleMenuClose}>
                       <MenuItem component={Link} to="/profileAdmin" onClick={handleMenuClose}>
@@ -251,7 +253,7 @@ function App() {
 
           {/* Admin Toolbar */}
           {admin && !user ? (
-            <AppBar position="sticky" className="AppBar">
+            <AppBar position="sticky" className="AppBar admin">
               <Container>
                 <Toolbar disableGutters={true}>
                   <Link to="/adminridehistory" className="tabs">
@@ -278,16 +280,17 @@ function App() {
               </Container>
             </AppBar>
           ) : null}
-
-          {(admin === null || user !== null) && (
+          {(admin === null || user !== null) && showAllAnnouncements && (
             <Box className="announcement-container">
-              {announcements.length > 0 && displayedAnnouncementIndex < announcements.length && (
-                <Announcement
-                  key={announcements[displayedAnnouncementIndex].id}
-                  announcement={announcements[displayedAnnouncementIndex]}
-                  onClose={closeAnnouncement}
-                />
-              )}
+              {announcements.length > 0 &&
+                displayedAnnouncementIndex < announcements.length && (
+                  <Announcement
+                    key={announcements[displayedAnnouncementIndex].id}
+                    announcement={announcements[displayedAnnouncementIndex]}
+                    onClose={closeAnnouncement}
+                    closeAllAnnouncements={closeAllAnnouncements}
+                  />
+                )}
             </Box>
           )}
 
@@ -310,7 +313,7 @@ function App() {
 
               {/* Redirects anyone that goes to a non-existent or unauthorized page */}
               <Route path={"*"} element={<NotFound />} />
-              
+
               {/* User Stuff */}
               {user ? (
                 <>

@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, IconButton } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import "../../Announcement.css";
 
-const Announcement = ({ announcement, onClose }) => {
+const Announcement = ({ announcement, onClose, closeAllAnnouncements }) => {
     const [isVisible, setIsVisible] = useState(true);
+
     const handleClose = () => {
         setIsVisible(false);
         onClose(announcement.id);
+    };
+
+    const handleCloseAll = () => {
+        closeAllAnnouncements();
     };
 
     if (!announcement) {
@@ -19,10 +25,11 @@ const Announcement = ({ announcement, onClose }) => {
                 <Typography variant="h6" gutterBottom className="tt">
                     {announcement.title}
                 </Typography>
-                <Typography variant="body1">{announcement.description}</Typography>
-                <Button onClick={handleClose} variant="contained" color="primary">
+                <Typography className="description" variant="body1">{announcement.description}</Typography>
+                {/* <Button onClick={handleClose} variant="contained" color="primary">
                     Close
-                </Button>
+                </Button> */}
+                <IconButton onClick={handleCloseAll} variant="outlined" color="secondary"><CloseIcon /></IconButton>
             </Box>
         )
     );
