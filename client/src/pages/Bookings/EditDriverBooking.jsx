@@ -31,7 +31,8 @@ function EditDriverBooking() {
 
     const statusoptions = [
         { value: 'Accepted', label: 'Accept' },
-        { value: 'Rejected', label: 'Reject' }
+        { value: 'Rejected', label: 'Reject' },
+        { value: 'Completed', label: 'Completed' }
 
     ];
 

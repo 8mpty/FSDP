@@ -81,15 +81,7 @@ function AddBooking() {
                         role: 'rider'
                     };
 
-                    // Call the backend API to create the ride history entry
-                    http.post('/ridehistory', rideHistoryData)
-                        .then((rideHistoryRes) => {
-                            console.log('Ride history entry created successfully:', rideHistoryRes.data);
-
-                        })
-                        .catch((error) => {
-                            console.log('Error creating ride history entry:', error);
-                        });
+                    // Call the backend API to create the driver booking entry
 
                     http.post('/driverbooking', driverBookingData)
                         
