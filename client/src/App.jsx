@@ -59,6 +59,7 @@ function App() {
   const [announcements, setAnnouncements] = useState([]);
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
   const [showAllAnnouncements, setShowAllAnnouncements] = useState(true);
+  const [isDriver, setIsDriver] = useState(false);
 
   const store = {
     user,
@@ -116,6 +117,8 @@ function App() {
       });
   };
 
+
+
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
@@ -137,6 +140,9 @@ function App() {
           .then((res) => {
             setIsLoggedIn(true);
             setUser(res.data.user);
+            console.log(res.data.user);
+            setIsDriver(res.data.user.driverStatus);
+            // console.log(res.data.user);
           })
           .catch((error) => {
             console.log(error);
@@ -210,9 +216,13 @@ function App() {
                     <Link to="/bookings" className="tabs">
                       <Typography style={{ fontFamily: "system-ui" }}>Bookings</Typography>
                     </Link>
-                    <Link to="/driverbookings" className="tabs">
-                      <Typography style={{ fontFamily: "system-ui" }}>Driver Bookings</Typography>
-                    </Link>
+                    {isDriver && (
+                      <Link to="/driverbookings">
+                        <Typography style={{ fontFamily: "system-ui" }}>Driver Bookings</Typography>
+                      </Link>
+                    )}
+
+
                     <Button onClick={handleMenuOpen}>
                       <AccountCircleIcon />
                     </Button>
@@ -229,7 +239,7 @@ function App() {
                   <>
                     <Link to="/adminPanel"><IconButton><AdminPanelSettingsIcon /></IconButton></Link>
                     <Button onClick={handleMenuOpen}>
-                      <AccountCircleIcon />
+                      <AccountCircleIcon  />
                     </Button>
                     <Menu anchorEl={dropMenu} open={Boolean(dropMenu)} onClose={handleMenuClose}>
                       <MenuItem component={Link} to="/profileAdmin" onClick={handleMenuClose}>

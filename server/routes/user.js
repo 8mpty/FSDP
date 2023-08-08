@@ -52,7 +52,8 @@ router.get("/auth", validateToken, (req, res) => {
     let userInfo = {
         id: req.user.id,
         email: req.user.email,
-        name: req.user.name
+        name: req.user.name,
+        driverStatus: req.user.driverStatus
     };
     res.json({
         user: userInfo
@@ -230,7 +231,8 @@ router.post("/login", async (req, res) => {
         let userInfo = {
             id: user.id,
             email: user.email,
-            name: user.name
+            name: user.name,
+            driverStatus: user.driverStatus
         };
         let accessToken = sign(userInfo, process.env.APP_SECRET);
         res.json({
@@ -570,6 +572,21 @@ router.put("/rejectDelete/:id", validateToken, async (req, res) => {
         }
     } catch (error) {
         console.error('Error updating isDeleted status:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get("/getDriverStatus/:id", async (req, res) => {
+    const id = req.params.id;
+    try {
+        // let user = await User.findByPk(id);
+        const driverStatues = await User.findByPk(id,{
+            attributes: ['id', 'name',  'driverStatus', 'isDeleted'],
+        });
+
+        res.json(driverStatues);
+    } catch (error) {
+        console.error('Error fetching Users:', error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
