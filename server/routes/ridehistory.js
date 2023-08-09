@@ -5,26 +5,46 @@ const yup = require("yup");
 const { validateToken } = require("../middlewares/auth");
 
 
-router.post("/", validateToken, async (req, res) => {
-  let data = req.body;
-  // Validate request body
-  let validationSchema = yup.object().shape({
-    driver: yup.string().trim().min(3).max(100).required(),
-    description: yup.string().trim().max(50),
-    start: yup.string().trim().min(3).max(40).required(),
-    end: yup.string().trim().min(3).max(40).required(),
-  });
+router.post("/completeride/:rideId", async (req, res) => {
+  const { rideId } = req.params;
+  
   try {
-    await validationSchema.validate(data, { abortEarly: false, strict: true });
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ errors: err.errors });
-    return;
-  }
-  data.userId = req.user.id;
-  let result = await ridehistory.create(data);
+      // Find the ride with the given ID
+      const ride = await ridehistory.findByPk(rideId);
 
-  res.json(result);
+      if (!ride) {
+          return res.status(404).json({ message: "Ride not found" });
+      }
+
+      if (ride.status !== "completed") {
+          return res.status(400).json({ message: "Ride is not completed" });
+      }
+
+      // Create ride history entry for rider
+      const riderHistory = {
+          userId: ride.riderId,
+          bookingId: ride.bookingId,
+          description: `Completed ride from ${ride.start} to ${ride.end}`,
+          points: ride.points,
+          totalPoints: ride.totalPoints,
+      };
+      await RideHistory.create(riderHistory);
+
+      // Create ride history entry for driver
+      const driverHistory = {
+          userId: ride.driverId,
+          bookingId: ride.bookingId,
+          description: `Completed ride from ${ride.start} to ${ride.end}`,
+          points: ride.points,
+          totalPoints: ride.totalPoints,
+      };
+      await RideHistory.create(driverHistory);
+
+      return res.status(201).json({ message: "Ride history entries created" });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error creating ride history entries" });
+  }
 });
 
 router.get("/", validateToken, async (req, res) => {
