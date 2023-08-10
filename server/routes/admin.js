@@ -5,25 +5,9 @@ const { Admin, Sequelize } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
+const { transporter, generateVerificationCode, sendEmail } = require("./brevoEmail");
 require('dotenv').config();
 
-const brevSMTP = {
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_PASS,
-    },
-};
-
-const transporter = nodemailer.createTransport(brevSMTP);
-
-// Function to generate a random verification code
-function generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
 
 // Get all Admins
 router.get("/getAllAdmins", async (req, res) => {
@@ -127,13 +111,12 @@ router.post("/registerAdmin", async (req, res) => {
     let result = await Admin.create(data);
 
     try {
-        await transporter.sendMail({
-            from: process.env.BREVO_USER,
-            to: data.email,
-            subject: "Account Secure Code",
-            text: `Your account verification code is: ${verificationCode}. 
-            Please keep this safe as it will help in recovering your account if lost!`,
-        });
+        await sendEmail(
+            data.email,
+            "Account Secure Code",
+            `Your account verification code is: ${verificationCode}. 
+            Please keep this safe as it will help in recovering your account if lost!`
+        );
     } catch (error) {
         console.error("Error sending verification code email:", error);
     }
@@ -237,7 +220,7 @@ router.delete("/:id", validateToken, async (req, res) => {
     }
 
     // Add a check for the default admin
-    if (admin.email === 'admin@admin.com') {
+    if (admin.id === 1) {
         res.status(403).json({ message: "Default admin cannot be deleted." });
         return;
     }
@@ -366,13 +349,10 @@ router.post("/resendVerificationCode", async (req, res) => {
     await admin.save();
 
     try {
-        await transporter.sendMail({
-            from: process.env.BREVO_USER,
-            to: email,
-            subject: "New Verification Code Requested",
-            text: `Your new verification code is: ${verificationCode}`,
-        });
-        transporter.close();
+        await sendEmail(email,
+            "New Verification Code Requested",
+            `Your new verification code is: ${verificationCode}`
+        );
     } catch (error) {
         console.error("Error sending verification code email:", error);
         res.status(500).json({ message: "Failed to send verification code." });

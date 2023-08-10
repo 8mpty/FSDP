@@ -68,7 +68,7 @@ function ProfileAdmin() {
                     });
             } catch (error) {
                 console.error('Error updating admin:', error);
-                toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!",error);
+                toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!", error);
             }
         },
     });
@@ -83,7 +83,7 @@ function ProfileAdmin() {
         setOpen(false);
     };
 
-    const deleteUser = () => {
+    const deleteAdmin = () => {
         http.delete(`/admin/${admin.id}`)
             .then((res) => {
                 toast.success('Deleted Account Successfully!');
@@ -167,9 +167,11 @@ function ProfileAdmin() {
                     <Button variant="contained" type="submit" onClick={formik.handleSubmit}>
                         Update
                     </Button>
-                    <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpen}>
-                        Delete Account
-                    </Button>
+                    {admin.id !== 1 && (
+                        <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpen}>
+                            Delete Account
+                        </Button>
+                    )}
                     <Button variant="contained" sx={{ ml: 2 }} onClick={resendVerificationCode}>
                         Resend New Verification Code
                     </Button>
@@ -189,7 +191,7 @@ function ProfileAdmin() {
                             Cancel
                         </Button>
                         <Button variant="contained" color="error"
-                            onClick={deleteUser}>
+                            onClick={deleteAdmin}>
                             Delete
                         </Button>
                     </DialogActions>
