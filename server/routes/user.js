@@ -5,23 +5,9 @@ const { User, Sequelize, UserLoginHistory } = require('../models');
 const yup = require("yup");
 const { validateToken } = require('../middlewares/auth');
 const { sign } = require('jsonwebtoken');
-const nodemailer = require("nodemailer");
 const dayjs = require('dayjs');
+const { transporter, generateVerificationCode, sendEmail } = require("./brevoEmail");
 require('dotenv').config();
-
-const brevSMTP = {
-    host: "smtp-relay.brevo.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.BREVO_USER,
-        pass: process.env.BREVO_PASS,
-    },
-};
-const transporter = nodemailer.createTransport(brevSMTP);
-function generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
 
 // Get all Users
 router.get("/getAllUsers", async (req, res) => {
@@ -132,13 +118,12 @@ router.post("/register", async (req, res) => {
 
     // Send the verification code to the user's email
     try {
-        await transporter.sendMail({
-            from: process.env.BREVO_USER,
-            to: data.email,
-            subject: "Account Secure Code",
-            text: `Your account verification code is: ${verificationCode}. 
-            Please keep this safe as it will help in recovering your account if lost!`,
-        });
+        await sendEmail(
+            data.email,
+            "Account Secure Code UWU",
+            `Your account verification code is: ${verificationCode}. 
+            Please keep this safe as it will help in recovering your account if lost!`
+            );
     } catch (error) {
         console.error("Error sending verification code email:", error);
     }
@@ -406,12 +391,11 @@ router.post("/resendVerificationCode", async (req, res) => {
         user.verificationCode = verificationCode;
         await user.save();
 
-        await transporter.sendMail({
-            from: process.env.BREVO_USER,
-            to: user.email,
-            subject: "New Verification Code Requested",
-            text: `Your new verification code is: ${verificationCode}`,
-        });
+        await sendEmail(
+            user.email, 
+            "New Verification Code Requested", 
+            `Your new verification code is: ${verificationCode}`
+            );
 
         res.json({ message: "Verification code sent successfully." });
     } catch (error) {
@@ -480,12 +464,11 @@ router.put("/setDriverStatus/:id", validateToken, async (req, res) => {
             // Save the updated status of user
             await user.save();
 
-            await transporter.sendMail({
-                from: process.env.BREVO_USER,
-                to: user.email,
-                subject: "Driver Status",
-                text: `Your driver status has been APPROVED!!`,
-            });
+            await sendEmail(
+                user.email,
+                "Driver Status UWU",
+                "Your driver status has been APPROVED!!"
+                );
 
             res.json({ message: "User has been approved as a driver." });
 
@@ -515,12 +498,11 @@ router.put("/rejectDriver/:id", validateToken, async (req, res) => {
             // Save the updated status of user
             await user.save();
 
-            await transporter.sendMail({
-                from: process.env.BREVO_USER,
-                to: user.email,
-                subject: "Driver Status",
-                text: `Your driver status has been REJECTED!!`,
-            });
+            await sendEmail(
+                user.email,
+                "Driver Status",
+                "Your driver status has been REJECTED!!"
+                );
 
             res.json({ message: "User has been rejected to be a driver." });
         } else {
@@ -541,6 +523,8 @@ router.put("/softDelete/:id", validateToken, async (req, res) => {
             return;
         }
         if (user.requestDelete && !user.isDeleted) {
+            user.email = "";
+            user.password = "";
             user.isDeleted = true;
             // Save the updated status of user
             await user.save();

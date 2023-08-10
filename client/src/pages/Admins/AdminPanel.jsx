@@ -23,6 +23,9 @@ function AdminPanel() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const itemsPerPage = 5;
   const [confirmationInput, setConfirmationInput] = useState('');
+  const [rejectButtonEnabled, setRejectButtonEnabled] = useState(false);
+  const [approveButtonEnabled, setApproveButtonEnabled] = useState(false);
+
 
 
 
@@ -120,7 +123,9 @@ function AdminPanel() {
         .then(response => {
           toast.success(`Account Deleted Successfully.`);
           setUsers(users.map(user => user.id === id ? {
-            ...user, isDeleted: true
+            ...user,
+            email: "",
+            isDeleted: true
           } : user));
         })
         .catch(error => {
@@ -211,22 +216,35 @@ function AdminPanel() {
   const handleOpenUser = () => {
     setOpenDelUser(true);
     setConfirmationInput('');
+    setRejectButtonEnabled(false);
+    setApproveButtonEnabled(false);
   };
   const handleOpenAdmin = () => {
     setOpenDelAdmin(true);
   };
   const handleOpenDriver = () => {
     setOpenDriver(true);
+    setConfirmationInput('');
+    setRejectButtonEnabled(false);
+    setApproveButtonEnabled(false);
   };
 
   const handleCloseUser = () => {
     setOpenDelUser(false);
+    setConfirmationInput('');
+    setRejectButtonEnabled(false);
+    setApproveButtonEnabled(false);
   };
   const handleCloseAdmin = () => {
     setOpenDelAdmin(false);
+    setRejectButtonEnabled(false);
+    setApproveButtonEnabled(false);
   };
   const handleCloseDriver = () => {
     setOpenDriver(false);
+    setConfirmationInput('');
+    setRejectButtonEnabled(false);
+    setApproveButtonEnabled(false);
   };
 
 
@@ -261,12 +279,28 @@ function AdminPanel() {
   };
 
   const handleConfirmationInputChange = (e) => {
-    setConfirmationInput(e.target.value);
+    const inputValue = e.target.value.toLowerCase();
+    setConfirmationInput(inputValue);
+
+    if (inputValue === 'reject') {
+      setRejectButtonEnabled(true);
+      setApproveButtonEnabled(false);
+    } else if (inputValue === 'confirm') {
+      setRejectButtonEnabled(false);
+      setApproveButtonEnabled(true);
+    } else if (inputValue === '') {
+      setRejectButtonEnabled(false);
+      setApproveButtonEnabled(false);
+    } else {
+      setRejectButtonEnabled(false);
+      setApproveButtonEnabled(false);
+    }
   };
 
   const isConfirmationValid = () => {
-    return confirmationInput.toLowerCase() === 'confirm';
+    return rejectButtonEnabled || approveButtonEnabled;
   };
+
 
   return (
     <Box>
@@ -313,7 +347,7 @@ function AdminPanel() {
                     <TableCell>{admin.name}</TableCell>
                     <TableCell>{admin.email}</TableCell>
                     <TableCell>
-                      {admin.email !== "admin@admin.com" && (
+                      {admin.id !== 1 && (
                         <Box>
                           <IconButton color="error" onClick={handleOpenAdmin}><Delete /></IconButton>
                           <Dialog open={openDelAdmin} onClose={handleCloseUser}>
@@ -418,7 +452,7 @@ function AdminPanel() {
                               </DialogContentText>
                               <DialogContentText>
                                 <Input
-                                  placeholder="Type 'confirm' to delete"
+                                  placeholder="Type 'reject' or 'confirm' "
                                   value={confirmationInput}
                                   onChange={handleConfirmationInputChange}
                                 />
@@ -431,13 +465,14 @@ function AdminPanel() {
                               </Button>
 
                               <Button variant="contained" color="warning"
-                                onClick={() => rejectDelete(user.id, user.requestDelete, user.isDeleted)}>
+                                onClick={() =>
+                                  rejectDelete(user.id, user.requestDelete, user.isDeleted)
+                                }
+                                disabled={!rejectButtonEnabled}>
                                 Reject
                               </Button>
 
-                              <Button
-                                variant="contained"
-                                color="error"
+                              <Button variant="contained" color="error"
                                 onClick={() => {
                                   if (isConfirmationValid()) {
                                     softDelete(user.id, user.requestDelete);
@@ -445,7 +480,7 @@ function AdminPanel() {
                                     toast.error('Please type "confirm" to proceed with deletion.');
                                   }
                                 }}
-                                disabled={!isConfirmationValid()}
+                                disabled={!approveButtonEnabled}
                               >
                                 Delete
                               </Button>
@@ -468,7 +503,7 @@ function AdminPanel() {
                               </DialogContentText>
                               <DialogContentText>
                                 <Input
-                                  placeholder="Type 'confirm' to approve"
+                                  placeholder="Type 'reject' or 'confirm' "
                                   value={confirmationInput}
                                   onChange={handleConfirmationInputChange}
                                 />
@@ -481,14 +516,15 @@ function AdminPanel() {
                               </Button>
 
                               <Button variant="contained" color="warning"
-                                onClick={() => rejectDriver(user.id, user.requestAsDriver, user.driverStatus)}>
+                                onClick={() =>
+                                  rejectDriver(user.id, user.requestAsDriver, user.driverStatus)
+                                }
+                                disabled={!rejectButtonEnabled}>
                                 Reject
                               </Button>
 
 
-                              <Button
-                                variant="contained"
-                                color="error"
+                              <Button variant="contained" color="error"
                                 onClick={() => {
                                   if (isConfirmationValid()) {
                                     setDriver(user.id, user.requestAsDriver, user.driverStatus);
@@ -496,8 +532,7 @@ function AdminPanel() {
                                     toast.error('Please type "confirm" to proceed.');
                                   }
                                 }}
-                                disabled={!isConfirmationValid()}
-                              >
+                                disabled={!approveButtonEnabled}>
                                 Approve
                               </Button>
 

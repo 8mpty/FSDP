@@ -98,6 +98,7 @@ function ProfileUser() {
         console.log("Be a Driver requested!");
         toast.success("Be a Driver requested. An admin will review your request.");
         setProf((prevState) => ({ ...prevState, requestDelete: true }));
+        handleCloseDriverDialog();
       })
       .catch((error) => {
         console.error("Error requesting account driver status:", error);
@@ -110,6 +111,7 @@ function ProfileUser() {
         console.log("Account deletion requested!");
         toast.success("Account deletion requested. An admin will review your request.");
         setProf((prevState) => ({ ...prevState, requestDelete: true }));
+        handleCloseDeleteDialog();
       })
       .catch((error) => {
         console.error("Error requesting account deletion:", error);
