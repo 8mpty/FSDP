@@ -19,23 +19,49 @@ import { UserContext } from '../../contexts/AccountContext';
 
 function Ridehistory() {
   const [ridehistorylist, setRidehistorylist] = useState([]);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
-    http.get("/ridehistory").then((res) => {
-      const rideHistoryWithBookings = res.data.map(async (ridehistory) => {
-        const bookingResponse = await http.get(`/bookings/${ridehistory.bookingId}`);
-        return {
-          ...ridehistory,
-          booking: bookingResponse.data,
-        };
-      });
-      Promise.all(rideHistoryWithBookings).then((rideHistories) => {
-        setRidehistorylist(rideHistories);
-      });
-    });
-  }, []);
+      const isAdmin = user.isAdmin;
 
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          isAdmin: isAdmin,
+        },
+      };
 
+      const bookingsPromise = http.get("/booking", headers);
+      const driverBookingsPromise = http.get("/driverbooking", headers);
+      const rideHistoryPromise = http.get("/ridehistory", headers);
+
+      Promise.all([bookingsPromise, rideHistoryPromise, driverBookingsPromise])
+        .then(([bookingResponse, rideHistoryResponse, driverBookingResponse]) => {
+          const bookingsData = bookingResponse.data;
+          const rideHistoryData = rideHistoryResponse.data;
+          const driverBookingsData = driverBookingResponse.data;
+
+          const mergedData = rideHistoryData.map(ride => {
+            const booking = bookingsData.find(booking => booking.id === ride.id);
+            const driverBooking = driverBookingsData.find(driverBooking => driverBooking.id === ride.id);
+
+            return {
+              id: ride.id,
+              rider: booking.name,
+              driver: driverBooking.drivername,
+              start: booking.pickup,
+              end: booking.passby,
+              createdAt: ride.createdAt,
+            };
+          });
+
+          setRidehistorylist(mergedData);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    
+  }, [user]);
 
   const sortedRideHistory = ridehistorylist.slice().sort((a, b) => {
     // Sort by createdAt in descending order (most recent first)
@@ -81,7 +107,7 @@ function Ridehistory() {
                 textAlign: "left",
               }}
             >
-              {ridehistory.driverbooking.drivername}'s car
+              {ridehistory.driver}'s car
             </Typography>
             <Typography
               variant="h5"
@@ -92,7 +118,7 @@ function Ridehistory() {
                 textAlign: "left",
               }}
             >
-              {ridehistory.booking.pickup} to {ridehistory.booking.passby}
+              {ridehistory.start} to {ridehistory.end}
             </Typography>
             <Typography
               variant="h6"
