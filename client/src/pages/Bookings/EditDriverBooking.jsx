@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -21,11 +21,14 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserContext } from '../../contexts/AccountContext';
 
 function EditDriverBooking() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [imageFile, setImageFile] = useState(null);
+  const userContext = useContext(UserContext);
+
 
   const options = [
     { value: "1", label: "Class 1" },
@@ -145,9 +148,45 @@ function EditDriverBooking() {
 
       if (data.status === "Completed") {
         try {
-          http.post(`/ridehistory/completeride/${id}`, data).then((res) => {
-            console.log(res.data);
-          });
+          // Fetch the DriverBooking record using data.id
+          http.get(`/driverbooking/${data.id}`)
+            .then((driverBookingResponse) => {
+              const driverBookingData = driverBookingResponse.data;
+              const driverId = driverBookingData.userId; // Extract the driverId from DriverBooking data
+              console.log("driverId ",driverId)
+              // Fetch the Booking record using data.bookingId
+              http.get(`/booking/${data.id}`)
+                .then((bookingResponse) => {
+                  const bookingData = bookingResponse.data;
+                  const riderId = bookingData.userId; // Extract the riderId
+      
+                  // Create the ride history entry
+                  const ridehistoryData = {
+                    driverbookingId: data.id,
+                    bookingId: data.id,
+                    description: "",
+                    points: 100,
+                    totalPoints: 100,
+                    driverId: driverId, // Use the extracted driverId
+                    riderId: riderId,   // Use the extracted riderId
+                  };
+      
+                  // Make the POST request to create the ride history entry
+                  http.post('/ridehistory', ridehistoryData)
+                    .then((res) => {
+                      console.log(res.data);
+                    })
+                    .catch((error) => {
+                      console.error("Error creating ride history entries", error);
+                    });
+                })
+                .catch((error) => {
+                  console.error("Error fetching booking data", error);
+                });
+            })
+            .catch((error) => {
+              console.error("Error fetching driver booking data", error);
+            });
         } catch (error) {
           console.error("Error creating ride history entries", error);
         }

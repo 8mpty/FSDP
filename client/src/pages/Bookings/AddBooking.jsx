@@ -72,14 +72,6 @@ function AddBooking() {
 
                     };
 
-                    const rideHistoryData = {
-                        driver: data.name,
-                        rider: user.name,
-                        start: data.pickup,
-                        end: data.passby,
-                        points: 100,
-                        role: 'rider'
-                    };
 
                     // Call the backend API to create the driver booking entry
 
