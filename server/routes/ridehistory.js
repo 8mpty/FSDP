@@ -3,47 +3,60 @@ const router = express.Router();
 const { User, ridehistory, Sequelize } = require("../models");
 const yup = require("yup");
 const { validateToken } = require("../middlewares/auth");
+const axios = require('axios');
 
-
-router.post("/completeride/:rideId", async (req, res) => {
-  const { rideId } = req.params;
-  
+router.post("/", validateToken, async (req, res) => {
   try {
-      // Find the ride with the given ID
-      const ride = await ridehistory.findByPk(rideId);
+    // Get the authenticated user's ID from the request
+    const userId = req.user.id;
 
-      if (!ride) {
-          return res.status(404).json({ message: "Ride not found" });
-      }
+    // Find the ride with the given ID from the request body
+    const data = req.body;
 
-      if (ride.status !== "completed") {
-          return res.status(400).json({ message: "Ride is not completed" });
-      }
+    if (!data) {
+      return res.status(404).json({ message: "Ride not found" });
+    }
 
-      // Create ride history entry for rider
-      const riderHistory = {
-          userId: ride.riderId,
-          bookingId: ride.bookingId,
-          description: `Completed ride from ${ride.start} to ${ride.end}`,
-          points: ride.points,
-          totalPoints: ride.totalPoints,
-      };
-      await RideHistory.create(riderHistory);
+    const bookingResponse = await axios.get(`http://localhost:3001/booking/${data.bookingId}`);
+    const bookingData = bookingResponse.data;
 
-      // Create ride history entry for driver
-      const driverHistory = {
-          userId: ride.driverId,
-          bookingId: ride.bookingId,
-          description: `Completed ride from ${ride.start} to ${ride.end}`,
-          points: ride.points,
-          totalPoints: ride.totalPoints,
-      };
-      await RideHistory.create(driverHistory);
+    const riderId = bookingData.userId;
 
-      return res.status(201).json({ message: "Ride history entries created" });
+    const driverbookingResponse = await axios.get(`http://localhost:3001/driverbooking/${data.driverbookingId}`);
+    const driverbookingData = driverbookingResponse.data;
+
+    const driverId = driverbookingData.userId;
+
+    const existingRideHistory = await ridehistory.findOne({
+      where: {
+        userId: userId,
+        bookingId: data.bookingId, // Assuming you have this data in the request body
+      },
+    });
+
+    if (existingRideHistory) {
+      return res.status(400).json({ message: "Ride history entry already exists" });
+    }
+
+    // Create ride history entry for rider
+    const ridehistoryData = {
+      userId: userId,
+      bookingId: data.bookingId, // Make sure you have this data in the request body
+      description: "", // Set the description as needed
+      points: 100,
+      totalPoints: 100,
+      driverId: driverId,
+      riderId: riderId,
+    };
+    await ridehistory.create(ridehistoryData);
+
+    // Create ride history entry for driver
+
+
+    return res.status(201).json({ message: "Ride history entries created" });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error creating ride history entries" });
+    console.error(error);
+    res.status(500).json({ message: "Error creating ride history entries" });
   }
 });
 

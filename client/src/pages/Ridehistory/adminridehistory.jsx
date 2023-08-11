@@ -17,7 +17,11 @@ import {
   TableSortLabel,
   FormControlLabel,
   Checkbox,
-  Dialog, DialogTitle, DialogContent, DialogActions, Button
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { AccessTime, Search, Clear } from "@mui/icons-material";
@@ -44,8 +48,6 @@ function Adminridehistory() {
     driver: false,
   });
 
-
-
   const [selectedRideHistory, setSelectedRideHistory] = useState(null);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -54,14 +56,13 @@ function Adminridehistory() {
     setSelectedRideHistory(ridehistory);
     setDeleteModalOpen(true);
   };
-  
 
   const closeDeleteModal = () => {
     setDeleteModalOpen(false);
   };
 
   useEffect(() => {
-    http.get(`/ridehistory/${id}`).then((res) => {
+    http.get(`/ridehistory`).then((res) => {
       setRidehistory(res.data);
     });
   }, [id]);
@@ -70,12 +71,12 @@ function Adminridehistory() {
     if (ridehistory && ridehistory.id) {
       http.delete(`/ridehistory/${ridehistory.id}`).then((res) => {
         console.log(res.data);
-  
+
         // Update the ridehistorylist state to remove the deleted entry
         setRidehistorylist((prevRidehistorylist) =>
           prevRidehistorylist.filter((item) => item.id !== ridehistory.id)
         );
-  
+
         // Close the modal and navigate to the same page
         closeDeleteModal();
         navigate("/adminridehistory");
@@ -84,21 +85,57 @@ function Adminridehistory() {
       console.log("Invalid ride history. Cannot delete ride history.");
     }
   };
-  
 
   const getRidehistory = () => {
     const isAdmin = true;
     const headers = {
       headers: {
-        "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-        "isAdmin": isAdmin
-      }
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        isAdmin: isAdmin,
+      },
     };
+  
+    const bookingsPromise = http.get("/booking", headers);
+    const driverBookingsPromise = http.get("/driverbooking", headers);
+    const rideHistoryPromise = http.get("/ridehistory", headers);
+
     
-    http.get("/ridehistory",headers).then((res) => {
-      setRidehistorylist(res.data);
-    });
-  };
+
+    Promise.all([bookingsPromise, rideHistoryPromise, driverBookingsPromise])
+      .then(([bookingResponse, rideHistoryResponse, driverBookingResponse]) => {
+        const bookingsData = bookingResponse.data;
+        const rideHistoryData = rideHistoryResponse.data;
+        const driverBookingsData = driverBookingResponse.data;
+
+        console.log("bookingsData", bookingsData); // Check if data is fetched correctly
+        console.log("rideHistoryData", rideHistoryData); // Check if data is fetched correctly
+        console.log("driverBookingsData", driverBookingsData);
+
+        // Merge data based on a common identifier (e.g., rideId or id)
+        const mergedData = rideHistoryData.map(ride => {
+          const booking = bookingsData.find(booking => booking.id === ride.id);
+          const driverBooking = driverBookingsData.find(driverBooking => driverBooking.id === ride.id);
+
+          console.log("booking", booking); // Check if booking data is found
+          console.log("driverBooking", driverBooking);
+
+          return {
+            id: ride.id,
+            rider: booking.name,
+            driver: driverBooking.drivername,
+            start: booking.pickup,
+            end: booking.passby,
+            createdAt: ride.createdAt,
+          };
+        });
+
+        // Set merged data to the state
+        setRidehistorylist(mergedData);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+}
 
   const searchRidehistory = () => {
     http.get(`/ridehistory?search=${search}`).then((res) => {
@@ -146,18 +183,6 @@ function Adminridehistory() {
   const rows = [];
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((res) => {
-        setData(res.data);
-        console.log("Result:", data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
   //search
   const onFilterChange = (event) => {
     setFilterOptions({
@@ -165,7 +190,9 @@ function Adminridehistory() {
       [event.target.name]: event.target.checked,
     });
   };
-
+  console.log("ridehistory",ridehistory); // Log the ridehistory object
+  console.log("ridehistorylist",ridehistorylist); // Log the entire ridehistorylist array
+  
   return (
     <Box>
       <Input
@@ -237,12 +264,6 @@ function Adminridehistory() {
               <TableCell align="right" className="table-header">
                 Destination
               </TableCell>
-              <TableCell align="right" className="table-header">
-                Points
-              </TableCell>
-              <TableCell align="right" className="table-header">
-                {" "}
-              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -275,61 +296,77 @@ function Adminridehistory() {
                 <TableRow key={ridehistory.id}>
                   <TableCell>{ridehistory.id}</TableCell>
                   <TableCell>
-                    {dayjs(ridehistory.createdAt).format(global.datetimeFormat)}
+                  {dayjs(ridehistory.createdAt).format(global.datetimeFormat)}
                   </TableCell>
                   <TableCell align="right">{ridehistory.driver}</TableCell>
                   <TableCell align="right">{ridehistory.rider}</TableCell>
                   <TableCell align="right">{ridehistory.start}</TableCell>
                   <TableCell align="right">{ridehistory.end}</TableCell>
-                  <TableCell align="right">{ridehistory.points}</TableCell>
-                  
                 </TableRow>
-                
               ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog open={deleteModalOpen} onClose={closeDeleteModal} className="custom-modal">
-        
-      <DialogTitle>Delete Ride History</DialogTitle>
-      <DialogContent className="modal-content">
-        <Typography variant="body1" className="modal-text">
-          Are you sure you want to delete the following ride history entry?
-        </Typography>
-        {/* Display the details of the selected ride history */}
-        {selectedRideHistory && (
-          <>
-          
-            <Typography variant="body2">Ride ID: {selectedRideHistory.id}</Typography>
-            <Typography variant="body2">Date and Time: {dayjs(selectedRideHistory.createdAt).format(global.datetimeFormat)}</Typography>
-            <Typography variant="body2">Driver: {selectedRideHistory.driver}</Typography>
-            <Typography variant="body2">Rider: {selectedRideHistory.rider}</Typography>
-            <Typography variant="body2">Pickup: {selectedRideHistory.start}</Typography>
-            <Typography variant="body2">Destination: {selectedRideHistory.end}</Typography>
-            <Typography variant="body2">Points: {selectedRideHistory.points}</Typography>
-            
-          </>
-        )}
-      </DialogContent>
-      <DialogActions className="modal-actions">
-        <Button onClick={closeDeleteModal} color="primary" className="modal-cancel-button">
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            deleteridehistory(selectedRideHistory); // Call the function to delete the selected ride history
-            closeDeleteModal();
-          }}
-          color="error"
-          variant="contained"
-          className="modal-delete-button"
-        >
-          Delete
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </Box>
-);
+      <Dialog
+        open={deleteModalOpen}
+        onClose={closeDeleteModal}
+        className="custom-modal"
+      >
+        <DialogTitle>Delete Ride History</DialogTitle>
+        <DialogContent className="modal-content">
+          <Typography variant="body1" className="modal-text">
+            Are you sure you want to delete the following ride history entry?
+          </Typography>
+          {/* Display the details of the selected ride history */}
+          {selectedRideHistory && (
+            <>
+              <Typography variant="body2">
+                Ride ID: {selectedRideHistory.id}
+              </Typography>
+              <Typography variant="body2">
+                Date and Time:{" "}
+                {dayjs(selectedRideHistory.createdAt).format(
+                  global.datetimeFormat
+                )}
+              </Typography>
+              <Typography variant="body2">
+                Driver: {selectedRideHistory.driver}
+              </Typography>
+              <Typography variant="body2">
+                Rider: {selectedRideHistory.rider}
+              </Typography>
+              <Typography variant="body2">
+                Pickup: {selectedRideHistory.start}
+              </Typography>
+              <Typography variant="body2">
+                Destination: {selectedRideHistory.end}
+              </Typography>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions className="modal-actions">
+          <Button
+            onClick={closeDeleteModal}
+            color="primary"
+            className="modal-cancel-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              deleteridehistory(selectedRideHistory); // Call the function to delete the selected ride history
+              closeDeleteModal();
+            }}
+            color="error"
+            variant="contained"
+            className="modal-delete-button"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
 }
 
 export default Adminridehistory;

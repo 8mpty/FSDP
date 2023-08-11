@@ -19,7 +19,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
 
     },
-
+    driverId:{
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    riderId: {
+      type: DataTypes.INTEGER, // Assuming this is the data type of userId
+      allowNull: false,
+    },
   });
   ridehistory.associate = (models) => {
     ridehistory.belongsTo(models.User, {
