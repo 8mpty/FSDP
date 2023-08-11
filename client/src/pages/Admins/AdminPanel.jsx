@@ -27,8 +27,6 @@ function AdminPanel() {
   const [approveButtonEnabled, setApproveButtonEnabled] = useState(false);
 
 
-
-
   const onSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -97,22 +95,19 @@ function AdminPanel() {
     getAllUsers();
   };
 
-
   useEffect(() => {
     getAllAdmins();
     getAllUsers();
   }, []);
 
-  const deleteAdmin = (id) => {
-    http.delete(`/admin/${id}`)
+  const softDeleteAdmin = (id) => {
+    http.put(`/admin/softDeleteAdmin/${id}`)
       .then(response => {
-        if (response.data.message) {
-          toast.success(`Successfully deleted admin`);
-          setAdmins(admins.filter(admin => admin.id !== id));
-        }
+        toast.success(`Account Deleted Successfully.`);
+        handleCloseAdmin(true);
       })
       .catch(error => {
-        toast.error(`Error when deleting admin`, error);
+        toast.error(`Error when deleting ${admins.id} `, error);
         console.error(`Error deleting admin with ID ${id}:`, error);
       });
   };
@@ -365,7 +360,7 @@ function AdminPanel() {
                                 Cancel
                               </Button>
                               <Button variant="contained" color="error"
-                                onClick={() => deleteAdmin(admin.id)}>
+                                onClick={() => softDeleteAdmin(admin.id)}>
                                 Delete
                               </Button>
                             </DialogActions>
@@ -522,8 +517,6 @@ function AdminPanel() {
                                 disabled={!rejectButtonEnabled}>
                                 Reject
                               </Button>
-
-
                               <Button variant="contained" color="error"
                                 onClick={() => {
                                   if (isConfirmationValid()) {
@@ -535,10 +528,6 @@ function AdminPanel() {
                                 disabled={!approveButtonEnabled}>
                                 Approve
                               </Button>
-
-
-
-
                             </DialogActions>
                           </Dialog>
                         </Box>

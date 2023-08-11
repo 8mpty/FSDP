@@ -147,55 +147,63 @@ router.post("/loginadmin", async (req, res) => {
     data.email = data.email.trim().toLowerCase();
     data.password = data.password.trim();
 
-    // Check email and password
-    let errorMsg = "Email or password is not correct.";
-    let admin = await Admin.findOne({
-        where: { email: data.email }
-    });
-    if (!admin) {
-        res.status(400).json({ message: errorMsg });
-        return;
-    }
-
-    let adminCount = await Admin.count({
-        where: { email: data.email }
-    });
-
-    if (adminCount > 1) {
-        let hasActiveAdmin = await Admin.findOne({
-            where: { email: data.email, isDeleted: false }
+    try {
+        // Check email and password
+        let errorMsg = "Email or password is not correct.";
+        let admin = await Admin.findOne({
+            where: { email: data.email }
         });
-        if (hasActiveAdmin) {
-            admin = hasActiveAdmin;
-        } else {
+        if (!admin) {
             res.status(400).json({ message: errorMsg });
             return;
         }
-    }
 
-    if (admin.isDeleted) {
-        res.status(400).json({ message: errorMsg });
-        return;
-    }
+        let adminCount = await Admin.count({
+            where: { email: data.email }
+        });
 
-    let match = await bcrypt.compare(data.password, admin.password);
-    if (!match) {
-        res.status(400).json({ message: errorMsg });
-        return;
-    }
 
-    // Return Admin info
-    let adminInfo = {
-        id: admin.id,
-        email: admin.email,
-        name: admin.name
-        // password: admin.password
-    };
-    let accessToken = sign(adminInfo, process.env.APP_SECRET);
-    res.json({
-        accessToken: accessToken,
-        admin: adminInfo
-    });
+        if (adminCount > 1) {
+            let hasActiveAdmin = await Admin.findOne({
+                where: { email: data.email, isDeleted: false }
+            });
+            if (hasActiveAdmin) {
+                admin = hasActiveAdmin;
+            } else {
+                res.status(400).json({ message: errorMsg });
+                return;
+            }
+        }
+
+        if (admin.isDeleted) {
+            res.status(400).json({ message: errorMsg });
+            return;
+        }
+
+        let match = await bcrypt.compare(data.password, admin.password);
+        if (!match) {
+            res.status(400).json({ message: errorMsg });
+            return;
+        }
+        await admin.save();
+
+        // Return Admin info
+        let adminInfo = {
+            id: admin.id,
+            email: admin.email,
+            name: admin.name
+            // password: admin.password
+        };
+        let accessToken = sign(adminInfo, process.env.APP_SECRET);
+        res.json({
+            accessToken: accessToken,
+            admin: adminInfo
+        });
+
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
 // Get the Details of Admin from Specific ID

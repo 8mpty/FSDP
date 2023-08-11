@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Box, Typography, TextField, Button } from '@mui/material';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Input } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { AdminContext } from '../../contexts/AccountContext';
@@ -13,6 +13,8 @@ import '../../Profile.css';
 function ProfileAdmin() {
     const { admin } = useContext(AdminContext);
     const navigate = useNavigate();
+    const [confirmationInput, setConfirmationInput] = useState('');
+    const [confirmButtonEnabled, setConfirmButtonEnabled] = useState(false);
 
     const [prof, setProf] = useState({
         name: "",
@@ -61,14 +63,17 @@ function ProfileAdmin() {
                     .then((res) => {
                         console.log('Form submitted!');
                         toast.success('Profile updated successfully.');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2200);
                     })
                     .catch((error) => {
                         console.error('Error updating profile:', error);
-                        toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!");
+                        toast.error("Failed to update profile. Name must not contain numbers and please confirm your passwords aswell or try again later!");
                     });
             } catch (error) {
                 console.error('Error updating admin:', error);
-                toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!", error);
+                toast.error("Failed to update profile. Name must not contain numbers and please confirm your passwords aswell or try again later!", error);
             }
         },
     });
@@ -77,23 +82,28 @@ function ProfileAdmin() {
 
     const handleOpen = () => {
         setOpen(true);
+        setConfirmationInput('');
+        setConfirmButtonEnabled(false);
     };
 
     const handleClose = () => {
         setOpen(false);
     };
 
-    const deleteAdmin = () => {
-        http.delete(`/admin/${admin.id}`)
-            .then((res) => {
-                toast.success('Deleted Account Successfully!');
-                localStorage.clear();
-                window.location = "/";
-                navigate("/");
-            }).catch((err) => {
-                toast.error('Error when deleting account. Please try again later!', err);
+    const softDeleteAdmin = (id) => {
+        http.put(`/admin/softDeleteAdmin/${id}`)
+            .then(response => {
+                handleClose();
+                toast.success(`Account Deleted Successfully.`);
+                setTimeout(() => {
+                    logout();
+                }, 2200);
+            })
+            .catch(error => {
+                toast.error(`Error when deleting ${admin.id} `, error);
+                console.error(`Error deleting admin with ID ${id}:`, error);
             });
-    }
+    };
 
     const resendVerificationCode = () => {
         http.post("/admin/resendVerificationCode", { email: prof.email })
@@ -105,6 +115,28 @@ function ProfileAdmin() {
                 toast.error("Failed to resend verification code. Please try again later.");
                 console.error("Error resending verification code:", error);
             });
+    };
+
+    const handleConfirmationInputChange = (e) => {
+        const inputValue = e.target.value.toLowerCase();
+        setConfirmationInput(inputValue);
+        if (inputValue === 'confirm') {
+            setConfirmButtonEnabled(true);
+        } else if (inputValue === '') {
+            setConfirmButtonEnabled(false);
+        } else {
+            setConfirmButtonEnabled(false);
+        }
+    };
+
+    const isConfirmationValid = () => {
+        return confirmButtonEnabled;
+    };
+
+    const logout = () => {
+        localStorage.clear();
+        window.location = "/";
+        toast.success("Logout Successfull!!");
     };
 
     return (
@@ -181,8 +213,13 @@ function ProfileAdmin() {
                         Delete Account
                     </DialogTitle>
                     <DialogContent>
+                        <DialogContentText>Are you sure you want to delete your account?</DialogContentText>
+                        <Box sx={{ m: 2 }}></Box>
                         <DialogContentText>
-                            Are you sure you want to delete your account?
+                            <Input
+                                placeholder="Type 'confirm' to delete"
+                                value={confirmationInput}
+                                onChange={handleConfirmationInputChange} />
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -191,7 +228,8 @@ function ProfileAdmin() {
                             Cancel
                         </Button>
                         <Button variant="contained" color="error"
-                            onClick={deleteAdmin}>
+                            onClick={() => softDeleteAdmin(admin.id)}
+                            disabled={!confirmButtonEnabled}>
                             Delete
                         </Button>
                     </DialogActions>

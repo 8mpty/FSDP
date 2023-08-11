@@ -1,37 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, Button, IconButton } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import global from "../../global";
+import dayjs from 'dayjs';
 import "../../Announcement.css";
 
-const Announcement = ({ announcement, onClose, closeAllAnnouncements }) => {
-    const [isVisible, setIsVisible] = useState(true);
+const Announcement = ({ announcement, closeAllAnnouncements, userLoggedIn }) => {
+    const [showAnnouncement, setShowAnnouncement] = useState(true);
 
-    const handleClose = () => {
-        setIsVisible(false);
-        onClose(announcement.id);
-    };
+    useEffect(() => {
+        const hasClosedAnnouncement = localStorage.getItem("closedAnnouncement");
+
+        if (hasClosedAnnouncement === "true") {
+            setShowAnnouncement(false);
+        }
+    }, []);
 
     const handleCloseAll = () => {
+        setShowAnnouncement(false);
+        localStorage.setItem("closedAnnouncement", "true");
         closeAllAnnouncements();
     };
 
-    if (!announcement) {
+    useEffect(() => {
+        if (userLoggedIn) {
+            localStorage.setItem("closedAnnouncement", "false");
+        }
+    }, [userLoggedIn]);
+
+    if (!announcement || !showAnnouncement) {
         return null;
     }
 
     return (
-        isVisible && (
-            <Box className="announcement-box">
-                <Typography variant="h6" gutterBottom className="tt">
-                    {announcement.title}
-                </Typography>
-                <Typography className="description" variant="body1">{announcement.description}</Typography>
-                {/* <Button onClick={handleClose} variant="contained" color="primary">
-                    Close
-                </Button> */}
-                <IconButton onClick={handleCloseAll} variant="outlined" color="secondary"><CloseIcon /></IconButton>
-            </Box>
-        )
+        <Box className="announcement-box">
+            <Typography variant="h6" gutterBottom className="tt">
+                {announcement.title}
+            </Typography>
+            <Typography className="description" variant="body1">{announcement.description}</Typography>
+            <Box sx={{ m: 2 }}></Box>
+            <Typography className="description" variant="body1">Ends At:</Typography>
+            <Typography className="description" variant="body1">{dayjs(announcement.endDate).format(global.datetimeFormat)}</Typography>
+            <IconButton onClick={handleCloseAll} variant="outlined" color="secondary"><CloseIcon /></IconButton>
+        </Box>
     );
 };
 

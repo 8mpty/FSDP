@@ -120,10 +120,10 @@ router.post("/register", async (req, res) => {
     try {
         await sendEmail(
             data.email,
-            "Account Secure Code UWU",
+            "Account Secure Code",
             `Your account verification code is: ${verificationCode}. 
             Please keep this safe as it will help in recovering your account if lost!`
-            );
+        );
     } catch (error) {
         console.error("Error sending verification code email:", error);
     }
@@ -392,10 +392,10 @@ router.post("/resendVerificationCode", async (req, res) => {
         await user.save();
 
         await sendEmail(
-            user.email, 
-            "New Verification Code Requested", 
+            user.email,
+            "New Verification Code Requested",
             `Your new verification code is: ${verificationCode}`
-            );
+        );
 
         res.json({ message: "Verification code sent successfully." });
     } catch (error) {
@@ -466,9 +466,9 @@ router.put("/setDriverStatus/:id", validateToken, async (req, res) => {
 
             await sendEmail(
                 user.email,
-                "Driver Status UWU",
+                "Driver Status",
                 "Your driver status has been APPROVED!!"
-                );
+            );
 
             res.json({ message: "User has been approved as a driver." });
 
@@ -502,7 +502,7 @@ router.put("/rejectDriver/:id", validateToken, async (req, res) => {
                 user.email,
                 "Driver Status",
                 "Your driver status has been REJECTED!!"
-                );
+            );
 
             res.json({ message: "User has been rejected to be a driver." });
         } else {
@@ -564,8 +564,8 @@ router.get("/getDriverStatus/:id", async (req, res) => {
     const id = req.params.id;
     try {
         // let user = await User.findByPk(id);
-        const driverStatues = await User.findByPk(id,{
-            attributes: ['id', 'name',  'driverStatus', 'isDeleted'],
+        const driverStatues = await User.findByPk(id, {
+            attributes: ['id', 'name', 'driverStatus', 'isDeleted'],
         });
 
         res.json(driverStatues);

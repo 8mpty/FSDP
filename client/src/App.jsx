@@ -60,6 +60,7 @@ function App() {
   const [displayedAnnouncementIndex, setDisplayedAnnouncementIndex] = useState(0);
   const [showAllAnnouncements, setShowAllAnnouncements] = useState(true);
   const [isDriver, setIsDriver] = useState(false);
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
 
   const store = {
     user,
@@ -143,6 +144,7 @@ function App() {
             console.log(res.data.user);
             setIsDriver(res.data.user.driverStatus);
             // console.log(res.data.user);
+            setUserLoggedIn(true);
           })
           .catch((error) => {
             console.log(error);
@@ -297,7 +299,6 @@ function App() {
                   <Announcement
                     key={announcements[displayedAnnouncementIndex].id}
                     announcement={announcements[displayedAnnouncementIndex]}
-                    onClose={closeAnnouncement}
                     closeAllAnnouncements={closeAllAnnouncements}
                   />
                 )}

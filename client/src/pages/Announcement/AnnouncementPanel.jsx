@@ -15,19 +15,30 @@ const columns = [
     { field: 'endDate', headerName: 'End Date', width: 150 },
     { field: 'adminName', headerName: 'Created By', width: 150 },
     {
-        field: 'edit',
-        headerName: 'Edit',
-        width: 100,
+        field: 'edit', headerName: 'Edit', width: 100,
         renderCell: (params) => {
             const { adminId, id } = params.row;
             const { admin } = useContext(AdminContext);
-            return adminId === admin.id ? (
-                <Link to={`/editAnnouncement/${id}`}>
-                    <IconButton color="primary">
-                        <Edit />
-                    </IconButton>
-                </Link>
-            ) : null;
+
+            if (admin.id === 1) {
+                return (
+                    <Link to={`/editAnnouncement/${id}`}>
+                        <IconButton color="primary">
+                            <Edit />
+                        </IconButton>
+                    </Link>
+                );
+            }
+            if (adminId === admin.id) {
+                return (
+                    <Link to={`/editAnnouncement/${id}`}>
+                        <IconButton color="primary">
+                            <Edit />
+                        </IconButton>
+                    </Link>
+                );
+            }
+            return null;
         },
     },
 ];
@@ -117,8 +128,7 @@ function AnnouncementPanel() {
                     value={searchInput}
                     placeholder="Search"
                     onChange={onSearchChange}
-                    onKeyDown={onSearchKeyDown}
-                />
+                    onKeyDown={onSearchKeyDown} />
                 <IconButton color="primary" onClick={onClickSearch}>
                     <Search />
                 </IconButton>
@@ -141,7 +151,7 @@ function AnnouncementPanel() {
                             title: announ.title,
                             description: announ.description,
                             endDate: dayjs(announ.endDate).format(global.datetimeFormat),
-                            adminName: announ.admin.name,
+                            adminName: announ.admin.name + " " + announ.adminId,
                             adminId: announ.adminId,
                         }))}
                         columns={columns}
