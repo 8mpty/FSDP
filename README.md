@@ -3,8 +3,13 @@
  -------------------------------------------
 Group Members:
 <br>
+LEE HUI SHI, REBECCA (210999Q)
+<br>
 MOHAMED KHAIRIN BIN RAMLEE (224149Q) ~Leader
 <br>
+QUEK WEN ZHI, GABRIEL (222576M)
+<br>
+TEO YU CHENG (224494Q)
 
 ---------------------------------------------
 1: Please run ```npm i``` for both the "Server" and "Client" Folders to install all the dependencies.<br>
