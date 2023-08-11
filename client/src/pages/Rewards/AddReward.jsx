@@ -28,14 +28,14 @@ function AddReward() {
             Points_Required: yup
                 .number()
                 .integer('Points must be an integer')
-                .min(2, 'Points must be at least 2 characters')
-                .max(10000, 'Points must be at most 1000 characters')
+                .min(2, 'Points must be at least 2 digits')
+                .max(10000, 'Points must be at most 1000 digits')
                 .required('Points is required'),
             Reward_Amount: yup
                 .number()
                 .integer('Reward Amount must be an integer')
-                .min(2, 'Reward Amount must be at least 2 characters')
-                .max(1000, 'Reward Amount must be at most 1000 characters')
+                .min(2, 'Reward Amount must be at least 2 digits')
+                .max(1000, 'Reward Amount must be at most 1000 digits')
                 .required('Reward Amount is required'),
         }),
         onSubmit: (data) => {
@@ -126,6 +126,7 @@ function AddReward() {
                     multiline minRows={2}
                     label="Points Required"
                     name="Points_Required"
+                    type="number"
                     value={formik.values.Points_Required}
                     onChange={formik.handleChange}
                     error={formik.touched.Points_Required && Boolean(formik.errors.Points_Required)}
@@ -139,6 +140,7 @@ function AddReward() {
                     multiline minRows={2}
                     label="Reward Amount"
                     name="Reward_Amount"
+                    type="number"
                     value={formik.values.Reward_Amount}
                     onChange={formik.handleChange}
                     error={formik.touched.Reward_Amount && Boolean(formik.errors.Reward_Amount)}
