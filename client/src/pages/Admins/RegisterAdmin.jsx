@@ -12,7 +12,7 @@ import http from '../../http';
 function RegisterAdmin() {
   const navigate = useNavigate();
 
-  const dateChange = (increment) =>{
+  const dateChange = (increment) => {
     return dayjs().add(increment, 'days').format(global.datetimeFormat);
   }
 
@@ -51,7 +51,7 @@ function RegisterAdmin() {
         .then((res) => {
           toast.success(`Admin has been registered!`);
           console.log(res.data);
-          navigate("/loginAdmin");
+          navigate("/");
         })
         .catch(function (err) {
           toast.error(`${err.response.data.message}`, err);

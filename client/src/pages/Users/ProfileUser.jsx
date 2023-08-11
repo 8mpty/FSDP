@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Box, Typography, TextField, Button } from "@mui/material";
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Input } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { UserContext } from "../../contexts/AccountContext";
@@ -13,6 +13,8 @@ import '../../Profile.css';
 function ProfileUser() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
+  const [confirmationInput, setConfirmationInput] = useState('');
+  const [confirmButtonEnabled, setConfirmButtonEnabled] = useState(false);
 
   const [prof, setProf] = useState({
     name: "",
@@ -55,15 +57,17 @@ function ProfileUser() {
           values.confirmPassword = prof.confirmPassword;
         }
 
-        http
-          .put(`/user/updateUser/${user.id}`, values)
+        http.put(`/user/updateUser/${user.id}`, values)
           .then((res) => {
             console.log("Form submitted!");
             toast.success("Profile updated successfully.");
+            setTimeout(() => {
+              window.location.reload();
+            }, 2200);
           })
           .catch((error) => {
             console.error("Error updating profile:", error);
-            toast.error("Failed to update profile. Please confirm your passwords aswell or try again later!");
+            toast.error("Failed to update profile. Name must not contain numbers and please confirm your passwords aswell or try again later!");
           });
       } catch (error) {
         console.error("Error updating user:", error);
@@ -75,9 +79,13 @@ function ProfileUser() {
 
   const handleOpenDeleteDialog = () => {
     setOpenDeleteDialog(true);
+    setConfirmationInput('');
+    setConfirmButtonEnabled(false);
   };
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
+    setConfirmationInput('');
+    setConfirmButtonEnabled(false);
   };
 
   const [openDriverDialog, setOpenDriverDialog] = useState(false);
@@ -130,6 +138,22 @@ function ProfileUser() {
         console.error("Error resending verification code:", error);
         toast.error("Failed to resend verification code. Please try again later.");
       });
+  };
+
+  const handleConfirmationInputChange = (e) => {
+    const inputValue = e.target.value.toLowerCase();
+    setConfirmationInput(inputValue);
+    if (inputValue === 'confirm') {
+      setConfirmButtonEnabled(true);
+    } else if (inputValue === '') {
+      setConfirmButtonEnabled(false);
+    } else {
+      setConfirmButtonEnabled(false);
+    }
+  };
+
+  const isConfirmationValid = () => {
+    return confirmButtonEnabled;
   };
 
   return (
@@ -222,13 +246,24 @@ function ProfileUser() {
           <DialogTitle>Request Account Deletion</DialogTitle>
           <DialogContent>
             <DialogContentText>Are you sure you want to request for deletion?</DialogContentText>
+            <DialogContentText>Contact an admin if you regret this decision!</DialogContentText>
+            <Box sx={{ m: 2 }}></Box>
+            <DialogContentText>
+              <Input
+                placeholder="Type 'confirm' to request"
+                value={confirmationInput}
+                onChange={handleConfirmationInputChange}
+              />
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button variant="contained" color="inherit" onClick={handleCloseDeleteDialog}>
               Cancel
             </Button>
-            <Button variant="contained" color="error" onClick={requestDeletion}>
-              Delete
+            <Button variant="contained" color="error"
+              onClick={requestDeletion}
+              disabled={!confirmButtonEnabled}>
+              Request
             </Button>
           </DialogActions>
         </Dialog>
