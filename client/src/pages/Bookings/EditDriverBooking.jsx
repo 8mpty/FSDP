@@ -147,12 +147,13 @@ function EditDriverBooking() {
 
       if (data.status === "Completed") {
         try {
+          const driverId = userContext.userId;
           // Fetch the DriverBooking record using data.id
           http
             .get(`/driverbooking/${data.id}`)
             .then((driverBookingResponse) => {
               const driverBookingData = driverBookingResponse.data;
-              const driverId = driverBookingData.userId; // Extract the driverId from DriverBooking data
+
               console.log("driverId ", driverId);
               // Fetch the Booking record using data.bookingId
               http
