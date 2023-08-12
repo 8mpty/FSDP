@@ -268,7 +268,7 @@ function EditDriverBooking() {
                     <Grid item xs={12} md={6} lg={8} style={{ boxShadow: "0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)", borderRadius: "5px", padding: "20px", marginLeft: "17px", marginTop: "50px", marginBottom: "50px" }}>
                         <TextField
                             fullWidth margin="normal" autoComplete="off"
-                            label="DriverName"
+                            label="Driver Name"
                             name="drivername"
                             value={formik.values.drivername}
                             onChange={formik.handleChange}
@@ -313,7 +313,7 @@ function EditDriverBooking() {
                         <TextField
                             fullWidth margin="normal" autoComplete="off"
                             multiline minRows={2}
-                            label="Totalearning"
+                            label="Total Earnings"
                             name="totalearning"
                             value={formik.values.totalearning}
                             onChange={formik.handleChange}

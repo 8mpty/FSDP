@@ -169,9 +169,9 @@ function DriverBookings() {
 
                                     {
                                         driverbooking.status === "Completed" && (
-
-
+                                    
                                             <td style={{ width: "70px" }} ><div style={{ color: "#1134A6", backgroundColor: "#63e5ff", borderRadius: "20px", padding: "8px" }}>{driverbooking.status}</div></td>
+                                            
 
                                         )}
 
