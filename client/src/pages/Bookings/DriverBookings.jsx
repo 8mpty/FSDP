@@ -12,6 +12,7 @@ import '../../App.css';
 
 
 
+
 const onFileChange = (e) => {
     let file = e.target.files[0];
     if (file) {
@@ -36,9 +37,8 @@ const onFileChange = (e) => {
 };
 
 
-
 function DriverBookings() {
-    
+
     const [driverbookingList, setDriverBookingList] = useState([]);
     const [search, setSearch] = useState('');
     const { user } = useContext(UserContext);
@@ -87,6 +87,7 @@ function DriverBookings() {
     const handleClose = () => {
         setOpen(false);
     };
+
 
     const deleteDriverBooking = () => {
         http.delete(`/driverbooking/${id}`)
@@ -162,9 +163,10 @@ function DriverBookings() {
 
 
                                             <td style={{ width: "70px" }} ><div style={{ color: "green", backgroundColor: "#A4F0C1", borderRadius: "20px", padding: "8px" }}>{driverbooking.status}</div></td>
+                                            
 
                                         )}
-                                    
+
                                     {
                                         driverbooking.status === "Completed" && (
 
@@ -189,7 +191,7 @@ function DriverBookings() {
 
                                         )}
 
-                                    
+
 
 
 
