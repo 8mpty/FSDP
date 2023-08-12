@@ -25,14 +25,14 @@ function AddReward() {
                 .min(3, 'Reward Name must be at least 3 characters')
                 .max(100, 'Reward Name must be at most 100 characters')
                 .required('Reward Name is required'),
-            Points_Required: yup
-                .number()
+            Points_Required: yup.number()
+                .typeError('Points must be a number')
                 .integer('Points must be an integer')
                 .min(2, 'Points must be at least 2 digits')
                 .max(10000, 'Points must be at most 1000 digits')
                 .required('Points is required'),
-            Reward_Amount: yup
-                .number()
+            Reward_Amount: yup.number()
+                .typeError('Reward Amount must be a number')
                 .integer('Reward Amount must be an integer')
                 .min(2, 'Reward Amount must be at least 2 digits')
                 .max(1000, 'Reward Amount must be at most 1000 digits')

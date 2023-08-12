@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 //const { Rewards } = require('../models');
-const { Rewards, Sequelize } = require('../models');
+const { Admin, Rewards, Sequelize } = require('../models');
 const yup = require("yup");
+const { validateToken } = require('../middlewares/auth');
 
-router.post("/", async (req, res) => {
+router.post("/", validateToken ,async (req, res) => {
     let data = req.body;
     // Validate request body  - error roughly around here
     let validationSchema = yup.object().shape({
@@ -25,6 +26,7 @@ router.post("/", async (req, res) => {
     data.Reward_Name = data.Reward_Name.trim();
     data.Points_Required = data.Points_Required;
     data.Reward_Amount = data.Reward_Amount;
+    data.adminId = req.admin.id;
     let result = await Rewards.create(data);
     res.json(result);
 });
@@ -42,14 +44,17 @@ router.get("/", async (req, res) => {
 
     let list = await Rewards.findAll({
         where: condition,
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', 'DESC']],
+        include: { model: Admin, as: "admin", attributes: ['name'] },
     });
     res.json(list);
 });
 
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
-    let rewards = await Rewards.findByPk(id);
+    let rewards = await Rewards.findByPk(id, {
+        include: { model: Admin, as: "admin", attributes: ['name'] }
+    });
     // Check id not found
     if (!rewards) {
         res.sendStatus(404);
@@ -58,15 +63,21 @@ router.get("/:id", async (req, res) => {
     res.json(rewards);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", validateToken ,async (req, res) => {
     let id = req.params.id;
     // Check id not found
-    
     let rewards = await Rewards.findByPk(id);
     if (!rewards) {
         res.sendStatus(404);
         return;
     }
+    // Check request Admin Id
+    let adminId = req.admin.id;
+    if (rewards.adminId != adminId) {
+        res.sendStatus(403);
+        return;
+    }
+    
     let data = req.body;
     data.Reward_Amount = parseInt(data.Reward_Amount);
     data.Points_Required = parseInt(data.Points_Required);

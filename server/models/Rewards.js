@@ -16,5 +16,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         }
     });
+    Rewards.associate = (models) => {
+        Rewards.belongsTo(models.Admin, {
+            foreignKey: "adminId",
+            as: 'admin'
+        });
+    };
     return Rewards;
 }
