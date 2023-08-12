@@ -28,7 +28,14 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: "userId",
             as: 'user'
         });
+
+        Booking.belongsTo(models.DriverBooking, {
+            foreignKey: "driverbookingId",
+            as: 'driverbooking'
+        });
     };
+
+    
 
     return Booking;
 }

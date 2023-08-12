@@ -246,139 +246,81 @@ function EditDriverBooking() {
     }
   };
 
-  return (
-    <Box style={{ marginLeft: "150px", marginTop: "75px" }}>
-      <Box
-        component="form"
-        onSubmit={formik.handleSubmit}
-        style={{ display: "flex" }}
-      >
-        <div
-          style={{
-            display: "flex",
-            backgroundColor: "#129D72",
-            width: "550px",
-            height: "500px",
-            marginTop: "35px",
-            color: "white",
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "system-ui",
-              fontWeight: "bold",
-              fontSize: "30px",
-              marginLeft: "20px",
-            }}
-          >
-            Let's Book
-            <p
-              style={{
-                fontFamily: "system-ui",
-                paddingTop: "30px",
-                fontSize: "15px",
-              }}
-            >
-              Feeling Lazy?
-            </p>
-            <p style={{ fontFamily: "system-ui", fontSize: "15px" }}>
-              Book a car ride that maximises comfort and speed today
-            </p>
-          </p>
-        </div>
-        <Grid container spacing={2} style={{ alignItems: "center" }}>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={8}
-            style={{
-              boxShadow:
-                "0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)",
-              borderRadius: "5px",
-              padding: "20px",
-              marginLeft: "17px",
-              marginTop: "50px",
-              marginBottom: "50px",
-            }}
-          >
-            <TextField
-              fullWidth
-              margin="normal"
-              autoComplete="off"
-              label="DriverName"
-              name="drivername"
-              value={formik.values.drivername}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.drivername && Boolean(formik.errors.drivername)
-              }
-              helperText={formik.touched.drivername && formik.errors.drivername}
-              style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
-            />
-            <Select
-              fullWidth
-              margin="normal"
-              label="Driver Position"
-              name="driverposition"
-              value={formik.values.driverposition}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.driverposition &&
-                Boolean(formik.errors.driverposition)
-              }
-              style={{
-                fontFamily: "system-ui",
-                border: "1px solid #33FFDA",
-                textAlign: "left",
-              }}
-              displayEmpty
-            >
-              <MenuItem value="" disabled>
-                Driver Position
-              </MenuItem>
+    return (
+        <Box style={{ marginLeft: "150px", marginTop: "75px" }}>
 
-              {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <TextField
-              fullWidth
-              margin="normal"
-              autoComplete="off"
-              multiline
-              minRows={2}
-              label="Fare"
-              name="fare"
-              value={formik.values.fare}
-              onChange={formik.handleChange}
-              error={formik.touched.fare && Boolean(formik.errors.fare)}
-              helperText={formik.touched.fare && formik.errors.fare}
-              style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              autoComplete="off"
-              multiline
-              minRows={2}
-              label="Totalearning"
-              name="totalearning"
-              value={formik.values.totalearning}
-              onChange={formik.handleChange}
-              error={
-                formik.touched.totalearning &&
-                Boolean(formik.errors.totalearning)
-              }
-              helperText={
-                formik.touched.totalearning && formik.errors.totalearning
-              }
-              style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
-            />
+            <Box component="form" onSubmit={formik.handleSubmit} style={{ display: "flex" }}>
+                <div style={{ display: "flex", backgroundColor: "#129D72", width: "550px", height: "500px", marginTop: "35px", color: "white", alignContent: "center", alignItems: "center" }}>
+                    <p style={{ fontFamily: "system-ui", fontWeight: "bold", fontSize: "30px", marginLeft: "20px" }}>Let's Book
+                        <p style={{ fontFamily: "system-ui", paddingTop: "30px", fontSize: "15px" }}>
+                            Feeling Lazy?
+                        </p>
+                        <p style={{ fontFamily: "system-ui", fontSize: "15px" }}>
+                            Book a car ride that maximises comfort and speed today
+                        </p>
+                    </p>
+                </div>
+                <Grid container spacing={2} style={{ alignItems: "center" }}>
+
+
+
+
+                    <Grid item xs={12} md={6} lg={8} style={{ boxShadow: "0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)", borderRadius: "5px", padding: "20px", marginLeft: "17px", marginTop: "50px", marginBottom: "50px" }}>
+                        <TextField
+                            fullWidth margin="normal" autoComplete="off"
+                            label="DriverName"
+                            name="drivername"
+                            value={formik.values.drivername}
+                            onChange={formik.handleChange}
+                            error={formik.touched.drivername && Boolean(formik.errors.drivername)}
+                            helperText={formik.touched.drivername && formik.errors.drivername}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
+                        />
+                        <Select
+                            fullWidth
+                            margin="normal"
+                            label="Driver Position"
+                            name="driverposition"
+                            value={formik.values.driverposition}
+                            onChange={formik.handleChange}
+                            error={formik.touched.driverposition && Boolean(formik.errors.driverposition)}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA", textAlign: "left" }}
+                            displayEmpty
+                        >
+
+                            <MenuItem value="" disabled>
+                                Driver Position
+                            </MenuItem>
+
+
+                            {options.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <TextField
+                            fullWidth margin="normal" autoComplete="off"
+                            multiline minRows={2}
+                            label="Fare"
+                            name="fare"
+                            value={formik.values.fare}
+                            onChange={formik.handleChange}
+                            error={formik.touched.fare && Boolean(formik.errors.fare)}
+                            helperText={formik.touched.fare && formik.errors.fare}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
+                        />
+                        <TextField
+                            fullWidth margin="normal" autoComplete="off"
+                            multiline minRows={2}
+                            label="Totalearning"
+                            name="totalearning"
+                            value={formik.values.totalearning}
+                            onChange={formik.handleChange}
+                            error={formik.touched.totalearning && Boolean(formik.errors.totalearning)}
+                            helperText={formik.touched.totalearning && formik.errors.totalearning}
+                            style={{ fontFamily: "system-ui", border: "1px solid #33FFDA" }}
+                        />
 
             <Select
               fullWidth

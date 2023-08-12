@@ -132,7 +132,7 @@ function AddBooking() {
 
                         <TextField
                             fullWidth margin="normal" autoComplete="off"
-                            label="Name"
+                            label="Destination"
                             name="name"
                             value={formik.values.name}
                             onChange={formik.handleChange}
