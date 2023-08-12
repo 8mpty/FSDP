@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, TextField, Button } from "@mui/material";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../../http";
@@ -52,7 +52,7 @@ function AccountRecovery() {
       <Typography variant="h5" sx={{ my: 2 }}>
         Admin Account Recovery
       </Typography>
-      <ToastContainer/>
+      <ToastContainer />
       <Box className="forget-con-admin" component="form" sx={{ maxWidth: "500px" }} onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth
@@ -100,6 +100,9 @@ function AccountRecovery() {
           error={formik.touched.verificationCode && Boolean(formik.errors.verificationCode)}
           helperText={formik.touched.verificationCode && formik.errors.verificationCode}
         />
+        <Box>
+          <Link to="/contactus">Contact Us</Link>
+        </Box>
         <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
           Recover
         </Button>

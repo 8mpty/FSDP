@@ -242,9 +242,9 @@ function AdminPanel() {
     setApproveButtonEnabled(false);
   };
 
-
   const handleToggleData = () => {
     setShowAdmins(prevShowAdmins => !prevShowAdmins);
+    setCurrentPage(1);
   };
 
   const handleNextPage = () => {
@@ -378,17 +378,17 @@ function AdminPanel() {
               {currentPage > 1 && (
                 <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }} >Previous</Link>
               )}
-              {currentPage > 1 && currentPage < Math.ceil(admins.length / itemsPerPage) && (
+              {currentPage > 1 && currentPage < Math.ceil(filterActiveAdmins(admins).length / itemsPerPage) && (
                 <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
               )}
-              {currentPage < Math.ceil(admins.length / itemsPerPage) && (
+              {currentPage < Math.ceil(filterActiveAdmins(admins).length / itemsPerPage) && (
                 <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>Next</Link>
               )}
             </Box>
           )}
           {currentPage > 1 && (
             <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
-              {`< ${currentPage} / ${getTotalPages(admins.length, itemsPerPage)} >`}
+              {`< ${currentPage} / ${getTotalPages(filterActiveAdmins(admins).length, itemsPerPage)} >`}
             </Typography>
           )}
         </Box>
@@ -487,7 +487,7 @@ function AdminPanel() {
                     <TableCell>
                       {user.requestAsDriver && !user.driverStatus && (
                         <Box>
-                          <IconButton color="secondary" onClick={handleOpenDriver}><DriveEtaIcon /></IconButton>
+                          <IconButton color="secondary" onClick={handleOpenDriver} ><DriveEtaIcon /></IconButton>
                           <Dialog open={openDriver} onClose={handleCloseDriver}>
                             <DialogTitle>
                               Approve Driver Request
@@ -548,17 +548,17 @@ function AdminPanel() {
               {currentPage > 1 && (
                 <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }} >Previous</Link>
               )}
-              {currentPage > 1 && currentPage < Math.ceil(users.length / itemsPerPage) && (
+              {currentPage > 1 && currentPage < Math.ceil(filterActiveUsers(users).length / itemsPerPage) && (
                 <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
               )}
-              {currentPage < Math.ceil(users.length / itemsPerPage) && (
+              {currentPage < Math.ceil(filterActiveUsers(users).length / itemsPerPage) && (
                 <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>Next</Link>
               )}
             </Box>
           )}
           {currentPage > 1 && (
             <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
-              {`< ${currentPage} / ${getTotalPages(users.length, itemsPerPage)} >`}
+              {`< ${currentPage} / ${getTotalPages(filterActiveUsers(users).length, itemsPerPage)} >`}
             </Typography>
           )}
         </Box>
