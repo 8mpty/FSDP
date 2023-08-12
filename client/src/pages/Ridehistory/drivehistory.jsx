@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import {
   Box,
   Typography,
@@ -14,16 +14,56 @@ import global from "../../global";
 import { Link } from "react-router-dom";
 import SplitButton from "../../assets/button";
 import "../../ridehistory.css";
+import { UserContext } from '../../contexts/AccountContext';
 
 function Drivehistory({ role }) {
   const [ridehistorylist, setRidehistorylist] = useState([]);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
-    http.get("/ridehistory").then((res) => {
-      console.log(res.data);
-      setRidehistorylist(res.data);
-    });
-  }, []);
+      const isAdmin = user.isAdmin;
+
+      const headers = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          isAdmin: isAdmin,
+        },
+      };
+
+      const bookingsPromise = http.get("/booking", headers);
+      const driverBookingsPromise = http.get("/driverbooking", headers);
+      const rideHistoryPromise = http.get("/ridehistory", headers);
+
+      Promise.all([bookingsPromise, rideHistoryPromise, driverBookingsPromise])
+        .then(([bookingResponse, rideHistoryResponse, driverBookingResponse]) => {
+          const bookingsData = bookingResponse.data;
+          const rideHistoryData = rideHistoryResponse.data;
+          const driverBookingsData = driverBookingResponse.data;
+
+          const mergedData = rideHistoryData.map(ride => {
+            const booking = bookingsData.find(booking => booking.id === ride.id);
+            const driverBooking = driverBookingsData.find(driverBooking => driverBooking.id === ride.id);
+
+            return {
+              id: ride.id,
+              rider: booking.name,
+              driver: driverBooking.drivername,
+              start: booking.pickup,
+              end: booking.passby,
+              createdAt: ride.createdAt,
+              description: ride.description,
+              points: ride.points
+            };
+          });
+
+          setRidehistorylist(mergedData);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    
+  }, [user]);
+
 
   const userRole = "driver";
 
