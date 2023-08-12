@@ -67,9 +67,9 @@ function Drivehistory({ role }) {
       });
   }, [user]);
 
-  const userRole = "driver";
-
-  const filteredDriveHistory = ridehistorylist.filter((ridehistory) => {});
+  const filteredDriveHistory = ridehistorylist.filter((ridehistory) => {
+    return ridehistory.driverId === user.userId;
+  });
 
   return (
     <Box className="history-page">
