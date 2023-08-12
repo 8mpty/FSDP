@@ -107,6 +107,9 @@ function ProfileUser() {
         toast.success("Be a Driver requested. An admin will review your request.");
         setProf((prevState) => ({ ...prevState, requestDelete: true }));
         handleCloseDriverDialog();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error requesting account driver status:", error);
