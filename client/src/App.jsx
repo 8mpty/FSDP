@@ -13,6 +13,7 @@ import ProfileAdmin from "./pages/Admins/ProfileAdmin";
 import AccountRecoveryAdmin from "./pages/Admins/AccountRecoveryAdmin";
 import AdminPanel from "./pages/Admins/AdminPanel";
 import UserCreationDashboard from "./pages/Admins/UserCreationDashboard";
+import ContactAdmin from "./pages/Admins/ContactAdmin";
 
 import RegisterUser from "./pages/Users/RegisterUser";
 import LoginUser from "./pages/Users/LoginUser";
@@ -241,7 +242,7 @@ function App() {
                   <>
                     <Link to="/adminPanel"><IconButton><AdminPanelSettingsIcon /></IconButton></Link>
                     <Button onClick={handleMenuOpen}>
-                      <AccountCircleIcon  />
+                      <AccountCircleIcon />
                     </Button>
                     <Menu anchorEl={dropMenu} open={Boolean(dropMenu)} onClose={handleMenuClose}>
                       <MenuItem component={Link} to="/profileAdmin" onClick={handleMenuClose}>
@@ -324,6 +325,8 @@ function App() {
 
               {/* Redirects anyone that goes to a non-existent or unauthorized page */}
               <Route path={"*"} element={<NotFound />} />
+
+              <Route path={"/contactus"} element={<ContactAdmin />} />
 
               {/* User Stuff */}
               {user ? (

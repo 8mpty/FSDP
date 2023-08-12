@@ -45,18 +45,12 @@ function LoginUser() {
     }
   });
   return (
-    <Box sx={{
-      marginTop: 8,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center'
-    }}>
+    <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <ToastContainer />
       <Typography variant="h5" sx={{ my: 2 }}>
         Login
       </Typography>
-      <Box component="form" className="login-con" sx={{ maxWidth: '500px' }}
-        onSubmit={formik.handleSubmit}>
+      <Box component="form" className="login-con" sx={{ maxWidth: '500px' }} onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth margin="normal" autoComplete="off"
           label="Email"

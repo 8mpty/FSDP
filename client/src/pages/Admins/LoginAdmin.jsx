@@ -69,7 +69,7 @@ function LoginAdmin() {
           helperText={formik.touched.password && formik.errors.password}
         />
         <Box>
-          <Link to="/accountRecoveryAdmin"><IconButton><PasswordIcon /></IconButton></Link>
+          <Link to="/accountRecoveryAdmin">Forgot Password</Link>
         </Box>
         <Button fullWidth variant="contained" sx={{ mt: 2 }} type="submit">
           Login

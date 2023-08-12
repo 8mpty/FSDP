@@ -85,24 +85,6 @@ function AnnouncementPanel() {
         getAllAnnouncements();
     };
 
-    const handleNextPage = () => {
-        setCurrentPage((prevPage) => prevPage + 1);
-    };
-
-    const handlePreviousPage = () => {
-        setCurrentPage((prevPage) => prevPage - 1);
-    };
-
-    const renderTableData = (data) => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return data.slice(startIndex, endIndex);
-    };
-
-    const getTotalPages = (totalItems, itemsPerPage) => {
-        return Math.ceil(totalItems / itemsPerPage);
-    };
-
     useEffect(() => {
         getAllAnnouncements();
     }, []);
@@ -155,35 +137,9 @@ function AnnouncementPanel() {
                             adminId: announ.adminId,
                         }))}
                         columns={columns}
-                        pageSize={itemsPerPage}
-                        components={{
-                            Toolbar: CustomToolbar,
-                        }}
                         autoHeight
                     />
                 </Paper>
-                {rows.length > itemsPerPage && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
-                        {currentPage > 1 && (
-                            <Link onClick={handlePreviousPage} style={{ textDecoration: 'none' }}>
-                                Previous
-                            </Link>
-                        )}
-                        {currentPage > 1 && currentPage < Math.ceil(rows.length / itemsPerPage) && (
-                            <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>/</Typography>
-                        )}
-                        {currentPage < Math.ceil(rows.length / itemsPerPage) && (
-                            <Link onClick={handleNextPage} style={{ textDecoration: 'none' }}>
-                                Next
-                            </Link>
-                        )}
-                    </Box>
-                )}
-                {currentPage > 1 && (
-                    <Typography sx={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>
-                        {`< ${currentPage} / ${getTotalPages(rows.length, itemsPerPage)} >`}
-                    </Typography>
-                )}
             </Box>
         </Box>
     );
@@ -192,8 +148,8 @@ function AnnouncementPanel() {
 const CustomToolbar = () => {
     return (
         <GridToolbarContainer>
-            <GridToolbarFilterButton />
-            <GridToolbarExport />
+            {/* <GridToolbarFilterButton /> */}
+            {/* <GridToolbarExport /> */}
         </GridToolbarContainer>
     );
 };
