@@ -52,6 +52,8 @@ function Ridehistory() {
               start: booking.pickup,
               end: booking.passby,
               createdAt: ride.createdAt,
+              description: ride.description,
+              points: ride.points
             };
           });
 
@@ -67,11 +69,11 @@ function Ridehistory() {
     // Sort by createdAt in descending order (most recent first)
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
-
+  
   return (
     <Box className='history-page'>
       <SplitButton />
-      <Typography variant="h2" sx={{ my: 2, textAlign: "left", marginLeft: 3 }}>
+      <Typography variant="h2" sx={{fontFamily:"poppins-regular", my: 2, textAlign: "left", marginLeft: 3 }}>
           Ride History
         </Typography>
       <Box className="history-container">
