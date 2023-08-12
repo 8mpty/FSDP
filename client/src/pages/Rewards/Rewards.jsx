@@ -1,6 +1,7 @@
 //when you open this again, START from practical 5 FSDP - Search and Add data
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AdminContext } from '../../contexts/AccountContext';
 import { Link } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
 import http from '../../http';
@@ -13,6 +14,8 @@ import AspectRatio from '@mui/joy/AspectRatio';
 function Rewards() {
     const [rewardList, setRewardList] = useState([]);
     const [search, setSearch] = useState('');
+    const { admin } = useContext(AdminContext);
+
 
     const onSearchChange = (e) => {
         setSearch(e.target.value);
@@ -70,11 +73,16 @@ function Rewards() {
                     <Clear />
                 </IconButton>
                 <Box sx={{ flexGrow: 1 }} />
-                <Link to="/addreward" style={{ textDecoration: 'none' }}>
-                    <Button variant='contained'>
-                        Add
-                    </Button>
-                </Link>
+                {
+                    admin && (
+                        <Link to="/addreward" style={{ textDecoration: 'none' }}>
+                            <Button variant='contained'>
+                                Add
+                            </Button>
+                        </Link>
+                    )
+                }
+
             </Box>
 
             <Grid container spacing={2}>
@@ -98,11 +106,16 @@ function Rewards() {
                                             <Typography variant="h6" sx={{ flexGrow: 1 }}>
                                                 {reward.Reward_Name}
                                             </Typography>
-                                            <Link to={`/editreward/${reward.id}`}>
-                                                <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                    <Edit />
-                                                </IconButton>
-                                            </Link>
+                                            {
+                                                admin && admin.id == reward.adminId && (
+                                                    <Link to={`/editreward/${reward.id}`}>
+                                                        <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                            <Edit />
+                                                        </IconButton>
+                                                    </Link>
+                                                )
+                                            }
+
                                         </Box>
                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
                                             color="text.secondary">
