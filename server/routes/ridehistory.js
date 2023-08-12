@@ -3,7 +3,7 @@ const router = express.Router();
 const { User, ridehistory, Sequelize } = require("../models");
 const yup = require("yup");
 const { validateToken } = require("../middlewares/auth");
-const axios = require('axios');
+const axios = require("axios");
 
 router.post("/", validateToken, async (req, res) => {
   try {
@@ -17,12 +17,16 @@ router.post("/", validateToken, async (req, res) => {
       return res.status(404).json({ message: "Ride not found" });
     }
 
-    const bookingResponse = await axios.get(`http://localhost:3001/booking/${data.bookingId}`);
+    const bookingResponse = await axios.get(
+      `http://localhost:3001/booking/${data.bookingId}`
+    );
     const bookingData = bookingResponse.data;
 
     const riderId = bookingData.userId;
 
-    const driverbookingResponse = await axios.get(`http://localhost:3001/driverbooking/${data.driverbookingId}`);
+    const driverbookingResponse = await axios.get(
+      `http://localhost:3001/driverbooking/${data.driverbookingId}`
+    );
     const driverbookingData = driverbookingResponse.data;
 
     const driverId = driverbookingData.userId;
@@ -35,25 +39,38 @@ router.post("/", validateToken, async (req, res) => {
     });
 
     if (existingRideHistory) {
-      return res.status(400).json({ message: "Ride history entry already exists" });
+      return res
+        .status(400)
+        .json({ message: "Ride history entry already exists" });
     }
 
     // Create ride history entry for rider
-    const ridehistoryData = {
-      userId: userId,
-      bookingId: data.bookingId, // Make sure you have this data in the request body
-      description: "", // Set the description as needed
-      points: 100,
-      totalPoints: 100,
-      driverId: driverId,
-      riderId: riderId,
-    };
-    await ridehistory.create(ridehistoryData);
+    try {
+      const points = 100;
 
-    // Create ride history entry for driver
+      // Calculate totalPoints by adding points to the user's current totalPoints
+      const totalPoints = ridehistory.totalPoints + 100;
 
+      const newRideHistoryData = {
+        userId: userId,
+        bookingId: data.bookingId, // Make sure you have this data in the request body
+        description: "", // Set the description as needed
+        points: points,
+        totalPoints: points + points,
+        driverId: driverId,
+        riderId: riderId,
+      };
 
-    return res.status(201).json({ message: "Ride history entries created" });
+      // Create the new ride history entry
+      await ridehistory.create(newRideHistoryData);
+
+      return res.status(201).json({ message: "Ride history entries created" });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ message: "Error creating ride history entries" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating ride history entries" });

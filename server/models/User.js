@@ -32,14 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    totalPoints: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
     isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    }
+    },
   });
   User.associate = (models) => {
     User.hasMany(models.ridehistory, {

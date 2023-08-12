@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
   const ridehistory = sequelize.define("ridehistory", {
     bookingId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     description: {
       type: DataTypes.TEXT,
@@ -12,43 +12,44 @@ module.exports = (sequelize, DataTypes) => {
     points: {
       type: DataTypes.INTEGER,
       allowNull: false,
-
+    },
+    totalPoints: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     totalPoints: {
       type: DataTypes.INTEGER,
       allowNull: false,
-
     },
-    driverId:{
+    driverId: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
     },
     riderId: {
-      type: DataTypes.INTEGER, // Assuming this is the data type of userId
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   });
   ridehistory.associate = (models) => {
     ridehistory.belongsTo(models.User, {
       foreignKey: "userId",
-      as: 'user'
+      as: "user",
     });
   };
 
   ridehistory.associate = (models) => {
     ridehistory.belongsTo(models.Booking, {
       foreignKey: "bookingId",
-      as: 'booking'
+      as: "booking",
     });
   };
 
   ridehistory.associate = (models) => {
     ridehistory.belongsTo(models.DriverBooking, {
       foreignKey: "driverbookingId",
-      as: 'driverbooking'
+      as: "driverbooking",
     });
   };
 
   return ridehistory;
-
 };
