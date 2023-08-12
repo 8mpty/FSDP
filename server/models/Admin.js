@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: "adminId",
             onDelete: "cascade"
         });
+        Admin.hasMany(models.Rewards, {
+            foreignKey: "adminId",
+            onDelete: "cascade"
+        });
     };
     return Admin;
 }
