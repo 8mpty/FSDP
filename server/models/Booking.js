@@ -16,13 +16,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        
-        
+
+
         imageFile: {
             type: DataTypes.STRING
         }
     });
 
+    
     Booking.associate = (models) => {
         Booking.belongsTo(models.User, {
             foreignKey: "userId",
@@ -36,6 +37,8 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     
+
+
 
     return Booking;
 }

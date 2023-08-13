@@ -163,15 +163,15 @@ function DriverBookings() {
 
 
                                             <td style={{ width: "70px" }} ><div style={{ color: "green", backgroundColor: "#A4F0C1", borderRadius: "20px", padding: "8px" }}>{driverbooking.status}</div></td>
-                                            
+
 
                                         )}
 
                                     {
                                         driverbooking.status === "Completed" && (
-                                    
+
                                             <td style={{ width: "70px" }} ><div style={{ color: "#1134A6", backgroundColor: "#63e5ff", borderRadius: "20px", padding: "8px" }}>{driverbooking.status}</div></td>
-                                            
+
 
                                         )}
 
@@ -196,12 +196,38 @@ function DriverBookings() {
 
 
                                     <td>
+                                        {
+                                            user && driverbooking.status === "Pending" && (
 
-                                        <Link to={`/editdriverbooking/${driverbooking.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
-                                                <Edit />
-                                            </IconButton>
-                                        </Link>
+                                                <Link to={`/editdriverbooking/${driverbooking.id}`}>
+                                                    <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                        <Edit />
+                                                    </IconButton>
+                                                </Link>
+                                            )
+                                        }
+
+                                        {
+                                            user && driverbooking.status === "Accepted" && (
+
+                                                <Link to={`/editdriverbooking/${driverbooking.id}`}>
+                                                    <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                        <Edit />
+                                                    </IconButton>
+                                                </Link>
+                                            )
+                                        }
+
+                                        {
+                                            user && driverbooking.status === "Rejected" && (
+
+                                                <Link to={`/editdriverbooking/${driverbooking.id}`}>
+                                                    <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                        <Edit />
+                                                    </IconButton>
+                                                </Link>
+                                            )
+                                        }
 
                                     </td>
 
